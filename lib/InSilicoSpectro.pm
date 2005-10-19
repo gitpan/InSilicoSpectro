@@ -40,6 +40,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 =head1 AUTHORS
 
+Jacques Colinge, fh-hagenberg.at
+
 Alexandre Masselot, www.genebio.com
 
 =cut
@@ -58,7 +60,7 @@ our (@ISA, @EXPORT, @EXPORT_OK, $VERSION);
 
 @EXPORT = qw($VERSION &saveInSilicoDef &init &getInSilicoDefFile $DEF_FILENAME_ENV);
 @EXPORT_OK = ();
-$VERSION = "1.2.4";
+$VERSION = "1.2.5";
 
 our $DEF_FILENAME_ENV='INSILICOSPECTRO_DEFFILE';
 
