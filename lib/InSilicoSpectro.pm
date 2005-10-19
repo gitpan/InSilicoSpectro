@@ -1,6 +1,6 @@
 =head1 NAME
 
-Phenyx::InSilicoSpectro - InSilico Mass Spectrometry toolkit
+InSilicoSpectro - InSilico Mass Spectrometry toolkit
 
 =head1 DESCRIPTION
 
@@ -58,7 +58,7 @@ our (@ISA, @EXPORT, @EXPORT_OK, $VERSION);
 
 @EXPORT = qw($VERSION &saveInSilicoDef &init &getInSilicoDefFile $DEF_FILENAME_ENV);
 @EXPORT_OK = ();
-$VERSION = "1.2.3";
+$VERSION = "1.2.4";
 
 our $DEF_FILENAME_ENV='INSILICOSPECTRO_DEFFILE';
 
