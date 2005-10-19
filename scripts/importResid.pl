@@ -41,7 +41,7 @@ use Pod::Usage;
 
 use InSilicoSpectro::InSilico::ModRes;
 use InSilicoSpectro::InSilico::CleavEnzyme;
-use Phenyx::InSilicoSpectro;
+use InSilicoSpectro;
 
 my ($help, $verbose, $dest, $username);
 if (!GetOptions('dest=s'=> \$dest,
@@ -84,7 +84,7 @@ if($src eq '-'){
   close(F);
 }
 
-Phenyx::InSilicoSpectro::saveInSilicoDef($dest);
+InSilicoSpectro::saveInSilicoDef($dest);
 
 # ------------------------------ XML --------------------------
 

@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name: InSilicoSpectro
-version: 1.2.2
+version: 1.2.3
 author:
   - Alexandre Masselot <alexandre.masselot@genebio.com>, Jacques Colinge <Jacques.Colinge@fh-hagenberg.at>
 abstract: InSilico Mass Spectrometry toolkit
