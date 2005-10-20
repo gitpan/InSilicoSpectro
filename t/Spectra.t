@@ -10,9 +10,11 @@ END{
 
 use Test::More tests => 3;
 use File::Basename;
-my $dir=dirname $0;
+
+my $dir=dirname($0)."/Spectra";
+my $env="INSILICOSPECTRO_DEFFILE=".dirname($0)."/InSilico/insilicodef.xml";
 
 use InSilicoSpectro::Spectra::MSSpectra;
 is(InSilicoSpectro::Spectra::MSSpectra::string2chargemask('2+ AND 3+'), 12);
-is( system("$dir/testPeakDescriptor.pl"), 0);
-is( system("$dir/testSpectra.pl 1 $dir/166.dta dta"), 0);
+is( system("$env $dir/testPeakDescriptor.pl"), 0);
+is( system("$env $dir/testSpectra.pl 1 $dir/166.dta dta"), 0);

@@ -97,7 +97,7 @@ otherwise returns the modification name.
 
 =head1 EXAMPLES
 
-See Phenyx/InSilico/test/testCleavEnzyme.pl.
+See t/InSilico/testCleavEnzyme.pl.
 
 =head1 COPYRIGHT
 

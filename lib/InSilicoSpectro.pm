@@ -60,7 +60,7 @@ our (@ISA, @EXPORT, @EXPORT_OK, $VERSION);
 
 @EXPORT = qw($VERSION &saveInSilicoDef &init &getInSilicoDefFile $DEF_FILENAME_ENV);
 @EXPORT_OK = ();
-$VERSION = "1.2.5";
+$VERSION = "0.9.7";
 
 our $DEF_FILENAME_ENV='INSILICOSPECTRO_DEFFILE';
 

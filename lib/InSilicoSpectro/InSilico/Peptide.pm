@@ -746,7 +746,7 @@ sub getVersion
 
 =head1 EXAMPLES
 
-See Phenyx/InSilico/test/testPeptide.pl and Phenyx/InSilico/test/testCalcDigestOOP.pl.
+See t/InSilico/testPeptide.pl and t/InSilico/testCalcDigestOOP.pl.
 
 =head1 AUTHORS
 

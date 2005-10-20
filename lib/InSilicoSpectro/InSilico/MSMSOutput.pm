@@ -38,7 +38,7 @@ use Carp;
 use InSilicoSpectro::InSilico::MassCalculator;
 our $okGD;
 eval{
-  require GD;
+  use GD;
   $okGD=1;
 };
 

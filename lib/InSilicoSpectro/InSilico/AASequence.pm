@@ -244,7 +244,7 @@ sub getVersion
 
 =head1 EXAMPLES
 
-See Phenyx/InSilico/test/testAASequence.pl.
+See t/InSilico/testAASequence.pl.
 
 =head1 AUTHORS
 

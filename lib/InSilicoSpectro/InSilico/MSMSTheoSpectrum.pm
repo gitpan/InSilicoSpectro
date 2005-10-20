@@ -381,7 +381,7 @@ sub getVersion
 
 =head1 EXAMPLES
 
-See Phenyx/InSilico/test/testCalcFragOOP.pl.
+See t/InSilico/testCalcFragOOP.pl.
 
 =head1 AUTHORS
 

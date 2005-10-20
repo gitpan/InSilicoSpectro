@@ -344,7 +344,7 @@ sub getVersion
 
 =head1 EXAMPLES
 
-See Phenyx/InSilico/test/testCaclcPMFMatchOOP.pl.
+See t/InSilico/testCaclcPMFMatchOOP.pl.
 
 =head1 AUTHORS
 

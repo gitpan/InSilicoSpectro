@@ -90,7 +90,7 @@ return an XML::Twig::Elt object containing the modres
 
 =head1 EXAMPLES
 
-see Phenyx/InSilico/test/tesModRes.pl script
+see t/InSilico/tesModRes.pl script
 
 =head1 SEE ALSO
 

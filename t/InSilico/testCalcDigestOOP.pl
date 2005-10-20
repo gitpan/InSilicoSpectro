@@ -84,7 +84,7 @@ eval{
 
   if ($test == 4){
     # Test 4, tryptic digestion
-    my $protein = new InSilicoSpectro::InSilico::AASequence(sequence=>'MCTMACTKGIPRKQWWEMMKPCKADFCV', modif=>'::Cys_CAM::Oxidation::::::::::::::Oxidation:::::::::::', AC=>'12345');
+    my $protein = new InSilicoSpectro::InSilico::AASequence(sequence=>'MCTMACTKGIPRKQWWEMMKPCKADFCV', modif=>'::Cys_CAM::Oxidation::::::::::::::(*)Oxidation:::::::::::', AC=>'12345');
     print "Protein:\n$protein", modifToString($protein->modif(), $protein->getLength()), "\n\nTryptic digestion (nmc=1) with O18 (modif O18_twice):\n";
     my @result = digestByRegExp(protein=>$protein, methionine=>1, nmc=>1, enzyme=>InSilicoSpectro::InSilico::CleavEnzyme::getFromDico('Trypsin_O18modif'));
     foreach (@result){

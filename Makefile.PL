@@ -12,9 +12,12 @@ WriteMakefile
                            'Compress::Zlib' => 0,
                            'XML::Twig' => '3.14',
                            'Archive::Zip' => 0,
+                           'GD::Graph' => 0,
                            'MIME::Base64' => 0,
                            'File::Temp' => 0,
                            'Digest::MD5' => 0,
+                           'GD::Text' => 0,
+                           'GD' => 0,
                            'XML::Parser' => 0
                          }
         )
