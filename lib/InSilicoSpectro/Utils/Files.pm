@@ -41,12 +41,11 @@ Alexandre Masselot, www.genebio.com
 
 =cut
 
-our (@ISA,@EXPORT,@EXPORT_OK, $VERSION);
+our (@ISA,@EXPORT,@EXPORT_OK);
 @ISA = qw(Exporter);
 
-@EXPORT = qw(&rmdirRecursive $VERSION);
+@EXPORT = qw(&rmdirRecursive);
 @EXPORT_OK = ();
-$VERSION = "0.9";
 
 use File::Find::Rule;
 use File::Spec;

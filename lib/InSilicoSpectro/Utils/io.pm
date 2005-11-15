@@ -88,13 +88,11 @@ Alexandre Masselot, www.genebio.com
 
 =cut
 
-our (@ISA,@EXPORT,@EXPORT_OK, $VERBOSE, $VERSION);
+our (@ISA,@EXPORT,@EXPORT_OK, $VERBOSE);
 @ISA = qw(Exporter);
 
 @EXPORT = qw(&getFD $VERBOSE &compressFile &uncompressFile &zipFiles &getMD5 &croakIt);
 @EXPORT_OK = ();
-$VERSION = "0.9";
-
 
 sub getFD{
   my ($this, $v)=@_;

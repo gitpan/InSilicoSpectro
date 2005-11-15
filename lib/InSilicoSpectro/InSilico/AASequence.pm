@@ -26,12 +26,11 @@ use InSilicoSpectro::InSilico::Sequence;
 use InSilicoSpectro::InSilico::MassCalculator;
 
 
-our (@ISA, @EXPORT, @EXPORT_OK, $isBioPerl, $VERSION);
+our (@ISA, @EXPORT, @EXPORT_OK, $isBioPerl);
 @ISA = qw(InSilicoSpectro::InSilico::Sequence);
 
 @EXPORT = qw($qrValidAASeq);
 @EXPORT_OK = ();
-$VERSION = "1.0";
 
 # Visible attributes controled vocabulary
 our %visibleAttr = (readingFrame=>1, modif=>1);
@@ -233,13 +232,6 @@ sub getMass
   return $mass;
 
 } # getMass
-
-
-sub getVersion
-{
-  return $VERSION;
-
-} # getVersion
 
 
 =head1 EXAMPLES

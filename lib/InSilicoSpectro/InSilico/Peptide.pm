@@ -27,12 +27,11 @@ use InSilicoSpectro::InSilico::AASequence;
 use InSilicoSpectro::InSilico::CleavEnzyme;
 use InSilicoSpectro::Utils::io;
 
-our (@ISA, @EXPORT, @EXPORT_OK, $VERSION);
+our (@ISA, @EXPORT, @EXPORT_OK);
 @ISA = qw(Exporter);
 
-@EXPORT = qw(getVersion);
+@EXPORT = qw();
 @EXPORT_OK = ();
-$VERSION = "1.0";
 
 our %visibleAttr = (sequence=>1, modif=>1, parentProtein=>1, start=>1, end=>1, readingFrame=>1, nTerm=>1, cTerm=>1, enzymatic=>1, enzyme=>1, aaBefore=>1, aaAfter=>1, nmc=>1, addProton=>1);
 our %aaList = split(//, 'A1C1D1E1F1G1H1I1K1L1M1N1P1Q1R1S1T1V1W1Y1');
@@ -728,20 +727,6 @@ sub print
   print $fdOut " Da, average mass=", $this->getMass(), " Da\n";
   InSilicoSpectro::InSilico::MassCalculator::setMassType($massType);
 }
-
-
-=head1 FUNCTIONS
-
-=head2 getVersion
-
-Object definition version.
-
-=cut
-sub getVersion
-{
-  return $VERSION;
-
-} # getVersion
 
 
 =head1 EXAMPLES

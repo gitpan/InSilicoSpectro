@@ -146,12 +146,11 @@ Nicolas Budin, www.genebio.com
 
 =cut
 
-our (@ISA, @EXPORT, @EXPORT_OK, $VERSION);
+our (@ISA, @EXPORT, @EXPORT_OK);
 @ISA = qw(Exporter);
 
-@EXPORT = qw($VERSION);
+@EXPORT = qw();
 @EXPORT_OK = ();
-$VERSION = "0.9";
 
 use InSilicoSpectro::Utils::io;
 

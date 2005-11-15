@@ -23,7 +23,7 @@
 #  Upper Austria University of Applied Science at Hagenberg
 #  Hauptstrasse 117
 #  A-4232 Hagenberg, Austria
-#  e-mail: jacques.colinge@fh-hagenberg.at or, alternatively, austrian_olav@yahoo.com
+#  http://www.fhs-hagenberg.ac.at
 
 
 =head1 testCalcFrag.pl
@@ -39,8 +39,8 @@ module MSMSOutput.pm, see the corresponding examples.
 BEGIN{
   use File::Basename;
   push @INC, (dirname $0).'/../../lib';
-}
-
+}print @INC;
+use Cwd;
 use strict;
 use Carp;
 use InSilicoSpectro;

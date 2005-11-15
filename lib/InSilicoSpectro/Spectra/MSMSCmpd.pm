@@ -4,9 +4,9 @@ package InSilicoSpectro::Spectra::MSMSCmpd;
 use Carp;
 
 require Exporter;
-our (@ISA,@EXPORT,@EXPORT_OK, $VERSION,);
+our (@ISA,@EXPORT,@EXPORT_OK,);
 @ISA=qw (Exporter MSSpectra);
-@EXPORT=qw(&getVersion);
+@EXPORT=qw();
 @EXPORT_OK=qw();
 
 =head1 MSMSSpectra
@@ -39,8 +39,6 @@ Alexandre Masselot, www.genebio.com
 
 use InSilicoSpectro::Utils::io;
 use InSilicoSpectro::Spectra::PhenyxPeakDescriptor;
-
-$VERSION="0.9";
 
 sub new{
   my ($class, $h) = @_;
@@ -207,8 +205,5 @@ PEPMASS=".$this->get('parentPD')->sprintData($this->getParentData(), $transformC
 }
 
 # -------------------------------   misc
-sub getVersion{
-  return $VERSION;
-}
 return 1;
  

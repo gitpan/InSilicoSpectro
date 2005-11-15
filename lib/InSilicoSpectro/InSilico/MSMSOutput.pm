@@ -23,25 +23,24 @@ package InSilicoSpectro::InSilico::MSMSOutput;
 #  Upper Austria University of Applied Science at Hagenberg
 #  Hauptstrasse 117
 #  A-4232 Hagenberg, Austria
-#  e-mail: jacques.colinge@fh-hagenberg.at or, alternatively, austrian_olav@yahoo.com
+#  http://www.fhs-hagenberg.ac.at
 
 require Exporter;
 
-our (@ISA, @EXPORT, @EXPORT_OK, $VERSION);
+our (@ISA, @EXPORT, @EXPORT_OK);
 @ISA = qw(Exporter);
-@EXPORT = qw(normalizeIntensities annotatePept chooseColorLineNum chooseColorFrag htmlCSS plotLegendOnly getVersion);
+@EXPORT = qw(normalizeIntensities annotatePept chooseColorLineNum chooseColorFrag htmlCSS plotLegendOnly );
 @EXPORT_OK = ();
-$VERSION = 1.0;
 
 use strict;
 use Carp;
 use InSilicoSpectro::InSilico::MassCalculator;
 our $okGD;
 eval{
+  #require fails for autoload results  (bug #4)
   use GD;
   $okGD=1;
 };
-
 our %htmlize = ('<'=>'&lt;', '>'=>'&gt;', '&'=>'&amp;', '"'=>'&quot;', "'"=>'&apos;');
 our ($tmpim, $tmpWhite);
 
@@ -1525,7 +1524,7 @@ sub plotSpectrumMatch
     }
     else{
       $fname =~ s/\.$format$//;
-      open(FGD, ">$fname.$format")|| croak("Cannot open file [$fname.$format]: $!");
+      open(FGD, ">$fname.$format") || croak("Cannot open file [$fname.$format]: $!");
       binmode FGD;
       print FGD $im->$format;
       close(FGD);
@@ -2315,10 +2314,6 @@ sub plotLegendOnly
 
 } # plotLegendOnly
 
-
-sub getVersion{
-  $VERSION;
-}
 
 =head1 EXAMPLES
 

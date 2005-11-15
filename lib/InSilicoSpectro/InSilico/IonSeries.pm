@@ -23,17 +23,16 @@ package  InSilicoSpectro::InSilico::IonSeries;
 #  Upper Austria University of Applied Science at Hagenberg
 #  Hauptstrasse 117
 #  A-4232 Hagenberg, Austria
-#  e-mail: jacques.colinge@fh-hagenberg.at or, alternatively, austrian_olav@yahoo.com
+#  http://www.fhs-hagenberg.ac.at
 
 use strict;
 use Carp;
 require Exporter;
 
-our (@ISA, @EXPORT, @EXPORT_OK, $VERSION);
+our (@ISA, @EXPORT, @EXPORT_OK);
 @ISA = qw(Exporter);
-@EXPORT = qw(getVersion);
+@EXPORT = qw();
 @EXPORT_OK = ();
-$VERSION = 1.0;
 
 our %visibleAttr = (ionType=>1, charge=>1, masses=>1, names=>1, massType=>1, matches=>1, massIndex=>1, intensityIndex=>1);
 
@@ -346,12 +345,6 @@ sub toString
 
 } # toString
 
-
-sub getVersion
-{
-  $VERSION;
-
-} # getVersion
 
 
 =head1 EXAMPLES

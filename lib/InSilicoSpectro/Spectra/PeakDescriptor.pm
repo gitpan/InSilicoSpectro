@@ -21,13 +21,12 @@ use strict;
 use Carp;
 require Exporter;
 
-our (@ISA,@EXPORT,@EXPORT_OK, $VERSION);
+our (@ISA,@EXPORT,@EXPORT_OK);
 @ISA=qw (Exporter);
-@EXPORT=qw(&getVersion);
+@EXPORT=qw();
 @EXPORT_OK=qw();
 
 
-$VERSION="1.0";
 
 =head1 NAME
 
@@ -166,9 +165,4 @@ sub toString{
   return $string;
 }
 
-sub getVersion{
-  $VERSION;
-}
-
 return 1;
- 

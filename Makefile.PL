@@ -5,6 +5,13 @@ WriteMakefile
           'PL_FILES' => {},
           'INSTALLDIRS' => 'site',
           'NAME' => 'InSilicoSpectro',
+          'EXE_FILES' => [
+                           'scripts/computePI.pl',
+                           'scripts/computeRT.pl',
+                           'scripts/convertSpectra.pl',
+                           'scripts/importResid.pl',
+                           'scripts/indexXml.pl'
+                         ],
           'VERSION_FROM' => './lib/InSilicoSpectro.pm',
           'PREREQ_PM' => {
                            'Getopt::Long' => 0,

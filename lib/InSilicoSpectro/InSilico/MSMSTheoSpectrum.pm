@@ -23,15 +23,14 @@ package  InSilicoSpectro::InSilico::MSMSTheoSpectrum;
 #  Upper Austria University of Applied Science at Hagenberg
 #  Hauptstrasse 117
 #  A-4232 Hagenberg, Austria
-#  e-mail: jacques.colinge@fh-hagenberg.at or, alternatively, austrian_olav@yahoo.com
+#  http://www.fhs-hagenberg.ac.at
 
 require Exporter;
 
-our (@ISA, @EXPORT, @EXPORT_OK, $VERSION);
+our (@ISA, @EXPORT, @EXPORT_OK);
 @ISA = qw(Exporter);
-@EXPORT = qw(getVersion);
+@EXPORT = qw();
 @EXPORT_OK = ();
-$VERSION = 1.0;
 
 use strict;
 use Carp;
@@ -370,13 +369,6 @@ sub getInternIons
   return @internIons;
 
 } # getInternIons
-
-
-sub getVersion
-{
-  $VERSION;
-
-} # getVersion
 
 
 =head1 EXAMPLES

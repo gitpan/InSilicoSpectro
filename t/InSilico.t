@@ -2,7 +2,7 @@
 use Test::More tests => 44;
 use File::Basename;
 my $dir=dirname($0)."/InSilico";
-my $env="INSILICOSPECTRO_DEFFILE=".dirname($0)."/InSilico/insilicodef.xml";
+my $env="INSILICOSPECTRO_DEFFILE=$dir/insilicodef.xml";
 
 is(system("$env $dir/testSequence.pl 1 > /dev/null"), 0);
 

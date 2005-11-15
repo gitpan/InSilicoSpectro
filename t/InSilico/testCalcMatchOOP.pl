@@ -23,7 +23,7 @@
 #  Upper Austria University of Applied Science at Hagenberg
 #  Hauptstrasse 117
 #  A-4232 Hagenberg, Austria
-#  e-mail: jacques.colinge@fh-hagenberg.at or, alternatively, austrian_olav@yahoo.com
+#  http://www.fhs-hagenberg.ac.at
 
 BEGIN{
   use File::Basename;

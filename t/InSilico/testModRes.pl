@@ -38,4 +38,3 @@ if ($@){
   print STDERR "error trapped in main\n";
   carp $@;
 }
-print "version=".InSilicoSpectro::InSilico::ModRes->getVersion()."\n";

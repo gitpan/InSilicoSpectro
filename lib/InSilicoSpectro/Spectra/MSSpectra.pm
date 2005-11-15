@@ -5,9 +5,9 @@ package InSilicoSpectro::Spectra::MSSpectra;
 
 use InSilicoSpectro::Spectra::ExpSpectrum;
 require Exporter;
-our (@ISA,@EXPORT,@EXPORT_OK, %hFmt, %handlers, $VERSION);
+our (@ISA,@EXPORT,@EXPORT_OK, %hFmt, %handlers);
 @ISA=qw (InSilicoSpectro::Spectra::ExpSpectrum);
-@EXPORT=qw(&string2chargemask &chargemask2string &charge2mgfStr &guessFormat $VERSION &getFmtDescr);
+@EXPORT=qw(&string2chargemask &chargemask2string &charge2mgfStr &guessFormat &getFmtDescr);
 @EXPORT_OK=qw();
 
 =head1 MSSpectra
@@ -42,18 +42,6 @@ Set or get the spectra (array)
 
 Set or get the defaultCharge
 
-=head1 my $sp-> ([$string])
-
-Set or get the 
-
-=head1 my $sp-> ([$string])
-
-Set or get the 
-
-=head1 my $sp-> ([$string])
-
-Set or get the 
-
 =head1 COPYRIGHT
 
 Copyright (C) 2004-2005  Geneva Bioinformatics www.genebio.com
@@ -84,9 +72,6 @@ use Carp;
 use InSilicoSpectro::Utils::io;
 use InSilicoSpectro::Spectra::PhenyxPeakDescriptor;
 use InSilicoSpectro::Spectra::MSMSSpectra;
-
-
-$VERSION="0.9";
 
 %hFmt=(
        dta=>{
@@ -301,7 +286,7 @@ $shift  <ple:date>".($this->get('date'))."</ple:date>
 $shift  <ple:time>".($this->get('time'))."</ple:time>
 $shift  <ple:PeakDetectionAlg>
 $shift    <ple:ProgramName>InSilicoSpectro::Spectra::MSSpectra</ple:ProgramName>
-$shift    <ple:ProgramVersion>$VERSION</ple:ProgramVersion>
+$shift    <ple:ProgramVersion>$InSilicoSpectro::VERSION</ple:ProgramVersion>
 $shift    <ple:ProgramParameters>
 $shift      <ple:PParam name=\"source\" value=\"".$this->source."\"/>
 $shift    </ple:ProgramParameters>

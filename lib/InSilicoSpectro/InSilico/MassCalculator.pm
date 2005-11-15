@@ -23,15 +23,14 @@ package  InSilicoSpectro::InSilico::MassCalculator;
 #  Upper Austria University of Applied Science at Hagenberg
 #  Hauptstrasse 117
 #  A-4232 Hagenberg, Austria
-#  e-mail: jacques.colinge@fh-hagenberg.at or, alternatively, austrian_olav@yahoo.com
+#  http://www.fhs-hagenberg.ac.at
 
 require Exporter;
 
-our (@ISA, @EXPORT, @EXPORT_OK, $VERSION);
+our (@ISA, @EXPORT, @EXPORT_OK);
 @ISA = qw(Exporter);
-@EXPORT = qw(readConfigurationFiles getMass setMass setMassType getMassType massFromComposition setModif getModif modifToString getPeptideMass getCorrectCharge digestByRegExp nonSpecificDigestion $digestIndexPept $digestIndexStart $digestIndexEnd $digestIndexNmc $digestIndexMass $digestIndexModif $trypsinRegex $dibasicRegex matchPMF variablePeptide locateModif getSeries setSeries getLoss setLoss getFragType setFragType getFragTypeList setImmonium getImmonium getImmoniumMass getFragmentMasses matchSpectrumClosest matchSpectrumGreedy cmpFragTypes getVersion $invalidElementCall);
+@EXPORT = qw(readConfigurationFiles getMass setMass setMassType getMassType massFromComposition setModif getModif modifToString getPeptideMass getCorrectCharge digestByRegExp nonSpecificDigestion $digestIndexPept $digestIndexStart $digestIndexEnd $digestIndexNmc $digestIndexMass $digestIndexModif $trypsinRegex $dibasicRegex matchPMF variablePeptide locateModif getSeries setSeries getLoss setLoss getFragType setFragType getFragTypeList setImmonium getImmonium getImmoniumMass getFragmentMasses matchSpectrumClosest matchSpectrumGreedy cmpFragTypes $invalidElementCall);
 @EXPORT_OK = ();
-$VERSION = 1.0;
 
 use strict;
 use XML::Twig;
@@ -124,13 +123,6 @@ our $isInit;
 our $invalidElementCall=\&croak;
 
 return 1;
-
-
-sub getVersion
-{
-  return $VERSION;
-
-} # getVersion
 
 
 =head2 init([$filename])

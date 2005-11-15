@@ -121,12 +121,11 @@ Alexandre Masselot, www.genebio.com
 =cut
 
 
-our (@ISA, @EXPORT, @EXPORT_OK, $isInit, %dico, %re2Modif, $VERSION);
+our (@ISA, @EXPORT, @EXPORT_OK, $isInit, %dico, %re2Modif);
 @ISA = qw(Exporter);
 
-@EXPORT = qw(&getVersion &init &getFromDico &getList &getModifFromSprotFT &twig_addModRes);
+@EXPORT = qw(&init &getFromDico &getList &getModifFromSprotFT &twig_addModRes);
 @EXPORT_OK = ();
-$VERSION = "0.9";
 
 sub new{
   my $pkg=shift;
@@ -367,8 +366,4 @@ sub getXMLTwigElt{
 }
 
 # -------------------------------   misc
-sub getVersion{
-  return $VERSION;
-}
-
 return 1;

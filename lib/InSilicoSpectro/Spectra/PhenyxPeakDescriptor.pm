@@ -5,13 +5,11 @@ use Carp;
 
 use  InSilicoSpectro::Spectra::PeakDescriptor;
 
-our (@ISA,@EXPORT,@EXPORT_OK, $VERSION);
+our (@ISA,@EXPORT,@EXPORT_OK);
 @ISA=qw (InSilicoSpectro::Spectra::PeakDescriptor);
-@EXPORT=qw($VERSION);
+@EXPORT=qw();
 @EXPORT_OK=qw();
 
-
-$VERSION="0.9";
 
 =head1 NAME
 

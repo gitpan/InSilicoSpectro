@@ -211,11 +211,10 @@ use InSilicoSpectro::InSilico::RetentionTimer;
 use InSilicoSpectro::InSilico::ExpCalibrator;
 use File::Basename;
 
-our (@ISA, @EXPORT, @EXPORT_OK, $VERSION);
+our (@ISA, @EXPORT, @EXPORT_OK);
 @ISA = qw(Exporter InSilicoSpectro::InSilico::RetentionTimer);
 @EXPORT = qw(&getAuthorList);
 @EXPORT_OK = ();
-$VERSION = "0.1";
 
 our $defConfigFile=dirname(__FILE__).'/'.'hodges_coef.xml';
 
@@ -549,9 +548,5 @@ sub read_xml {
 
 
 # -------------------------------   misc
-sub getVersion{
-  return $VERSION;
-}
-
 return 1;
 

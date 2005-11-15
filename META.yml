@@ -1,8 +1,8 @@
 --- #YAML:1.0
 name: InSilicoSpectro
-version: 0.9.7
+version: 0.9.9
 author:
   - Alexandre Masselot <alexandre.masselot@genebio.com>, Jacques Colinge <Jacques.Colinge@fh-hagenberg.at>
-abstract: InSilico Mass Spectrometry toolkit
+abstract: Open source Perl library for proteomics
 license: lgpl
 generated_by: Module::Build version 0.2611, without YAML.pm

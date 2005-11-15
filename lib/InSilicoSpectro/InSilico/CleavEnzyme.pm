@@ -125,12 +125,11 @@ Jacques Colinge, Upper Austria University of Applied Science at Hagenberg
 =cut
 
 
-our (@ISA, @EXPORT, @EXPORT_OK, $isInit, %dico, $VERSION);
+our (@ISA, @EXPORT, @EXPORT_OK, $isInit, %dico);
 @ISA = qw(Exporter);
 
-@EXPORT = qw(&getVersion &init &getFromDico &getList &twig_addEnzyme);
+@EXPORT = qw(&init &getFromDico &getList &twig_addEnzyme);
 @EXPORT_OK = ();
-$VERSION = "1.0";
 
 our %visibleAttr = (name=>1, regexp=>1, terminus=>1, CTermGain=>1, NTermGain=>1, CTermModif=>1, NTermModif=>1);
 
@@ -354,8 +353,5 @@ sub twig_addEnzyme{
 
 # -------------------------------   misc
 
-sub getVersion{
-  return $VERSION;
-}
 
 

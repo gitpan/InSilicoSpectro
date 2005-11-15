@@ -128,9 +128,9 @@ Alexandre Masselot, Pierre-Alain Binz, www.genebio.com
 
 
 require Exporter;
-our (@ISA,@EXPORT,@EXPORT_OK, $VERSION, %handlers);
+our (@ISA,@EXPORT,@EXPORT_OK, %handlers);
 @ISA=qw(InSilicoSpectro::Spectra::MSSpectra);
-@EXPORT=qw($VERSION &getReadFmtList &getwriteFmtList &getFmtDescr);
+@EXPORT=qw(&getReadFmtList &getwriteFmtList &getFmtDescr);
 @EXPORT_OK=qw();
 
 
@@ -139,8 +139,6 @@ use InSilicoSpectro::Utils::io;
 use InSilicoSpectro::Spectra::PhenyxPeakDescriptor;
 use InSilicoSpectro::Spectra::MSMSCmpd;
 #use Phenyx::Config::GlobalParam;
-
-$VERSION="0.9";
 
 %handlers=(
 	   dta=>{read=>\&readDTA,
@@ -647,7 +645,7 @@ $shift  <ple:date>".($this->get('date'))."</ple:date>
 $shift  <ple:time>".($this->get('time'))."</ple:time>
 $shift  <ple:PeakDetectionAlg>
 $shift    <ple:ProgramName>InSilicoSpectro::Spectra::MSMSSpectra</ple:ProgramName>
-$shift    <ple:ProgramVersion>".InSilicoSpectro::Spectra::MSMSSpectra::getVersion()."</ple:ProgramVersion>
+$shift    <ple:ProgramVersion>".$InSilicoSpectro::Version."</ple:ProgramVersion>
 $shift    <ple:ProgramParameters>
 $shift      <ple:PParam name=\"source\" value=\"".$this->source()."\"/>
 $shift    </ple:ProgramParameters>

@@ -22,12 +22,11 @@ use strict;
 require Exporter;
 use Carp;
 
-our (@ISA, @EXPORT, @EXPORT_OK, $VERSION);
+our (@ISA, @EXPORT, @EXPORT_OK);
 @ISA = qw(Exporter);
 
-@EXPORT = qw(getVersion);
+@EXPORT = qw();
 @EXPORT_OK = ();
-$VERSION = "1.0";
 
 our %visibleAttr = (peakDescriptor=>1, spectrum=>1);
 
@@ -174,8 +173,4 @@ sub toString{
 }
 
 
-sub getVersion
-{
-  return $VERSION;
-
-} # getVersion
+return 1;

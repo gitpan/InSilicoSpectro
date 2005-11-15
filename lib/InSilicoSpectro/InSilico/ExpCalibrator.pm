@@ -85,11 +85,10 @@ Pablo Carbonell, Alexandre Masselot, www.genebio.com
 =cut
 
 
-our (@ISA, @EXPORT, @EXPORT_OK, $VERSION);
+our (@ISA, @EXPORT, @EXPORT_OK);
 @ISA = qw(Exporter);
 @EXPORT = qw();
 @EXPORT_OK = ();
-$VERSION = "0.1";
 
 sub new{
   my ($pkg,%h)=@_;# pkg: name of the module; h: hash with the rest of parameters
@@ -243,9 +242,5 @@ sub read_xml {
 }
 
 # -------------------------------   misc
-sub getVersion{
-  return $VERSION;
-}
-
 return 1;
 

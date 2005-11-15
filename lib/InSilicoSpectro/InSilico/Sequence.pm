@@ -24,12 +24,11 @@ use Carp;
 use InSilicoSpectro::Utils::io;
 
 
-our (@ISA, @EXPORT, @EXPORT_OK, $isBioPerl, $VERSION);
+our (@ISA, @EXPORT, @EXPORT_OK, $isBioPerl);
 @ISA = qw(Exporter);
 
 @EXPORT = qw();
 @EXPORT_OK = ();
-$VERSION = "1.0";
 
 # Checks for Bio::Perl availability.
 eval{
@@ -229,14 +228,6 @@ sub printFasta
 
 } # printFasta
 
-
-sub getVersion
-{
-  return $VERSION;
-
-} # getVersion
-
-
 =head1 EXAMPLES
 
 See t/InSilico/testSequence.pl.
@@ -248,3 +239,5 @@ Alexandre Masselot, www.genebio.com
 Jacques Colinge, Upper Austria University of Applied Science at Hagenberg
 
 =cut
+
+return 1;

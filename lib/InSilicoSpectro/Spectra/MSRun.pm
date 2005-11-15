@@ -93,12 +93,11 @@ Alexandre Masselot, www.genebio.com
 
 =cut
 
-our (@ISA,@EXPORT,@EXPORT_OK,$VERSION, $dbPath);
+our (@ISA,@EXPORT,@EXPORT_OK, $dbPath);
 @ISA = qw(Exporter);
 
-@EXPORT = qw(&getVersion &getReadFmtList &getwriteFmtList %handlers);
+@EXPORT = qw(&getReadFmtList &getwriteFmtList %handlers);
 @EXPORT_OK = ();
-$VERSION = "0.9";
 
 use File::Basename;
 
@@ -588,9 +587,6 @@ sub get{
 }
 
 # -------------------------------   misc
-sub getVersion{
-  return $VERSION;
-}
 
 return 1;
 

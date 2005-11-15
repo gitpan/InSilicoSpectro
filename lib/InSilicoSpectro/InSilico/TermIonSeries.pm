@@ -23,18 +23,17 @@ package  InSilicoSpectro::InSilico::TermIonSeries;
 #  Upper Austria University of Applied Science at Hagenberg
 #  Hauptstrasse 117
 #  A-4232 Hagenberg, Austria
-#  e-mail: jacques.colinge@fh-hagenberg.at or, alternatively, austrian_olav@yahoo.com
+#  http://www.fhs-hagenberg.ac.at
 
 use strict;
 use Carp;
 require Exporter;
 use InSilicoSpectro::InSilico::IonSeries;
 
-our (@ISA, @EXPORT, @EXPORT_OK, $VERSION);
+our (@ISA, @EXPORT, @EXPORT_OK);
 @ISA = qw(Exporter InSilicoSpectro::InSilico::IonSeries);
-@EXPORT = qw(getVersion);
+@EXPORT = qw();
 @EXPORT_OK = ();
-$VERSION = 1.0;
 
 our %visibleAttr = (series=>1, terminus=>1);
 
@@ -136,13 +135,6 @@ sub terminus
   return $this->{terminus};
 
 } # terminus
-
-
-sub getVersion
-{
-  $VERSION;
-
-} # getVersion
 
 
 =head1 EXAMPLES

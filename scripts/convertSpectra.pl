@@ -140,10 +140,8 @@ foreach(split /;/, $sampleInfo){
 
 use InSilicoSpectro::Spectra::MSRun;
 use InSilicoSpectro::Spectra::MSSpectra;
-use  Phenyx::Config::GlobalParam;
 eval{
   $InSilicoSpectro::Utils::io::VERBOSE=$verbose;
-  Phenyx::Config::GlobalParam::readParam(undef, 0);
 
   if((defined $showInputFmt) or (defined $showOutputFmt)){
     if(defined $showInputFmt){

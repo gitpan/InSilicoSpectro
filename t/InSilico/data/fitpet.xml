@@ -4,28 +4,28 @@
 		<gamma>1e-06</gamma>
 	</train>
 	<data>
-		<value time="1182">1152.96180694959</value>
-		<value time="1194">1152.96180694959</value>
-		<value time="1038">1153.91200721684</value>
-		<value time="1170">1159.39089317098</value>
-		<value time="1194">1168.57277364098</value>
-		<value time="1182">1168.57277364098</value>
-		<value time="1224">1258.62967573327</value>
-		<value time="1230">1258.62967573327</value>
-		<value time="1284">1259.82329722363</value>
-		<value time="1152">1284.33785303489</value>
-		<value time="1314">1347.12449850965</value>
-		<value time="1380">1381.17302818387</value>
-		<value time="1374">1381.17302818387</value>
-		<value time="1368">1381.17302818387</value>
-		<value time="1500">1418.13940067371</value>
-		<value time="1374">1438.47656818397</value>
-		<value time="1380">1438.47656818397</value>
-		<value time="1368">1438.47656818397</value>
-		<value time="1620">1629.92248845789</value>
-		<value time="1740">1644.28335839319</value>
-		<value time="1674">1667.52946321623</value>
-		<value time="1914">1722.72003793947</value>
-		<value time="2094">1753.1594473722</value>
+		<value time="1194">1094.84427794353</value>
+		<value time="1182">1094.84427794353</value>
+		<value time="1194">1165.87836716243</value>
+		<value time="1182">1165.87836716243</value>
+		<value time="1170">1183.81114321876</value>
+		<value time="1314">1188.17776425721</value>
+		<value time="1152">1231.79971449879</value>
+		<value time="1284">1260.87784939912</value>
+		<value time="1038">1268.44387859963</value>
+		<value time="1224">1277.51920558529</value>
+		<value time="1230">1277.51920558529</value>
+		<value time="1740">1458.88222159058</value>
+		<value time="1368">1476.72606838183</value>
+		<value time="1374">1476.72606838183</value>
+		<value time="1380">1476.72606838183</value>
+		<value time="1374">1490.530251782</value>
+		<value time="1380">1490.530251782</value>
+		<value time="1368">1490.530251782</value>
+		<value time="1500">1531.00855107866</value>
+		<value time="1620">1587.81047122441</value>
+		<value time="1674">1682.39982001475</value>
+		<value time="1914">1700.75100596112</value>
+		<value time="2094">1704.30209387768</value>
 	</data>
 </calibrator>
