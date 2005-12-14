@@ -45,16 +45,26 @@ use InSilicoSpectro::Spectra::ExpSpectrum;
 
 This class role is to model mass spectra.
 
-=head1 ATTRIBUTES
+=head1 METHODS
 
-=over 4
 
-=item peakDescriptor
+=head1 METHODS
+
+=head2 my $sp=new(%h|$ExpSpectrum)
+
+Constructor. %h is a hash of attribute=>value pairs, $ExpSpectrum is a
+InSilicoSpectro::Spectra::ExpSpectrum object, from which the attributes are copied.
+
+=head2 $sp->peakDescriptor([$pd])
 
 An object of class InSilicoSpectro::Spectra::PeakDescriptor that defines the index of each
 experimental peak property such as mass, intensity, s/n, etc.
 
-=item spectrum
+=head2 $sp->spectrum([\@array]);
+
+Accessor and modifier for the experimental spectrum. The spectrum is a reference to
+a vector of references to vectors containing peak properties (see function
+InSilicoSpectro::InSilico::PMFMatch).
 
 The experimental spectrum itself. It is part of the design of this class to impose
 a data structure for the spectrum and make it visible (no accessors/modifiers).
@@ -72,16 +82,21 @@ a structure like
 The actual order of the peak properties is given by the PeakDescriptor object pointed by
 the attribute peakDescriptor.
 
-=back
+=head2 $sp->size();
 
-=head1 METHODS
+Return the size of the spectrum
 
-=head2 new(%h|$ExpSpectrum)
+=head2 toString
 
-Constructor. %h is a hash of attribute=>value pairs, $ExpSpectrum is a
-InSilicoSpectro::Spectra::ExpSpectrum object, from which the attributes are copied.
+Converts the spectrum into a string with eol characters between peaks and at the end of the
+last line. Properties of a peak are separated by a tab character.
+
+=head2 Overloaded "" operator
+
+Returns the result of toString.
 
 =cut
+
 sub new
 {
   my $pkg = shift;
@@ -126,13 +141,7 @@ sub peakDescriptor
 } # peakDescriptor
 
 
-=head2 spectrum([$sp])
 
-Accessor and modifier for the experimental spectrum. The spectrum is a reference to
-a vector of references to vectors containing peak properties (see function
-InSilicoSpectro::InSilico::PMFMatch).
-
-=cut
 sub spectrum
 {
   my ($this, $sp) = @_;
@@ -151,16 +160,12 @@ sub spectrum
 } # spectrum
 
 
-=head2 toString
+sub size{
+  my $this=shift;
+  return undef unless defined $this->spectrum;
+  return scalar @{$this->spectrum};
+}
 
-Converts the spectrum into a string with eol characters between peaks and at the end of the
-last line. Properties of a peak are separated by a tab character.
-
-=head2 Overloaded "" operator
-
-Returns the result of toString.
-
-=cut
 use overload '""' => \&toString;
 sub toString{
   my $this = shift;

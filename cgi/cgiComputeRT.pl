@@ -262,7 +262,7 @@ EOT
     </tr>
     <tr>
       <td valign=top>Peptide sequence(s) (<a href="$script?doc=1#peptseq">?</a>)</td>
-      <td><textarea name="peptseq" rows=10 cols=30>$peptideList</textarea></td>
+      <td><textarea name="peptseq" rows=10 cols=80>$peptideList</textarea></td>
     </tr>
     <script language='javascript'>
       selectMethod('$method');
@@ -275,7 +275,7 @@ EOT
         <input type="checkbox" name="cb_exp_learn" onchange='setCBExp(this)'/> learn from<br/>
         <input type="checkbox" name="cb_exp_calibrate" onchange='setCBExp(this)'/> calibrate from
       </td>
-      <td><textarea name="expdata" rows=10 cols=30></textarea></td>
+      <td><textarea name="expdata" rows=10 cols=80></textarea></td>
     </tr>
 
   </table>

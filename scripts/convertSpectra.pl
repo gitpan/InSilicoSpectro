@@ -175,7 +175,8 @@ eval{
 	$run->set('source', $fileIn);
 	$inFormat=InSilicoSpectro::Spectra::MSSpectra::guessFormat($fileIn);
       }
-      unless (defined $InSilicoSpectro::Spectra::MSRun::readHandlers{$inFormat}) {
+      print STDERR "format=[$inFormat]\n";
+      unless (defined $InSilicoSpectro::Spectra::MSRun::handlers{$inFormat}{read}) {
 	my %h;
 	foreach (keys %$run) {
 	  next if /^spectra$/;
@@ -188,7 +189,7 @@ eval{
 	$sp->open();
       } else {
 	croak "not possible to set multiple file in with format [$inFormat]" if $#fileIn>0;
-	$InSilicoSpectro::Spectra::MSRun::readHandlers{$inFormat}->($run);
+	$InSilicoSpectro::Spectra::MSRun::handlers{$inFormat}{read}->($run);
       }
     }
   }

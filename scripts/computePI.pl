@@ -54,7 +54,7 @@ eval{
 
   # Read parameters and init the predictor
   ReadParamFile($readparam,\$method,\$current) if $readparam;
-  $pi=InSilicoSpectro::InSilico::ipoint->new(method=>$method,current=>$current,%settings);
+  $pi=InSilicoSpectro::InSilico::IsoelPoint->new(method=>$method,current=>$current,%settings);
   if ($readparam) {
     $pi->read_cal(calfile=>$readparam);
   }

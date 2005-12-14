@@ -99,6 +99,10 @@ use InSilicoSpectro::Spectra::MSMSSpectra;
 %handlers=(
 	   txt=>{write=>\&writeTxt,
 		},
+	   mgf=>{
+		 write=>\&writeMGF,
+		 description=>"Mascot generic format (mgf)"
+		},
 	      );
 
 sub new{
@@ -275,6 +279,11 @@ sub writeTxt{
     print "".(join ' ', @$_)."\n";
   }
   print "\n";
+}
+
+sub writeMGF{
+  my ($this)=@_;
+  return;
 }
 
 sub writePLE{

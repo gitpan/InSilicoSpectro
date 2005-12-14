@@ -39,7 +39,7 @@ eval{
 #    @seqs=('DYE');
 
     # Create a new retention time predictor
-    $rt=InSilicoSpectro::InSilico::ipoint->new(data=>{expseqs=>\@seqs,
+    $rt=InSilicoSpectro::InSilico::IsoelPoint->new(data=>{expseqs=>\@seqs,
 						      exptimes=>\@times,expmodifs=>\@modifs});
 
     # Calibrate data

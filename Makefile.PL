@@ -2,9 +2,23 @@
 use ExtUtils::MakeMaker;
 WriteMakefile
 (
-          'PL_FILES' => {},
-          'INSTALLDIRS' => 'site',
           'NAME' => 'InSilicoSpectro',
+          'VERSION_FROM' => './lib/InSilicoSpectro.pm',
+          'PREREQ_PM' => {
+                           'Getopt::Long' => 0,
+                           'GD' => 0,
+                           'MIME::Base64' => 0,
+                           'Compress::Zlib' => 0,
+                           'GD::Text' => 0,
+                           'GD::Graph' => 0,
+                           'XML::Twig' => '3.14',
+                           'File::Temp' => 0,
+                           'Archive::Zip' => 0,
+                           'File::Find::Rule' => 0,
+                           'XML::Parser' => 0,
+                           'Digest::MD5' => 0
+                         },
+          'INSTALLDIRS' => 'site',
           'EXE_FILES' => [
                            'scripts/computePI.pl',
                            'scripts/computeRT.pl',
@@ -12,20 +26,6 @@ WriteMakefile
                            'scripts/importResid.pl',
                            'scripts/indexXml.pl'
                          ],
-          'VERSION_FROM' => './lib/InSilicoSpectro.pm',
-          'PREREQ_PM' => {
-                           'Getopt::Long' => 0,
-                           'File::Find::Rule' => 0,
-                           'Compress::Zlib' => 0,
-                           'XML::Twig' => '3.14',
-                           'Archive::Zip' => 0,
-                           'GD::Graph' => 0,
-                           'MIME::Base64' => 0,
-                           'File::Temp' => 0,
-                           'Digest::MD5' => 0,
-                           'GD::Text' => 0,
-                           'GD' => 0,
-                           'XML::Parser' => 0
-                         }
+          'PL_FILES' => {}
         )
 ;

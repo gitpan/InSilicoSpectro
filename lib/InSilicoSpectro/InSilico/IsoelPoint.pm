@@ -1,7 +1,7 @@
 use strict;
 use Carp;
 
-package InSilicoSpectro::InSilico::ipoint;
+package InSilicoSpectro::InSilico::IsoelPoint;
 require Exporter;
 
 =head1 NAME
@@ -55,6 +55,12 @@ Set an instance parameter.
 
 Get an instance parameter.
 
+=head1 FUNCTIONS
+
+=head3 getAuthorList($method)
+
+Returns a pointer to an array of available authors param set for a given method (such as as 'iterative')
+
 =head1 EXAMPLES
 
 see InSilicoSpectro/t/InSilico/testIsoelPoint.pl script
@@ -91,8 +97,13 @@ Pablo Carbonell, Alexandre Masselot, www.genebio.com
 
 our (@ISA, @EXPORT, @EXPORT_OK);
 @ISA = qw(Exporter);
-@EXPORT = qw( );
+@EXPORT = qw(&getAuthorList);
 @EXPORT_OK = ();
+
+
+our %authorList=(
+		 iterative=>['Lehninger', 'Sillero', 'Rodwell', 'EMBOSS', 'Solomon', 'Patrickios'],
+		);
 
 sub new {
   my ($pkg,%h)=@_;
@@ -219,6 +230,11 @@ sub log10 {
 
   my $n = shift;
   return log($n)/log(10);
+}
+
+sub getAuthorList{
+  my $m=shift or die "must provide a method name when getAuthorList()";
+  return $authorList{$m} || die "empty author list for method [$m]";
 }
 
 
