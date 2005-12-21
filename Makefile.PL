@@ -6,17 +6,17 @@ WriteMakefile
           'VERSION_FROM' => './lib/InSilicoSpectro.pm',
           'PREREQ_PM' => {
                            'Getopt::Long' => 0,
-                           'GD' => 0,
-                           'MIME::Base64' => 0,
                            'Compress::Zlib' => 0,
-                           'GD::Text' => 0,
+                           'Digest::MD5' => 0,
                            'GD::Graph' => 0,
-                           'XML::Twig' => '3.14',
                            'File::Temp' => 0,
-                           'Archive::Zip' => 0,
+                           'MIME::Base64' => 0,
+                           'XML::Twig' => '3.14',
+                           'GD::Text' => 0,
                            'File::Find::Rule' => 0,
+                           'Archive::Zip' => 0,
                            'XML::Parser' => 0,
-                           'Digest::MD5' => 0
+                           'GD' => 0
                          },
           'INSTALLDIRS' => 'site',
           'EXE_FILES' => [
