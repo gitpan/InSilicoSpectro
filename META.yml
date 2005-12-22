@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name: InSilicoSpectro
-version: 0.9.11
+version: 0.9.13
 author:
   - ! >-
     Alexandre Masselot <alexandre.masselot@genebio.com>, Jacques Colinge
@@ -33,7 +33,7 @@ recommends:
 provides:
   InSilicoSpectro:
     file: lib/InSilicoSpectro.pm
-    version: 0.9.11
+    version: 0.9.13
   InSilicoSpectro::InSilico::AASequence:
     file: lib/InSilicoSpectro/InSilico/AASequence.pm
   InSilicoSpectro::InSilico::CleavEnzyme:
