@@ -652,7 +652,7 @@ sub getCorrectCharge
   $maxCharge = $maxCharge || 5;
 
   for (my $z = 1; $z <= $maxCharge; $z++){
-    my $theoMoz = ($mTheo+$z*getElMass('el_H+'))/$z;
+    my $theoMoz = ($mTheo+$z*getMass('el_H+'))/$z;
     return ($z, $theoMoz) if (abs($theoMoz-$mExp) < $delta);
   }
   return (0,0);
