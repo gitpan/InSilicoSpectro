@@ -289,6 +289,8 @@ sub twigMzxml_addMSMSSpectrum{
     $spmsms->set('fragPD', $pd_mzintcharge);
     $spmsms->setSampleInfo('spectrumType', 'msms');
     $spmsms->setSampleInfo('sampleNumber', $is++);
+    $spmsms->setSampleInfo('instrument', 'n/a');
+    $spmsms->setSampleInfo('instrumentID', 'n/a');
 
     $this->addSpectra($spmsms);
   }
@@ -320,7 +322,8 @@ sub twigMzxml_readCmpd{
     $cmpd->addOnePeak([$moz->[$_], $int->[$_]]);
    }
 
-   push @{$spmsms->{compounds}}, $cmpd;
+   $spmsms->addCompound($cmpd);
+#   push @{$spmsms->{compounds}}, $cmpd;
 }
 
 sub twigMzxml_decodeMzXmlPeaks{
@@ -431,6 +434,8 @@ sub twigMzdata_addMSMSSpectrum{
     $spmsms->set('fragPD', $pd_mzintcharge);
     $spmsms->setSampleInfo('spectrumType', 'msms');
     $spmsms->setSampleInfo('sampleNumber', $is++);
+    $spmsms->setSampleInfo('instrument', 'n/a');
+    $spmsms->setSampleInfo('instrumentID', 'n/a');
 
     $this->addSpectra($spmsms);
   }

@@ -218,9 +218,22 @@ my $lockmgr = LockFile::Simple->make(-format => '%f.lck',
 				      -max => 20, -delay => 1, -nfs => 1, -autoclean => 1);
 if($cat){
   print <<EOT;
-    function newObj(){
+    function newObj(cat){
       document.define.key.value='CHANGE_ME';
       document.define.key.disabled=0;
+      if(cat == 'cleavenzyme'){
+        document.define.sitetype[0].checked=1;
+        selectCleavSiteMode('classic');
+        document.define.site_terminus[0].checked=1;
+        document.define.NTermGain.value='H';
+        document.define.CTermGain.value='OH';
+      }
+      if(cat == 'modres'){
+        document.define.sitetype[0].checked=1;
+        selectSiteMode('classic');
+        document.define.delta_mono.value=9999;
+        document.define.delta_avg.value=9999;
+      }
     }
 
     function saveObj(){
@@ -417,7 +430,7 @@ EOT
   if ($edit){
     print <<EOT;
         <td colspan='2'>
-          <input type="button" value="new" onclick="newObj();"/>
+          <input type="button" value="new" onclick="newObj('$cat');"/>
           <input type="button" value="delete" onclick="removeObj();"/>
           <input type="submit" value="save" onclick="saveObj();"/>
           <input type='hidden' name='edit' value='1'/>
@@ -470,6 +483,7 @@ print "  <script language='javascript'>id2cleavenzymeForm('$key')</script>\n" if
     my $enzyme=InSilicoSpectro::InSilico::CleavEnzyme::getFromDico($key);
     print "/".($enzyme->regexp)."/\n";
     print "<pre>\n";
+    $testSequence=~s/\s//g;
     foreach(split $enzyme->regexp, $testSequence){
       print "<tt>$_</tt>\n";
     }
@@ -539,7 +553,8 @@ if($cat eq 'modres'){
     print "    defList['$key']['delta_mono']='".$_->first_child('delta')->atts->{monoisotopic}."';\n";
     print "    defList['$key']['delta_avg']='".$_->first_child('delta')->atts->{average}."';\n";
     print "    defList['$key']['formula']='".($_->first_child('formula')?$_->first_child('formula')->text:'')."';\n";
-    print "    defList['$key']['sprotFT']=\"".$_->first_child('sprotFT')->atts->{mask}."\";\n" if $_->first_child('sprotFT');
+    my $spft=($_->first_child('sprotFT'))?($_->first_child('sprotFT')->text):"";
+    print "    defList['$key']['sprotFT']=\"$spft\";\n";
   }
   print <<EOT;
 
@@ -662,7 +677,7 @@ EOT
   if ($edit){
     print <<EOT;
         <td colspan='2'>
-          <input type="button" value="new" onclick="newObj();"/>
+          <input type="button" value="new" onclick="newObj('$cat');"/>
           <input type="button" value="delete" onclick="removeObj();"/>
           <input type="submit" value="save" onclick="saveObj();"/>
           <input type='hidden' name='edit' value='1'/>
@@ -717,6 +732,7 @@ print "  <script language='javascript'>id2modresForm('$key')</script>\n" if defi
     my $mr=InSilicoSpectro::InSilico::ModRes::getFromDico($key);
     my $qr=$mr->regexp;
     print "<h4>$qr</h4>\n";
+    $testSequence=~s/\s//g;
     $testSequence=~s/($qr)/<b>$1<\/b>/g;
     print "<tt>$testSequence</tt>\n";
 

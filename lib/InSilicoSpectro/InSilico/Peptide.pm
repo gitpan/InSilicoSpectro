@@ -713,7 +713,7 @@ sub print
 
   my $fdOut = defined($out) ? (new SelectSaver(InSilicoSpectro::Utils::io->getFD($out) || croak("cannot open [$out]: $!"))) : \*STDOUT;
   print $fdOut $this->toString(), "\n";
-  print $fdOut InSilicoSpectro::InSilico::MassCalculator::modifToString($this->modif()), "\n" if (defined($this->modif()));
+  print $fdOut "".(InSilicoSpectro::InSilico::MassCalculator::modifToString($this->modif()))."\n" if (defined($this->modif()));
   print $fdOut $this->nmc(), " missed cleavage(s)\n" if (defined($this->nmc()));
   print $fdOut "Starts at ", $this->start(), "\n" if (defined($this->start()));
   print $fdOut "Ends at ", $this->end(), "\n" if (defined($this->end()));

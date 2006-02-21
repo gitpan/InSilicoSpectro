@@ -9,9 +9,21 @@ our (@ISA,@EXPORT,@EXPORT_OK,);
 @EXPORT=qw();
 @EXPORT_OK=qw();
 
-=head1 MSMSSpectra
+=head1 NAME
 
-General framework for ms spectra
+InSilicoSpectro::Spectra::MSMSCmpd
+
+=head1 DESCRIPTION
+
+General framework for ms/ms compound (fragmenetaion spectra)
+
+=head1 FUNCTION
+
+=head1 METHODS
+
+=head2 $cmpd->title2acquTime
+
+Try to deduce acquisition from the title (and @title2acquTime_regexes) if it was not defined
 
 =head1 COPYRIGHT
 
@@ -39,6 +51,18 @@ Alexandre Masselot, www.genebio.com
 
 use InSilicoSpectro::Utils::io;
 use InSilicoSpectro::Spectra::PhenyxPeakDescriptor;
+
+our %title2acquTime_regexes=(
+			     #Cmpd 11, +MSn(786.25) 16.0 min
+			     bruker_classic=>{qr=>qr/\b([\d\.]+)\s*min/i,
+unit=>'min',
+					     },
+			     #Elution from: 24.55 to 24.59   period: 0   experiment: 2 cycles:  2  (Charge not auto determined)(*)
+			     qtof_1=>{unit=>'min',
+				      qr=>qr/\bElution from:\s*([\d\.]+)/i,
+}
+
+			    );
 
 sub new{
   my ($class, $h) = @_;
@@ -143,6 +167,22 @@ sub get{
   return $this->{$name};
 }
 
+# -------------------------------- data sherlocking
+sub title2acquTime{
+  my $cmpd=shift;
+  return if $cmpd->{acquTime};
+  my $title=$cmpd->{title};
+  return unless $title;
+  foreach my $cvt (values %title2acquTime_regexes){
+    if($title=~/$cvt->{qr}/){
+      my $et=$1;
+      $et*=60 if $cvt->{unit} eq 'min';
+      $cmpd->{acquTime}=$et;
+      return;
+    }
+  }
+
+}
 # -------------------------------- I/O
 #the peakdescriptor
 sub readTwigEl{
@@ -163,9 +203,9 @@ sub readTwigEl{
 sub writePLE{
   my ($this, $shift, $transformCharge)=@_;
 
-  next unless (scalar @{$this->get('fragments')}>1);
+  return unless ($this->get('fragments') && scalar @{$this->get('fragments')}>1);
 
-  print "$shift<ple:peptide key=\"$this->{key}\" xmlns:ple=\"namespace/PeakListExport.html\">
+  print "$shift<ple:peptide key=\"$this->{key}\" xmlns:ple=\"http://www.phenyx-ms.com/namespaces/PeakListExport.html\">
 $shift  <ple:PeptideDescr>".$this->get('title')."</ple:PeptideDescr>
 $shift  <ple:acquTime>".$this->get('acquTime')."</ple:acquTime>
 $shift  <ple:ParentMass><![CDATA[".$this->get('parentPD')->sprintData($this->getParentData(), $transformCharge)."]]></ple:ParentMass>

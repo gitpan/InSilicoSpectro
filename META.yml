@@ -1,13 +1,12 @@
---- #YAML:1.0
+---
 name: InSilicoSpectro
-version: 0.9.14
+version: 0.9.15
 author:
-  - ! >-
-    Alexandre Masselot <alexandre.masselot@genebio.com>, Jacques Colinge
-    <Jacques.Colinge@fh-hagenberg.at>
+  - 'Alexandre Masselot <alexandre.masselot@genebio.com>, Jacques Colinge <Jacques.Colinge@fh-hagenberg.at>'
 abstract: Open source Perl library for proteomics
 license: lgpl
 requires:
+  Archive::Tar: 0
   Archive::Zip: 0
   Compress::Zlib: 0
   Digest::MD5: 0
@@ -33,7 +32,7 @@ recommends:
 provides:
   InSilicoSpectro:
     file: lib/InSilicoSpectro.pm
-    version: 0.9.14
+    version: 0.9.15
   InSilicoSpectro::InSilico::AASequence:
     file: lib/InSilicoSpectro/InSilico/AASequence.pm
   InSilicoSpectro::InSilico::CleavEnzyme:
@@ -61,13 +60,9 @@ provides:
   InSilicoSpectro::InSilico::RetentionTimer:
     file: lib/InSilicoSpectro/InSilico/RetentionTimer.pm
   InSilicoSpectro::InSilico::RetentionTimer::Hodges:
-    file: |-
-      lib/InSilicoSpectro/InSilico/RetentionTimer/Hodges.pm
-  ? |-
-    InSilicoSpectro::InSilico::RetentionTimer::Petritis
-:
-    file: |-
-      lib/InSilicoSpectro/InSilico/RetentionTimer/Petritis.pm
+    file: lib/InSilicoSpectro/InSilico/RetentionTimer/Hodges.pm
+  InSilicoSpectro::InSilico::RetentionTimer::Petritis:
+    file: lib/InSilicoSpectro/InSilico/RetentionTimer/Petritis.pm
   InSilicoSpectro::InSilico::Sequence:
     file: lib/InSilicoSpectro/InSilico/Sequence.pm
   InSilicoSpectro::InSilico::TermIonSeries:
@@ -85,12 +80,11 @@ provides:
   InSilicoSpectro::Spectra::PeakDescriptor:
     file: lib/InSilicoSpectro/Spectra/PeakDescriptor.pm
   InSilicoSpectro::Spectra::PhenyxPeakDescriptor:
-    file: |-
-      lib/InSilicoSpectro/Spectra/PhenyxPeakDescriptor.pm
+    file: lib/InSilicoSpectro/Spectra/PhenyxPeakDescriptor.pm
   InSilicoSpectro::Utils::Files:
     file: lib/InSilicoSpectro/Utils/Files.pm
   InSilicoSpectro::Utils::XML::SaxIndexMaker:
     file: lib/InSilicoSpectro/Utils/XML/SaxIndexMaker.pm
   InSilicoSpectro::Utils::io:
     file: lib/InSilicoSpectro/Utils/io.pm
-generated_by: Module::Build version 0.24
+generated_by: Module::Build version 0.2611

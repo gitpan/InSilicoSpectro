@@ -94,6 +94,9 @@ our (@ISA,@EXPORT,@EXPORT_OK, $VERBOSE);
 @EXPORT = qw(&getFD $VERBOSE &compressFile &uncompressFile &zipFiles &getMD5 &croakIt);
 @EXPORT_OK = ();
 
+use Carp;
+use File::Glob qw(:glob);
+
 sub getFD{
   my ($this, $v)=@_;
 
@@ -109,7 +112,7 @@ sub getFD{
 
 
 use Compress::Zlib;
-use Carp;
+
 sub uncompressFile{
   my ($fname, $arg)=@_;
 

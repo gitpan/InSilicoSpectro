@@ -39,8 +39,48 @@ Alexandre Masselot, www.genebio.com
 
 $|=1;		        #  flush immediately;
 
-BEGIN {
-  use CGIUtils;
+BEGIN{
+  push @INC, '../../lib';
+  eval{
+   require DefEnv;
+   DefEnv::read();
+  };
+}
+
+END{
+}
+
+my $isCGI;
+use CGI qw(:standard);
+if($isCGI){
+  use CGI::Carp qw(fatalsToBrowser warningsToBrowser);
+  warningsToBrowser(1);
+}
+
+BEGIN{
+  $isCGI=$ENV{GATEWAY_INTERFACE}=~/CGI/;
+  sub carp_error{
+    my $msg=shift;
+    if ($isCGI){
+      my $q=new CGI;
+      error($q, $msg);
+    }else{
+      print STDERR $msg;
+    }
+  }
+  CGI::Carp::set_message(\&carp_error) if $isCGI;
+
+  sub error(){
+    my($q, $msg)=@_;
+    #  $q->header;
+    print $q->start_html(-title=>"$0 - ms/ms peaklist converter",
+			 -author=>'alexandre.masselot@genebio.com',
+			 -BGCOLOR=>'white');
+    print "<center><h1>$0</h1></center>\n";
+    print  "<pre>$msg</pre>\n";
+    $q->end_html;
+    exit;
+  }
 }
 
 use InSilicoSpectro::Spectra::MSRun;

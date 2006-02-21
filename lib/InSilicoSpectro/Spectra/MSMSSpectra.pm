@@ -280,6 +280,7 @@ sub readDTA{
 
   my $src=$this->source();
   my @files;
+  $src=~s/ /\\ /g;
   if(-d $src){
     @files=File::Find::Rule->file()->name( qr/\.dta$/i)->in($src);
     carp "no *.dta  file within $src" unless @files;
@@ -299,7 +300,7 @@ sub readDTA{
   my $i;
   my $threeFieldsHeader;
   foreach my $fname(@files){
-    open (*fd, "<$fname") or die "cannot open [$fname]: $!";
+    open (*fd, "<$fname") or confess "cannot open [$fname]: $!";
     #rem: native dta contains only one ms/ms spectrum. dtas can be concatenated, separated by one blank line
     #local $/;
     my $all;
@@ -335,6 +336,10 @@ sub readDTA{
       my ($head, $contents)=split /\n/, $_, 2;
       $contents =~s/\s+$//;
       my($m, $int, $c)=split /\s+/, $head;
+      unless ((defined $m) && (defined $int)){
+	warn "invalid spectra headline [$head]";
+	next;
+      }
       my $defMoz;
       unless($c =~/\S/){
 	$c=$int;
@@ -342,6 +347,7 @@ sub readDTA{
       }else{
 	$defMoz=1;
       }
+
       local $/;
       my $md5=md5($contents);
       my $name=($this->{origFile}||(basename $fname)).".".($isp++);
@@ -403,7 +409,7 @@ sub readMGF{
   my $iCmpd;
   while(<fd>){
     chomp;
-    s/\s+$//;
+    s/[\s\cA]+$//;
     if (/^CHARGE=(.*)/i) {
       $this->set('defaultCharge', InSilicoSpectro::Spectra::MSSpectra::string2chargemask($1));
       next;
@@ -420,17 +426,13 @@ sub readMGF{
       my @pl;
       while (<fd>) {
 	chomp;
+	s/[\s\cA]+$//;
 	next unless /\S/;
 	if(/^TITLE=(.*)/i){
 	  my $t=$1;
 	  $t=~s/\s+$//;
 	  $t=~s/^\s+//;
 	  $cmpd->set('title', $t)if $t=~/\S/;
-
-
-	  if($t =~ /([\d\.]+)\s+min\b/){
-	    $cmpd->set('acquTime', 60*$1)
-	  }
 	  next;
 	}
 	if (/^CHARGE=(.*)/i) {
@@ -604,6 +606,7 @@ sub twigBtdxAtt2PeakDecriptorString{
 
 #---------------------- end of mzdata
 
+
 #--------------- writers
 use SelectSaver;
 sub write{
@@ -638,7 +641,7 @@ sub writePLE{
   my ($this, $shift)=@_;
   my $transformChargeMask=1;
 
-  $this->{key}="sample_$this->{sampleInfo}{sampleNumber}" unless defined $this->{key};
+  $this->{key}="sample_$this->{sampleInfo}{sampleNumber}" unless  $this->{key};
 
 print "$shift<ple:PeakListExport key=\"$this->{key}\" spectrumType=\"msms\" xmlns:ple=\"http://www.phenyx-ms.com/namespaces/PeakListExport.html\">
 $shift  <ple:date>".($this->get('date'))."</ple:date>
@@ -751,6 +754,7 @@ sub addSampleInfoTag{
 sub addCompound{
   my ($this, $cmpd)=@_;
   $cmpd->{key}="sample_$this->{sampleInfo}{sampleNumber}%"."cmpd_".($this->getSize()||0) unless defined $this->{key};
+  $cmpd->title2acquTime;
   push @{$this->{compounds}}, $cmpd;
 }
 

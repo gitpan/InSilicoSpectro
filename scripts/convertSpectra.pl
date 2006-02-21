@@ -165,6 +165,7 @@ eval{
   }
   my $is=0;
   foreach (@fileIn){
+    s/ /\\ /g;
     foreach my $fileIn (glob $_) {
       my $inFormat;
       if ($fileIn=~/(.*):(.*)/) {

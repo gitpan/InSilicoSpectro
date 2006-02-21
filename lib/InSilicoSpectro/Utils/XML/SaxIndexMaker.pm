@@ -307,7 +307,7 @@ sub end_element {
   undef $this->{saveContents}[$this->{level}];
 
   my $id=pop @{$this->{idStack}};
-  $this->{path}=dirname $this->{path};
+  $this->{path}=~s/\/[^\/]+$//;
   $this->{level}--;
 
 }

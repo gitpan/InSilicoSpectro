@@ -254,6 +254,7 @@ sub getList{
 sub getModifFromSprotFT{
   my ($ftmodres)=@_;
   foreach (keys %re2Modif){
+    next unless $_;
     return $re2Modif{$_} if $ftmodres=~/^$_$/i;
   }
   return undef;

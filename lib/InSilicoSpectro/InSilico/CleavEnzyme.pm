@@ -344,8 +344,8 @@ sub twig_addEnzyme{
   }elsif($tel=$el->first_child('siteRegexp')){
     $ce->{regexpStr}=$tel->text;
     $ce->regexp($ce->{regexpStr});
-    my $t=$el->first_child('terminus')->text;
-    $ce->terminus($t);
+#    my $t=$el->first_child('terminus')->text;
+#    $ce->terminus($t);
   }else{
     croak "no way of reading CleavEnzyme from xml node\n".$el->print."\n";
   }

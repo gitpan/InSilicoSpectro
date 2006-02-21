@@ -207,6 +207,15 @@ sub get{
   return $this->{$name};
 }
 
+sub srcFile{
+  my ($this, $val) = @_;
+
+  if (defined($val)){
+    $this->{srcFile}=$val;
+  }
+  return $this->{srcFile};
+}
+
 sub source{
   my ($this, $val) = @_;
 
@@ -241,6 +250,15 @@ sub format{
     $this->{format}=$val;
   }
   return $this->{format};
+}
+
+sub spectra{
+  my ($this, $val) = @_;
+
+  if (defined($val)){
+    $this->{spectra}=$val;
+  }
+  return $this->{spectra};
 }
 
 sub title{
@@ -290,7 +308,7 @@ sub writePLE{
   my ($this, $shift)=@_;
   my $transformChargeMask=1;
 
-print "$shift<ple:PeakListExport spectrumType=\"ms\" xmlns:ple=\"".(Phenyx::Config::GlobalParam::get('XMLNSHTTP'))."/PeakListExport.html\">
+print "$shift<ple:PeakListExport spectrumType=\"ms\" xmlns:ple=\"http://www.phenyx-ms.com/namespaces/PeakListExport.html\">
 $shift  <ple:date>".($this->get('date'))."</ple:date>
 $shift  <ple:time>".($this->get('time'))."</ple:time>
 $shift  <ple:PeakDetectionAlg>
