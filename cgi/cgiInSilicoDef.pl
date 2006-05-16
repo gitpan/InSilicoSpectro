@@ -483,7 +483,6 @@ print "  <script language='javascript'>id2cleavenzymeForm('$key')</script>\n" if
     my $enzyme=InSilicoSpectro::InSilico::CleavEnzyme::getFromDico($key);
     print "/".($enzyme->regexp)."/\n";
     print "<pre>\n";
-    $testSequence=~s/\s//g;
     foreach(split $enzyme->regexp, $testSequence){
       print "<tt>$_</tt>\n";
     }
@@ -732,7 +731,6 @@ print "  <script language='javascript'>id2modresForm('$key')</script>\n" if defi
     my $mr=InSilicoSpectro::InSilico::ModRes::getFromDico($key);
     my $qr=$mr->regexp;
     print "<h4>$qr</h4>\n";
-    $testSequence=~s/\s//g;
     $testSequence=~s/($qr)/<b>$1<\/b>/g;
     print "<tt>$testSequence</tt>\n";
 

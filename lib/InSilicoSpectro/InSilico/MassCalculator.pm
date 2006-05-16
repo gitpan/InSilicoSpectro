@@ -152,7 +152,7 @@ sub init
 
   if (@_){
     foreach (@_){
-      print STDERR "reading MassCalculator.pm def from $_" if ($InSilicoSpectro::Utils::io::VERBOSE);
+      print STDERR "reading MassCalculator.pm def from $_\n" if ($InSilicoSpectro::Utils::io::VERBOSE);
       $twig->parsefile($_) || croak("Cannot parse [$_]: $!");
     }
   }

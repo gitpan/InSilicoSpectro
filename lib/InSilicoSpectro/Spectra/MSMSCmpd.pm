@@ -1,11 +1,12 @@
 use strict;
 
 package InSilicoSpectro::Spectra::MSMSCmpd;
+use InSilicoSpectro::Spectra::MSSpectra;
 use Carp;
 
 require Exporter;
 our (@ISA,@EXPORT,@EXPORT_OK,);
-@ISA=qw (Exporter MSSpectra);
+@ISA=qw (Exporter InSilicoSpectro::Spectra::MSSpectra);
 @EXPORT=qw();
 @EXPORT_OK=qw();
 
@@ -60,7 +61,13 @@ unit=>'min',
 			     #Elution from: 24.55 to 24.59   period: 0   experiment: 2 cycles:  2  (Charge not auto determined)(*)
 			     qtof_1=>{unit=>'min',
 				      qr=>qr/\bElution from:\s*([\d\.]+)/i,
-}
+				     },
+			     dtafiles=>{unit=>'sec',
+					qr=>qr/(\d+)\.\d+\.dta$/i,
+					},
+			     Bruker_HCT=>{unit=>'min',
+					  qr=>qr/\(rt=([\d\.]+)\)/i,
+					       }
 
 			    );
 
@@ -96,7 +103,7 @@ sub new{
 All the data is stroed in arrays, the peakdescriptors (for parent and fragment) are responsible for stating what is the info stroed in each fields;
 
 All the data (peak data) associated with the parent ion
-
+Ex
 =head3 setParentData(\@vals | ($index, $val))
 
 =cut
@@ -183,16 +190,32 @@ sub title2acquTime{
   }
 
 }
+
+#### FIXME (bug #10)
+## MSMSCmpd should inherit from ExpSpexctrum for true
+## we redeclare here method to hide the problem
+sub spectrum{
+  my ($this, $a)=@_;
+  if(defined $a){
+    $this->set('fragments', $a);
+  }
+  return $this->get('fragments');
+}
+################################
+sub peakDescriptor{
+  return $_[0]->get('fragPD');
+}
+
 # -------------------------------- I/O
 #the peakdescriptor
 sub readTwigEl{
   my ($this, $el, $pdPar, $pdFrag)=@_;
   $this->set('parentPD', $pdPar);
   $this->set('fragPD', $pdFrag);
-  $this->set('title', $el->first_child('ple:PeptideDescr')->text);
-  my @d=split /\s+/, $el->first_child('ple:ParentMass')->text;
+  $this->set('title', ($el->first_child('PeptideDescr')||$el->first_child('ple:PeptideDescr'))->text);
+  my @d=split /\s+/, ($el->first_child('ple:ParentMass')||$el->first_child('ParentMass'))->text;
   $this->set('parentData', \@d);
-  my $tmp=$el->first_child('ple:peaks')->text;
+  my $tmp=($el->first_child('ple:peaks')||$el->first_child('peaks'))->text;
   foreach(split /\n/, $tmp){
     next unless /\S/;
     my @p=split;
@@ -206,7 +229,7 @@ sub writePLE{
   return unless ($this->get('fragments') && scalar @{$this->get('fragments')}>1);
 
   print "$shift<ple:peptide key=\"$this->{key}\" xmlns:ple=\"http://www.phenyx-ms.com/namespaces/PeakListExport.html\">
-$shift  <ple:PeptideDescr>".$this->get('title')."</ple:PeptideDescr>
+$shift  <ple:PeptideDescr><![CDATA[".$this->get('title')."]]></ple:PeptideDescr>
 $shift  <ple:acquTime>".$this->get('acquTime')."</ple:acquTime>
 $shift  <ple:ParentMass><![CDATA[".$this->get('parentPD')->sprintData($this->getParentData(), $transformCharge)."]]></ple:ParentMass>
 $shift  <ple:peaks><![CDATA[\n";
@@ -243,6 +266,28 @@ PEPMASS=".$this->get('parentPD')->sprintData($this->getParentData(), $transformC
   }
   print "END IONS\n\n";
 }
+
+
+
+=head3 label([$name], [$value])
+
+gets or sets a label to this compound and saves it in the hash 'label' with an optional corresponding value
+
+=cut
+
+sub label{
+  my ($this, $name, $value) = @_;
+
+  if(defined $name){
+    $this->{label}->{$name}= $value;
+    return $this->{label};
+  }
+  
+  return $this->{label};
+}
+
+
+
 
 # -------------------------------   misc
 return 1;

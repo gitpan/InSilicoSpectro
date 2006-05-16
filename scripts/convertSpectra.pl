@@ -42,6 +42,10 @@ Defined a default charge for the precursor (msms) of the peak (ms) (it might be 
 
 Allows for setting a title (one line text)
 
+=item --filter=file
+
+Allows for using a filter. See 'InSilicoSpectro/t/Spectra/Filter/examples.xml' for more information.
+
 =item --sampleinfo='name1=val1[;name2=val2[...]]'
 
 Set sample related info example 'instrument=QTOF;instrumentId=xyz'
@@ -107,7 +111,7 @@ END{
 
 
 use Getopt::Long;
-my(@fileIn, $fileOut, $showInputFmt, $showOutputFmt, $sampleInfo, $defaultCharge, $title, @skip, $phenyxConfig, $help, $man, $verbose);
+my(@fileIn, $fileOut, $showInputFmt, $showOutputFmt, $sampleInfo, $defaultCharge, $title, $fileFilter, @skip, $phenyxConfig, $help, $man, $verbose);
 
 if (!GetOptions(
 		"in=s@"=>\@fileIn,
@@ -118,6 +122,8 @@ if (!GetOptions(
 
 		"defaultcharge=s"=>\$defaultCharge,
 		"title=s"=>\$title,
+
+		"filter=s"=>\$fileFilter, 
 
 		"skip=s@"=>\@skip,
 		"phenyxconfig=s" => \$phenyxConfig,
@@ -140,6 +146,8 @@ foreach(split /;/, $sampleInfo){
 
 use InSilicoSpectro::Spectra::MSRun;
 use InSilicoSpectro::Spectra::MSSpectra;
+use InSilicoSpectro::Spectra::Filter::MSFilterCollection;
+
 eval{
   $InSilicoSpectro::Utils::io::VERBOSE=$verbose;
 
@@ -168,7 +176,7 @@ eval{
     s/ /\\ /g;
     foreach my $fileIn (glob $_) {
       my $inFormat;
-      if ($fileIn=~/(.*):(.*)/) {
+      if ($fileIn=~/(.*?):(.*)/) {
 	$run->set('format', $1);
 	$run->set('source', ($2 or \*STDIN));
 	$inFormat=$1;
@@ -188,6 +196,9 @@ eval{
 	$sp->set('sampleInfo', \%sampleInfo) if defined %sampleInfo;
 	$sp->setSampleInfo('sampleNumber', $is++);
 	$sp->open();
+	
+	
+	  
       } else {
 	croak "not possible to set multiple file in with format [$inFormat]" if $#fileIn>0;
 	$InSilicoSpectro::Spectra::MSRun::handlers{$inFormat}{read}->($run);
@@ -195,12 +206,19 @@ eval{
     }
   }
   my ($outformat, $outfile);
-  if($fileOut=~/(.*):(.*)/){
+  if($fileOut=~/(.*?):(.*)/){
     $outformat=$1;
     $outfile=($2 or \*STDOUT);
   }else{
     $outfile=$fileOut;
     $outformat=InSilicoSpectro::Spectra::MSSpectra::guessFormat($outfile);
+  }
+
+  #to filter the spectra
+  if($fileFilter){
+    my $fc = new InSilicoSpectro::Spectra::Filter::MSFilterCollection();
+    $fc->readXml($fileFilter);
+    $fc->filterSpectra($run);
   }
 
   $run->write($outformat, ">$outfile");

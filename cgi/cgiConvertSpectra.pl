@@ -32,7 +32,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 =head1 AUTHORS
 
-Alexandre Masselot, www.genebio.com
+Alexandre Masselot, Roman Mylonas, www.genebio.com
 
 =cut
 
@@ -85,6 +85,7 @@ BEGIN{
 
 use InSilicoSpectro::Spectra::MSRun;
 use InSilicoSpectro::Spectra::MSSpectra;
+use InSilicoSpectro::Spectra::Filter::MSFilterCollection;
 use InSilicoSpectro::Utils::io;
 use File::Basename;
 use CGI qw(:standard);
@@ -104,14 +105,130 @@ unless($query->param('inputfile')){
   my $inputformat=$cookies{inputformat};
   my $outputformat=$cookies{outputformat};
   my $defaultcharge=$cookies{defaultcharge};
+  my $filter=$cookies{filter};
+  my $filter_activated=$cookies{filter_activated};
 
   my $script=basename $0;
   print $query->header;
-  print $query->start_html(-title=>"$script - ms/ms peaklist converter",
-			   -author=>'alexandre.masselot@genebio.com'
-			  );
+ # print $query->start_html(-title=>"$script - ms/ms peaklist converter",
+#			   -author=>'alexandre.masselot@genebio.com',
+#			   -script=>[
+#				     {
+#				      -src      => 'elementControl.js',
+#				      -language=> 'JavaScript',
+#				     }
+#				    ]
+
+#			  );
+
 
   print <<EOT;
+<head>	
+		<title>Submission Page</title>
+        <script type="text/javascript">
+
+					//---------------------------------------------------------------------
+					// 						blocks collapsing/extending
+					//---------------------------------------------------------------------
+
+
+					function setImage(image, src, display) {
+					
+						if(image!=null) {
+							image.src=src;
+                       		image.style.display=display;
+						}
+					}
+
+                   /*
+                    * toggles hide/display of argument element and updates argument image
+                    */ 
+                   function expandCollapse(currElement, image) {
+
+                     if(currElement.style.display=="none") {
+                       expand(currElement, image);
+                     } else {
+                       collapse(currElement, image);
+                     }
+                   }
+
+
+					/**
+					 * shows argument element and updates argument image
+					 */ 
+					function expand(currElement, image) {                    	
+                       	currElement.style.display="";
+                       	setImage(image, "/images/opentriangle.png", "");                   		
+					}
+					
+					
+					/**
+					 * hides argument element and updates argument image
+					 */
+					function collapse(currElement, image) {
+                       	currElement.style.display="none";
+                       	setImage(image, "/images/triangle.png", "");
+					}
+
+					//---------------------------------------------------------------------
+					// 						blocks enabling/disabling
+					//---------------------------------------------------------------------
+
+					/**
+					 * toggles element 
+					 */
+					function enableDisable(checkBox, currElement, image, doExpand) {
+					
+					
+						if(checkBox.checked==true) {
+						
+							if(enableDisable.length==4) {
+								if(doExpand==true) {
+									enable(currElement, image, true);
+								} else {
+									enable(currElement, image, false);
+								}
+							} else {
+								enable(currElement, image);
+							}
+						} else {
+							disable(currElement, image);
+						}					
+					}
+
+
+					/**
+					 * enables component ans sets image
+					 */
+					function enable(currElement, image, doExpand) {
+										
+						if(enable.length=3) {
+							if(doExpand==true) {
+								expand(currElement, image);
+							} else {
+								collapse(currElement, image);
+							}
+						} else {
+							enable(currElement, image, false);
+						}
+					}
+					
+
+					/*
+					 * disables component and sets image
+					 */
+					function disable(currElement, image) {
+						collapse(currElement, null);
+						setImage(image, "/images/opentriangle.png", "none");
+					}
+
+
+</script>
+
+
+
+</head>
+
 <body>
   <center>
     <h1>$script</h1>
@@ -161,22 +278,84 @@ EOT
     </tr>
     <tr>
       <td>Title (<a href="$script?doc=1#title">?</a>)</td>
-      <td><input type='textfield' name='title' size=50/></td>
+      <td><input type='textfield' name='title' size=80/></td>
+    </tr>
+    <tr>
+      <td>Filter (<a href="$script?doc=1#title">?</a>)</td>
+      <td>
+
+      <div id="div_filter" style="position:static;display:">
+      <table   width="100%" align="left" >
+      <tr>
+      <td>	<input type="checkbox" class="submit_input" onclick="enableDisable(this, document.getElementById('expandable_div_textarea'),
+        				document.getElementById('expandable_div_image'), true);"
+					id="activation_filter" 
+					name="activation_filter"
+EOT
+  print "checked\n" if($filter_activated);
+
+print <<EOT;
+                                                                  >
+      
+    		<A HREF="" onclick="expandCollapse(document.getElementById('expandable_div_textarea'), 
+        		document.getElementById('expandable_div_image')); return false;"><IMG border="none" id="expandable_div_image" SRC="/images/triangle.png"><A>
+      
+      
+      
+      
+	<div  id="expandable_div_textarea" style="position:static;display:none">
+      
+      
+      <textarea name="filter" rows="20" cols="80">$filter</textarea>
+      
+ </td>
+</tr>
+      </table>
+      </div>
+      </div>
+      </td>
     </tr>
   </table>
   <input type="submit" value="convert"/>
   </form>
+
+
+
+
+	<!-- sets filter enablement initial state-->
+	<script type="text/javascript">	
+	
+	
+        	// checks if initially selected
+        	if(document.getElementById('activation_filter').checked==true) {
+                	
+        			enable(document.getElementById('expandable_div_image'), 
+        				document.getElementById('expandable_div_image'));
+        	
+        		
+        } else {
+                	
+        			disable(document.getElementById('expandable_div_image'), 
+        				document.getElementById('expandable_div_image'));
+        	
+        }
+        	
+	</script>
+
+
 EOT
   print $query->end_html;
   exit(0);
 }
 
 
-my $fileIn=$query->param('inputfile')||die "must provide filein parameter";
+my $fileIn=$query->param('inputfile')||die "must provide input file";
 my $inputFormat=$query->param('inputformat')||die "must provide input format";
 my $outputFormat=$query->param('outputformat')||die "must provide output format";
 my $defaultCharge=$query->param('defaultcharge') || die "must provide default parent charge";
 my $title=$query->param('title');
+my $filter=$query->param('filter');
+my $filter_activated=$query->param('activation_filter');
 
 my $help=$query->param('help');
 pod2usage(-verbose=>2, -exitval=>2) if(defined $help);
@@ -186,6 +365,8 @@ my %cookies;
 $cookies{inputformat}=$inputFormat;
 $cookies{outputformat}=$outputFormat;
 $cookies{defaultcharge}=$defaultCharge;
+$cookies{filter}=$filter;
+$cookies{filter_activated}=$filter_activated;
 
 use File::Basename;
 use File::Temp qw(tempfile);
@@ -240,6 +421,7 @@ foreach (@fileIn){
   unless (defined $InSilicoSpectro::Spectra::MSRun::handlers{$inputFormat}{read}) {
     my %h;
     foreach (keys %$run) {
+      next if /^spectra$/;
       $h{$_}=$run->{$_};
     }
     my $sp=InSilicoSpectro::Spectra::MSSpectra->new(%h);
@@ -266,6 +448,13 @@ print $query->header(-type=>'text/plain',
 		     -cookie=>$cookie,
 		     -attachment=>$dest,
 		    );
+
+if($filter_activated){
+  my $fc = new InSilicoSpectro::Spectra::Filter::MSFilterCollection();
+  $fc->readXmlString($filter);
+  $fc->filterSpectra($run);
+}
+
 $run->write($outputFormat, \*STDOUT);
 
 
@@ -294,5 +483,212 @@ __DATA__
   The list of formats with available <i>write</i> handlers.
   <a name="title"/><h3>Title</h3>
   Some formats allow for a title (ex: the <i>COM</i> line in an mgf file).
+  <a name="filter"/><h3>Filter</h3>
+  
+  You can use a filter to keep only a defined amount of peaks or MSMSCompounds in your file which fullfill certain criterias. You have to use a XML-format to set one or several filters which are described in the following paragraphs. You can find an example at the end of this text:
+        	
+
+<pre>
+   &lt;ExpMsMsSpectrumFilter&gt;
+</pre>
+
+You can have several <i>oneExpMsMsSpectrumFilter</i> in <i>ExpMsMsSpectrumFilter</i> each of the filters will be processed consecutively.
+You can choose between <i>spectrumType</i> "msms" and "ms". Usually you have to use "msms";
+
+<pre>
+   &lt;oneExpMsMsSpectrumFilter spectrumType="msms" name="dummy"&gt;
+</pre>
+
+The level on which the filter will be applied can be either <i>msmsCompounds</i> or <i>peaks</i>. Most filters can only be applied on one of the two levels. 
+
+<pre>
+   &lt;level&gt;peaks&lt;/level&gt;         
+   &lt;action type="removeOther"&gt;
+</pre>
+
+The action-type can be <!--"label", -->"removeOther", "remove" and "algorithm"<!--. Using "label" you can set a label for the selected msmsCompounds (you cannot label peaks)-->:
+
+
+<!--
+<pre>
+    &lt;action type="label"&gt;
+        &lt;labelValue&gt;%.3f&lt;/labelValue&gt;   
+	&lt;labelName&gt;some name&lt;/labelName&gt;
+</pre>
+  
+The <i>labelValue</i> is the resulting value of the filter for each compound. The result can be formated using the printf-perl-syntax.
+-->
+
+
+Use "removeOther" - to keep just the selected peaks or msmsCompounds - and "remove" to remove the selected ones. "algorithm" leaves it up to the algorithm to take off or change the peaks/peak-intensities. "algorithm" can only be set for the filters "banishNeighbors" and "smartPeaks".<br> 
+
+
+You can choose which part of the msmsCompounds or peaks should be selected to apply the <i>action</i> on. <i>relativeTo</i> can have the values <i>nFix</i>, <i>absValue</i>, <i>relMax</i> and <i>quantile</i>. The <i>comparator</i> can be <i>ge</i> , <i>gt</i>, <i>le</i> and <i>lt</i>. Using the three parameters <i>relativeTo</i>, <i>thresholdValue</i> and <i>comparator</i> you can choose a certain part of msmsCompounds/peaks to select. 
+
+
+<pre>
+               &lt;threshold type="sort"&gt;	
+			   &lt;relativeTo&gt;nFix&lt;/relativeTo&gt; 
+                           &lt;thresholdValue&gt;100&lt;/thresholdValue&gt;
+			   &lt;comparator&gt;ge&lt;/comparator&gt;
+               &lt;/threshold&gt;
+
+</pre>
+
+
+
+The type of the filters can be either "directValue" for directly accessible information of the spectra and <i>algorithm</i> for the more complex algorithms. 
+
+<pre>
+     &lt;/action&gt;
+      &lt;filterValue type="directValue"&gt;
+
+                &lt;name&gt;fragment.intensity&lt;/name&gt;
+</pre>
+
+you can choose which type of spectra-values can be used. You can choose either the <i>intensity</i> or <i>moz</i> of the <i>fragments</i> (only on level <i>peaks</i>) or the <i>precursor</i> (only on level <i>msmsCompounds</i>). <i>size</i> gives back the number of peaks in a compound and can only be applied on the level <i>msmsCompounds</i>. <i>sum</i> summs up the fragment values of choice.  
+
+The filterValue type <i>algorithm</i> uses more complex filter algorithms
+
+For <i>balance</i> the moz-range (between minMoz and maxMoz) of the spectra is divided into the number of <i>bands</i>. For each band the total raw intensity is calculated ant the standard deviation between the bands is the resulting value. 
+
+<pre>
+      &lt;filterValue type="algorithm"&gt; 
+                &lt;name&gt;balance&lt;/name&gt;
+                &lt;param name="bands"&gt;10&lt;/param&gt;    
+                &lt;param name="minMoz"&gt;300&lt;/param&gt;    this parameter isn't mandatory   
+                &lt;param name="maxMoz"&gt;900&lt;/param&gt;    this parameter isn't mandatory   
+      &lt;/filterValue&gt;                   
+</pre>
+
+
+The algorithm <i>smartPeaks</i> change the probability for peaks of regions of low intensities and/or only a few peaks to be selected. If you use the action type="algorithm" the intensities of the fragments in the spectra are changed. 
+
+<pre>
+            &lt;name&gt;smartPeaks&lt;/name&gt;
+            &lt;param name="winSize"&gt;100&lt;/param&gt;
+            &lt;param name="stepSize"&gt;20&lt;/param&gt;
+            &lt;param name="weightIntensity"&gt;0.8&lt;/param&gt;
+            &lt;param name="weightDensity"&gt;1&lt;/param&gt;
+</pre>
+
+
+The sum of all normalized peaks which have the distance of one of the 20 amino-acids. You can set a tolerance and which type of mass (<i>mono</i> or <i>average</i>) to use. 
+
+<pre>
+            &lt;name&gt;goodDiff.normRank&lt;/name&gt;
+            &lt;param name="tolerance"&gt;0.37&lt;/param&gt;
+            &lt;param name="toleranceUnit"&gt;Da&lt;/param&gt;
+            &lt;param name="mass"&gt;mono&lt;/param&gt;
+</pre>
+                        
+
+You can directly choose a maximal number of peaks to consider:
+
+
+<pre>
+            &lt;param name="filter"&gt;intensity&lt;/param&gt;
+            &lt;param name="peakNr"&gt;50&lt;/param&gt;
+</pre>
+
+
+Or you use <i>smartPeaks</i> to increase the probability to choose peaks in regions of low intensities. 
+
+
+<pre>
+            &lt;param name="filter"&gt;smartPeaks&lt;/param&gt;
+            &lt;param name="peakNr"&gt;50&lt;/param&gt;
+            &lt;param name="winSize"&gt;100&lt;/param&gt;
+            &lt;param name="stepSize"&gt;20&lt;/param&gt;
+            &lt;param name="weightIntensity"&gt;0.8&lt;/param&gt;
+            &lt;param name="weightDensity"&gt;1&lt;/param&gt;
+</pre>
+
+
+<i>waterLosses</i> sums up the peaks having the distance of water (18 Da). <i>Complements</i> sums up the peaks which sums up to the moz-value of the precursor-ion considering the possible charge states. The syntax is the same as for <i>goodDiff</i>.
+
+
+<i>banishNeighbors</i> can be used to take off small peaks near strong peaks. <i>selectStrongest</i> indicates the percentage of the peaks to be considered as strong ones. The peaks in the <i>banishRange</i> of a strong peak not bigger than <i>banishLimit</i> of the highest peak in this range are prepared to be taken off. Either you can use action type="removeOther" and level="peaks" to take of the amount of peaks you want. If you use the action type="algorithm" all the peaks which fulfill the condition are taken off and spectra with less than "skipSpectraBelow" peaks are skipped.  
+
+<pre>
+            &lt;name&gt;banishNeighbors&lt;/name&gt;
+            &lt;param name="selectStrongest"&gt;0.8&lt;/param&gt;
+            &lt;param name="banishRange"&gt;0.5&lt;/param&gt;
+            &lt;param name="banishLimit"&gt;0.9&lt;/param&gt;
+            &lt;param name="rangeUnit"&gt;Da&lt;/param&gt;
+            &lt;param name="skipSpectraBelow"&gt;100&lt;/param&gt;
+
+
+	&lt;/oneExpMsMsSpectrumFilter&gt;
+   &lt;/ExpMsMsSpectrumFilter&gt;
+</pre>
+
+
+<h3>Example of a filter</h3>
+
+You can process a spectrum successively by several filters. <i>banishNeighbors</i> is applied only on compounds containing at least 100 fragments. The 100 strongest peaks of each compound are kept and the 10% percent of all compounds with the lowest goodDiff-score are deleted<br>
+
+<pre>
+&lt;ExpMsMsSpectrumFilter&gt;
+        &lt;oneExpMsMsSpectrumFilter spectrumType="msms" name="dummy"&gt;
+	        &lt;level&gt;peaks&lt;/level&gt;	
+		&lt;action type="algorithm"&gt;
+                &lt;/action&gt;
+		&lt;filterValue type="algorithm"&gt;	
+                        &lt;name&gt;banishNeighbors&lt;/name&gt;
+                        &lt;param name="selectStrongest"&gt;0.2&lt;/param&gt;
+                        &lt;param name="banishRange"&gt;0.5&lt;/param&gt;
+                        &lt;param name="banishLimit"&gt;0.8&lt;/param&gt;
+                        &lt;param name="rangeUnit"&gt;Da&lt;/param&gt;
+                        &lt;param name="skipSpectraBelow"&gt;100&lt;/param&gt;
+	       &lt;/filterValue&gt;
+	&lt;/oneExpMsMsSpectrumFilter&gt;
+
+
+        &lt;oneExpMsMsSpectrumFilter spectrumType="msms" name="dummy"&gt;
+	        &lt;level&gt;peaks&lt;/level&gt;	
+		&lt;action type="removeOther"&gt;		
+		       &lt;threshold type="sort"&gt;	
+			   &lt;relativeTo&gt;nFix&lt;/relativeTo&gt;							
+			   &lt;thresholdValue&gt;100&lt;/thresholdValue&gt;
+			   &lt;comparator&gt;ge&lt;/comparator&gt;						
+		       &lt;/threshold&gt;
+                &lt;/action&gt;
+		&lt;filterValue type="directValue"&gt;							
+			&lt;name&gt;fragment.intensity&lt;/name&gt;						
+		&lt;/filterValue&gt;
+	&lt;/oneExpMsMsSpectrumFilter&gt;
+
+
+        &lt;oneExpMsMsSpectrumFilter spectrumType="msms" name="dummy"&gt;
+	        &lt;level&gt;msmsCompounds&lt;/level&gt;	
+		&lt;action type="removeOther"&gt;		
+		       &lt;threshold type="sort"&gt;	
+			   &lt;relativeTo&gt;quantile&lt;/relativeTo&gt;							
+			   &lt;thresholdValue&gt;0.1&lt;/thresholdValue&gt;
+			   &lt;comparator&gt;ge&lt;/comparator&gt;						
+		       &lt;/threshold&gt;
+                &lt;/action&gt;
+		&lt;filterValue type="algorithm"&gt;	
+	                &lt;name&gt;complements.normRank&lt;/name&gt;
+                        &lt;param name="tolerance"&gt;0.4&lt;/param&gt;
+                        &lt;param name="toleranceUnit"&gt;Da&lt;/param&gt;
+                        &lt;param name="mass"&gt;average&lt;/param&gt;
+                        &lt;param name="filter"&gt;intensity&lt;/param&gt;
+                        &lt;param name="peakNr"&gt;50&lt;/param&gt;
+ 		&lt;/filterValue&gt;
+	&lt;/oneExpMsMsSpectrumFilter&gt;
+
+
+&lt;/ExpMsMsSpectrumFilter&gt;
+</pre>
+
+
+
+
+
+
+
+
   <body>
 </html>

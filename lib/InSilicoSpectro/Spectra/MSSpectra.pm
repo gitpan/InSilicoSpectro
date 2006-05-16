@@ -34,10 +34,6 @@ Set or get the source file format
 
 Set or get the title
 
-=head1 my $sp->spectra  ([$string])
-
-Set or get the spectra (array)
-
 =head1 my $sp->defaultCharge ([$string])
 
 Set or get the defaultCharge
@@ -225,14 +221,18 @@ sub source{
   return $this->{source};
 }
 
+### FIXME
+#to ensure correct ExpSpectrum inheritance
 sub spectra{
   my ($this, $val) = @_;
+  return $this->spectrum($val);
 
-  if (defined($val)){
-    $this->{spectra}=$val;
-  }
-  return $this->{spectra};
+#  if (defined($val)){
+#    $this->{spectra}=$val;
+#  }
+#  return $this->{spectra};
 }
+####
 
 sub origFile{
   my ($this, $val) = @_;
@@ -250,15 +250,6 @@ sub format{
     $this->{format}=$val;
   }
   return $this->{format};
-}
-
-sub spectra{
-  my ($this, $val) = @_;
-
-  if (defined($val)){
-    $this->{spectra}=$val;
-  }
-  return $this->{spectra};
 }
 
 sub title{

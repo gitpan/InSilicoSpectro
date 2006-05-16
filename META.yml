@@ -1,8 +1,10 @@
----
+--- #YAML:1.0
 name: InSilicoSpectro
-version: 0.9.15
+version: 0.9.20
 author:
-  - 'Alexandre Masselot <alexandre.masselot@genebio.com>, Jacques Colinge <Jacques.Colinge@fh-hagenberg.at>'
+  - ! >-
+    Alexandre Masselot <alexandre.masselot@genebio.com>, Jacques Colinge
+    <Jacques.Colinge@fh-hagenberg.at>
 abstract: Open source Perl library for proteomics
 license: lgpl
 requires:
@@ -18,13 +20,16 @@ requires:
   Getopt::Long: 0
   MIME::Base64: 0
   XML::Parser: 0
+  XML::SemanticDiff: 0
   XML::Twig: 3.14
   perl: 5.6.1
 recommends:
   AI::NNFlex: 0
   Bio::Perl: 1.4
   Math::Derivative: 0
+  Math::FixedPrecision: 0
   Math::Spline: 0
+  Statistics::Basic: 0
   Statistics::Regression: 0
   XML::Dumper: 0
   XML::Merge: 0
@@ -32,7 +37,7 @@ recommends:
 provides:
   InSilicoSpectro:
     file: lib/InSilicoSpectro.pm
-    version: 0.9.15
+    version: 0.9.20
   InSilicoSpectro::InSilico::AASequence:
     file: lib/InSilicoSpectro/InSilico/AASequence.pm
   InSilicoSpectro::InSilico::CleavEnzyme:
@@ -60,15 +65,40 @@ provides:
   InSilicoSpectro::InSilico::RetentionTimer:
     file: lib/InSilicoSpectro/InSilico/RetentionTimer.pm
   InSilicoSpectro::InSilico::RetentionTimer::Hodges:
-    file: lib/InSilicoSpectro/InSilico/RetentionTimer/Hodges.pm
-  InSilicoSpectro::InSilico::RetentionTimer::Petritis:
-    file: lib/InSilicoSpectro/InSilico/RetentionTimer/Petritis.pm
+    file: |-
+      lib/InSilicoSpectro/InSilico/RetentionTimer/Hodges.pm
+  ? |-
+    InSilicoSpectro::InSilico::RetentionTimer::Petritis
+:
+    file: |-
+      lib/InSilicoSpectro/InSilico/RetentionTimer/Petritis.pm
   InSilicoSpectro::InSilico::Sequence:
     file: lib/InSilicoSpectro/InSilico/Sequence.pm
   InSilicoSpectro::InSilico::TermIonSeries:
     file: lib/InSilicoSpectro/InSilico/TermIonSeries.pm
   InSilicoSpectro::Spectra::ExpSpectrum:
     file: lib/InSilicoSpectro/Spectra/ExpSpectrum.pm
+  InSilicoSpectro::Spectra::Filter::MSFilter:
+    file: lib/InSilicoSpectro/Spectra/Filter/MSFilter.pm
+    version: 0.9
+  ? |-
+    InSilicoSpectro::Spectra::Filter::MSFilterAlgorithm
+:
+    file: |-
+      lib/InSilicoSpectro/Spectra/Filter/MSFilterAlgorithm.pm
+    version: 0.9
+  ? |-
+    InSilicoSpectro::Spectra::Filter::MSFilterCollection
+:
+    file: |-
+      lib/InSilicoSpectro/Spectra/Filter/MSFilterCollection.pm
+    version: 0.9
+  ? |-
+    InSilicoSpectro::Spectra::Filter::MSFilterDirectValue
+:
+    file: |-
+      lib/InSilicoSpectro/Spectra/Filter/MSFilterDirectValue.pm
+    version: 0.9
   InSilicoSpectro::Spectra::MSMSCmpd:
     file: lib/InSilicoSpectro/Spectra/MSMSCmpd.pm
   InSilicoSpectro::Spectra::MSMSSpectra:
@@ -80,11 +110,12 @@ provides:
   InSilicoSpectro::Spectra::PeakDescriptor:
     file: lib/InSilicoSpectro/Spectra/PeakDescriptor.pm
   InSilicoSpectro::Spectra::PhenyxPeakDescriptor:
-    file: lib/InSilicoSpectro/Spectra/PhenyxPeakDescriptor.pm
+    file: |-
+      lib/InSilicoSpectro/Spectra/PhenyxPeakDescriptor.pm
   InSilicoSpectro::Utils::Files:
     file: lib/InSilicoSpectro/Utils/Files.pm
   InSilicoSpectro::Utils::XML::SaxIndexMaker:
     file: lib/InSilicoSpectro/Utils/XML/SaxIndexMaker.pm
   InSilicoSpectro::Utils::io:
     file: lib/InSilicoSpectro/Utils/io.pm
-generated_by: Module::Build version 0.2611
+generated_by: Module::Build version 0.24

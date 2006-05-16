@@ -179,7 +179,7 @@ sub new{
       }
     }elsif((ref $h)eq $class){
       foreach (keys %$h){
-	$dvar->set($_, $h->{$_});
+	$dvar->set($_, $h->{$_}); 
       }
     }else{
       die "cannot instanciate new $class with arg of type [".(ref $h)."]";
@@ -392,7 +392,6 @@ sub pklContinuity{
 
 sub readMGF{
   my ($this)=@_;
-
   my $src=$this->source();
   open (*fd, "<$src") or croak "cannot open [<$src]: $!";
 
@@ -409,7 +408,7 @@ sub readMGF{
   my $iCmpd;
   while(<fd>){
     chomp;
-    s/[\s\cA]+$//;
+    s/\s+$//;
     if (/^CHARGE=(.*)/i) {
       $this->set('defaultCharge', InSilicoSpectro::Spectra::MSSpectra::string2chargemask($1));
       next;
@@ -426,7 +425,6 @@ sub readMGF{
       my @pl;
       while (<fd>) {
 	chomp;
-	s/[\s\cA]+$//;
 	next unless /\S/;
 	if(/^TITLE=(.*)/i){
 	  my $t=$1;
@@ -461,7 +459,7 @@ sub readMGF{
 	  my $pd=$cmpd->get('parentData');
 	  my $contents="$pd->[0]:$pd->[1]:x";
 	  foreach(@pl){
-	    $contents.='.'.(join ':', @$_);
+	    $contents.="\n".(join ':', @$_);
 	  }
 	  my $md5=md5($contents);
 	  if (defined $md52sp{$md5}) {
@@ -763,9 +761,26 @@ sub get{
   return $this->{$name};
 }
 
+### FIXME
+#to ensure correct ExpSpectrum inheritance
+sub spectrum{
+  my ($this, $val) = @_;
+
+  if (defined($val)){
+    $this->{compounds}=$val;
+  }
+  return $this->{compounds};
+}
+
+####
+
+###FIXME change into size()
 sub getSize{
   my $this=$_[0];
   return (defined $this->{compounds})?(scalar @{$this->{compounds}}):undef;
+}
+sub size{
+  return $_[0]->getSize();
 }
 
 # -------------------------------   misc
