@@ -76,7 +76,7 @@ eval{
     # Test 3, tryptic digestion
     my $protein = new InSilicoSpectro::InSilico::AASequence(sequence=>'MCTMACTKGIPRKQWWEMMKPCKADFCV', modif=>'::Cys_CAM::Oxidation::::::::::::::Oxidation:::::::::::', AC=>'12345');
     print "Protein:\n$protein", modifToString($protein->modif(), $protein->getLength()), "\n\nTryptic digestion (nmc=1) with O18 (atoms):\n";
-    my @result = digestByRegExp(protein=>$protein, methionine=>1, nmc=>1, enzyme=>InSilicoSpectro::InSilico::CleavEnzyme::getFromDico('Trypsin_O18atom'));
+    my @result = digestByRegExp(protein=>$protein, methionine=>1, nmc=>1, enzyme=>InSilicoSpectro::InSilico::CleavEnzyme::getFromDico('Trypsin'));
     foreach (@result){
       print "$_\t", join("\t", $_->start(), $_->end(), $_->enzymatic(), $_->getMass(), modifToString($_->modif())), "\n";
     }

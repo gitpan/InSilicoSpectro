@@ -12,7 +12,7 @@ use Test::More tests => 3;
 use File::Basename;
 
 my $dir=dirname($0)."/Spectra";
-my $env="INSILICOSPECTRO_DEFFILE=".dirname($0)."/InSilico/insilicodef.xml";
+my $env="INSILICOSPECTRO_DEFFILE=".dirname($0)."/InSilico/insilicodef-test.xml";
 
 use InSilicoSpectro::Spectra::MSSpectra;
 is(InSilicoSpectro::Spectra::MSSpectra::string2chargemask('2+ AND 3+'), 12);

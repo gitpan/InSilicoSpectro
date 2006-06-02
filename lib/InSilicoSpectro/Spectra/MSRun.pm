@@ -210,7 +210,7 @@ sub twig_addSpectrum{
   if($type eq 'msms'){
     $sp=InSilicoSpectro::Spectra::MSMSSpectra->new();
     $sp->readTwigEl($el);
-  }elsif($type eq 'ms'){
+  }elsif($type =~ /^(ms|pmf)$/){
     $sp=InSilicoSpectro::Spectra::MSSpectra->new();
     $sp->readTwigEl($el);
   }else{
@@ -449,7 +449,7 @@ sub twigMzdata_readCmpd{
    $title.=";retentionTime=".$el->atts->{retentionTime} if defined $el->atts->{retentionTime};
    $cmpd->set('title', $title);
 
-   return unless $el->get_xpath('spectrumDesc/spectrumSettings/spectrumInstrument[@msLevel="2"');
+   return unless $el->get_xpath('spectrumDesc/spectrumSettings/spectrumInstrument[@msLevel="2"]');
 
    my $xpath='spectrumDesc/precursorList/precursor[@msLevel="1"]/ionSelection/cvParam';
    my @a=$el->get_xpath($xpath);
@@ -478,17 +478,22 @@ sub twigMzdata_readCmpd{
 
    @a=$el->get_xpath('mzArrayBinary/data');
    my $e=$a[0];
-   InSilicoSpectro::Utils::io::croakIt "parsing not yet defined for <peaks precision!=32> tag (".($e->atts->{precision}).")" if $e->atts->{precision} ne 32;
+
+   ($e->atts->{precision} eq 32)?(my $unpack_precision="f*"):($e->atts->{precision} eq 64)?(my $unpack_precision="d*"):InSilicoSpectro::Utils::io::croakIt "parsing not yet defined for <peaks precision!=32 or 64> tag (".($e->atts->{precision}).")";
+
    InSilicoSpectro::Utils::io::croakIt "parsing not yet defined for <peaks endian!=\"little\"> tag (".($e->atts->{endian}).")" if $e->atts->{endian} ne "little";
+
    my $o=decode_base64($e->text);
-   my @moz=unpack ("f*", $o);
+   my @moz=unpack ($unpack_precision, $o);
 
    @a=$el->get_xpath('intenArrayBinary/data');
    my $e=$a[0];
-   InSilicoSpectro::Utils::io::croakIt "parsing not yet defined for <peaks precision!=32> tag (".($e->atts->{precision}).")" if $e->atts->{precision} ne 32;
+
+   ($e->atts->{precision} eq 32)?(my $unpack_precision="f*"):($e->atts->{precision} eq 64)?(my $unpack_precision="d*"):InSilicoSpectro::Utils::io::croakIt "parsing not yet defined for <peaks precision!=32 or 64> tag (".($e->atts->{precision}).")";
+
    InSilicoSpectro::Utils::io::croakIt "parsing not yet defined for <peaks endian!=\"little\"> tag (".($e->atts->{endian}).")" if $e->atts->{endian} ne "little";
    my $o=decode_base64($e->text);
-   my @int=unpack ("f*", $o);
+   my @int=unpack ($unpack_precision, $o);
 
    for (0..$#moz){
      $cmpd->addOnePeak([$moz[$_], $int[$_]]);

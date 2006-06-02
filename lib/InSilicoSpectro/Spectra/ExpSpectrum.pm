@@ -147,12 +147,12 @@ sub spectrum
   my ($this, $sp) = @_;
 
   if (ref($sp) eq 'ARRAY'){
-    if (ref($sp->[0]) eq 'ARRAY'){
+    #if (ref($sp->[0]) eq 'ARRAY'){
       $this->{spectrum} = $sp;
-    }
-    else{
-      croak("Illegal data structure for the experimental spectrum");
-    }
+    #}
+    #else{
+    #  croak __FILE__."(".__LINE__."): Illegal data structure for the experimental spectrum";
+    #}
   }
 
   return $this->{spectrum};

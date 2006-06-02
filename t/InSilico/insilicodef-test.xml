@@ -926,7 +926,13 @@
   </aminoAcids>
 
   <cleavEnzymes>
-    <oneCleavEnzyme name="Trypsin">
+   <oneCleavEnzyme name="Trypsin/P">
+      <siteRegexp><![CDATA[(?<=[KR])|(?=[P])]]></siteRegexp>
+      <terminus>C</terminus>
+      <CTermGain>OH</CTermGain>
+      <NTermGain>H</NTermGain>
+    </oneCleavEnzyme>
+     <oneCleavEnzyme name="Trypsin">
       <site>
         <cleavSite>KR</cleavSite>
         <adjacentSite>^P</adjacentSite>
@@ -992,17 +998,6 @@
       <terminus>C</terminus>
       <CTermGain>OH</CTermGain>
       <NTermGain>H</NTermGain>
-    </oneCleavEnzyme>
-    <oneCleavEnzyme name="CNBr">
-      <site>
-        <cleavSite>M</cleavSite>
-        <adjacentSite>.</adjacentSite>
-        <terminus>C</terminus>
-      </site>
-      <CTermGain>XXX</CTermGain>
-      <NTermGain>H</NTermGain>
-      <CTermLoss>XXX</CTermLoss>
-      <NTermLoss>XXX</NTermLoss>
     </oneCleavEnzyme>
    <oneCleavEnzyme name="Glu C (bicarbonate)">
       <site>

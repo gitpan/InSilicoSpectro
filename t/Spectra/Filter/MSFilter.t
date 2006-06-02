@@ -5,9 +5,8 @@ use English;
 
 use File::Basename;
 chdir dirname($0);
-my $dir=dirname($0)."/InSilico";
-my $env="INSILICOSPECTRO_DEFFILE=../../InSilico/insilicodef.xml";
-
+my $dir=dirname($0)."/../../InSilico";
+my $env="INSILICOSPECTRO_DEFFILE=../../InSilico/insilicodef-test.xml";
 
 eval{
   require Statistics::Basic;

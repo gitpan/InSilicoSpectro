@@ -4,10 +4,8 @@ use Carp;
 use Pod::Usage;
 use Math::FixedPrecision;
 
-BEGIN {
-  use Test::More tests=>5;
-  use_ok( 'InSilicoSpectro::Spectra::Filter::MSFilter' );
- }
+use Test::More tests=>5;
+use_ok( 'InSilicoSpectro::Spectra::Filter::MSFilter' );
 
 =head1 NAME
 
@@ -85,7 +83,7 @@ eval{
 					 },
 			  pretty_print=>'indented'
 			 );
-  
+
   #actually parse the file
   $twig->parsefile($dataDir.$xml_file) or croak "cannot parse [$dataDir.$xml_file]: $!";
 

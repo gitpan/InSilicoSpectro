@@ -68,10 +68,10 @@ eval{
 
   if ($test == 2){
     # Test 2, trypsin regexp given by a string
-    my $protein = 'MCTMACTKGIPRKQWWEMMKPCKADFCV';
-    my $modif =   '::Cys_CAM::Oxidation::::::::::::::Oxidation:::::::::::';
-    print "Protein:\n$protein\n$modif\n\nTryptic regexp given by a string:\n";
-    my @result = digestByRegExp(protein=>$protein, modif=>$modif, methionine=>1, nmc=>1, enzyme=>'(?<=[KR])(?=[^P])');
+    my $protein = 'MCTMAPCTKGIPRKQWWEMMKPCKADFCV';
+    my $modif =   '::Cys_CAM::Oxidation:::::::::::::::Oxidation:::::::::::';
+    print "Protein:\n$protein\n$modif\n\nTrypsin/P regexp given by a string:\n";
+    my @result = digestByRegExp(protein=>$protein, modif=>$modif, methionine=>1, nmc=>1, enzyme=>'(?<=[KR])|(?=P)', minMass=>0);
     for (my $i = 0; $i < @{$result[0]}; $i++){
       print "$result[$digestIndexPept][$i]\t$result[$digestIndexStart][$i]\t",
 	    "$result[$digestIndexEnd][$i]\t$result[$digestIndexNmc][$i]\t",
@@ -120,6 +120,7 @@ eval{
 	    "$result[$digestIndexMass][$i]\t", modifToString($result[$digestIndexModif][$i]), "\n";
     }
   }
+
 };
 if ($@){
   carp($@);

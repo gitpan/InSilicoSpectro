@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# Program to extract ion intensities from Phenyx correct peptide matches files
+# Program to extract ion intensities from a .peptSpectra.xml file
 # Copyright (C) 2005 Jacques Colinge
 
 # This program is free software; you can redistribute it and/or
@@ -19,11 +19,42 @@
 
 # Contact:
 #  Prof. Jacques Colinge
-#  Upper Austria University of Applied Science at Hagenberg
+#  Upper Austria University of Applied Sciences at Hagenberg
 #  Hauptstrasse 117
 #  A-4232 Hagenberg, Austria
 #  http://www.fhs-hagenberg.ac.at
 
+=head1 NAME
+
+getIonIntensities.pl - Extraction of ion intensities information from a .peptSpectra.xml file
+
+=head1 SYNOPSIS
+
+getIonIntensities.pl --pept=peptfile [options]
+
+=head1 OPTIONS
+
+Use getIonIntensities.pl -h
+
+=head1 DESCRIPTION
+
+The script parses a collection of trusted peptide/spectrum matches stored in a .peptSpectra.xml
+file to extract statistics regarding fragment ion intensities. It is possible to output the results
+either in text format (default) or in a format readable by R. In the latter case, the simple R script,
+ionStat.R, can be used for plotting data.
+
+In addition, plots can be generated for each match found in the .peptSpectra.xml file(s) by
+using the -withplots.
+
+=head1 EXAMPLE
+
+./getIonIntensities.pl --pept=example.peptSpectra.xml -rformat -withplots > intensities.dataf
+
+=head1 AUTHOR
+
+Jacques Colinge
+
+=cut
 
 BEGIN{
   use File::Basename;
@@ -68,12 +99,13 @@ if (!GetOptions('help' => \$help,
 --charge=int        only look at peptides at this charge state, default is no imposed charge
 --tol=float         relative mass error tolerance in ppm, default [$tol]
 --mintol=float      absolute mass error tolerance in Da, default [$minTol]
---insel=string      select the intensity normalization (original|log|order|relative)
+--intsel=string     select the intensity normalization (original|log|order|relative)
 --matchsel=string   select the match algorithm (closest|greedy|mostintense), the order is given by frag in case of greedy
 -withplots          generates individual plots for all the matches (png format)
 -rformat            formats the output for R
 -help
 -h\n";
+print "'$peptFile'\n";
   exit(0);
 }
 
@@ -131,8 +163,7 @@ else{
 # XML parsing
 # ------------------------------------------------------------------------
 
-my ($curChar, $massIndex, $intensityIndex, $charge, $peptide, $modif, $peaks);
-my $itemIndex = 0;
+my ($curChar, $massIndex, $intensityIndex, $charge, $peptide, $modif, $peaks, $itemIndex);
 
 sub Text
 {
@@ -145,7 +176,10 @@ sub StartTag
 {
   my ($p, $el) = @_;
 
-  if ($el eq 'ple:item'){
+  if ($el eq 'ple:ItemOrder'){
+    $itemIndex = 0;
+  }
+  elsif ($el eq 'ple:item'){
     if ($_{type} eq 'mass'){
       $massIndex = $itemIndex;
     }
@@ -207,7 +241,7 @@ sub EndTag
 
       if (defined($withPlots)){
 	my $msms = new InSilicoSpectro::InSilico::MSMSOutput(spectrum=>\%spectrum, prec=>2, modifLvl=>1, expSpectrum=>\@peaks, intSel=>'order', tol=>$tol, minTol=>$minTol);
-	$msms->plotSpectrumMatch(fname=>"$peptide-$$-$nPlot", format=>'png', fontChoice=>'/home/colinge/open-ms-tools/Garamond.ttf:14', changeColModifAA=>1, legend=>'right');
+	$msms->plotSpectrumMatch(fname=>"$peptide-$$-$nPlot", format=>'png', fontChoice=>'default:Large', changeColModifAA=>1, legend=>'right', plotIntern=>1);
 	$nPlot++;
       }
 

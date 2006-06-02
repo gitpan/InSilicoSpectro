@@ -926,7 +926,13 @@
   </aminoAcids>
 
   <cleavEnzymes>
-    <oneCleavEnzyme name="Trypsin">
+   <oneCleavEnzyme name="Trypsin/P">
+      <siteRegexp><![CDATA[(?<=[KR])|(?=[P])]]></siteRegexp>
+      <terminus>C</terminus>
+      <CTermGain>OH</CTermGain>
+      <NTermGain>H</NTermGain>
+    </oneCleavEnzyme>
+     <oneCleavEnzyme name="Trypsin">
       <site>
         <cleavSite>KR</cleavSite>
         <adjacentSite>^P</adjacentSite>
@@ -992,17 +998,6 @@
       <terminus>C</terminus>
       <CTermGain>OH</CTermGain>
       <NTermGain>H</NTermGain>
-    </oneCleavEnzyme>
-    <oneCleavEnzyme name="CNBr">
-      <site>
-        <cleavSite>M</cleavSite>
-        <adjacentSite>.</adjacentSite>
-        <terminus>C</terminus>
-      </site>
-      <CTermGain>XXX</CTermGain>
-      <NTermGain>H</NTermGain>
-      <CTermLoss>XXX</CTermLoss>
-      <NTermLoss>XXX</NTermLoss>
     </oneCleavEnzyme>
    <oneCleavEnzyme name="Glu C (bicarbonate)">
       <site>
@@ -1331,6 +1326,15 @@
     <delta monoisotopic="79.9663" average="79.9799" />
     <sprotFT><![CDATA[(4-aspartylphosphate|Phosphoarginine|Phosphocysteine|Phosphohistidine|Phosphoserine|Phosphothreonine|Phosphotyrosine|Pros-phosphohistidine|Tele-phosphohistidine).*]]></sprotFT>
   </oneModRes>
+  <oneModRes type="ptm" name="PHOS_STY">
+    <description>Phosphorylation</description>
+    <site>
+      <residue>STY</residue>
+    </site>
+    <residues aa="STY"/>
+    <delta monoisotopic="79.9663" average="79.9799" />
+    <sprotFT><![CDATA[(Phosphoserine|Phosphothreonine|Phosphotyrosine).*]]></sprotFT>
+  </oneModRes>
   <oneModRes type="ptm" name="AMID">
     <description>Amidation</description>
     <siteRegexp cterm="yes">.(?=G)</siteRegexp>
@@ -1372,6 +1376,15 @@
     <residues aa="K" cterm="yes" prositeRule="PDOC00167"/>
     <prositeRule>PDOC00167</prositeRule>
     <delta monoisotopic="226.0776" average="226.2934"/>
+  </oneModRes>
+   <oneModRes type="ptm" name="BIOT_nterm">
+    <description>Biotin_nterm</description>
+    <site>
+      <residue>.</residue>
+      <nterm/>
+    </site>
+    <residues aa="." nterm="yes"/>
+    <delta monoisotopic="210.0827" average="210.2960"/>
   </oneModRes>
   <oneModRes type="ptm" name="CAM_nterm">
     <description>Carbamylation_nterm</description>
@@ -1464,6 +1477,22 @@
     <delta monoisotopic="14.0157" average="14.0269"/>
     <sprotFT><![CDATA[(2-methylglutamine|5-methylarginine|Cysteine methyl ester|Glutamate methyl ester (Gln)|Glutamate methyl ester (Glu)|Methylhistidine|N-methylalanine|N-methylisoleucine|N-methylleucine|N-methylmethionine|N-methylphenylalanine|N-methyltyrosine|N4-methylasparagine|N5-methylarginine|N5-methylglutamine|N6-methylated lysine|N6-methyllysine|Omega-N-methylarginine|Omega-N-methylated arginine|S-methylcysteine|Tele-methylhistidine).*]]></sprotFT>
   </oneModRes>
+  <oneModRes type="ptm" name="Ubiquitin_0mc">
+    <description>Ubiquitination no missed cleavage</description>
+    <site>
+      <residue>K</residue>
+    </site>
+    <residues aa="K"/>
+    <delta monoisotopic="114.0429" average="114.1040"/>
+  </oneModRes>
+  <oneModRes type="ptm" name="Ubiquitin_1mc">
+    <description>Ubiquitination one missed cleavage</description>
+    <site>
+      <residue>K</residue>
+    </site>
+    <residues aa="K"/>
+    <delta monoisotopic="383.2281" average="383.4511"/>
+  </oneModRes>
   <!--<oneModRes type="ptm" name="GGLU" 
 description="Gamma-carboxyglutamic_acid">
     <residue aa="E"/>
@@ -1483,10 +1512,10 @@ description="Gamma-carboxyglutamic_acid">
   <oneModRes type="ptm" name="SULF_core">
     <description>"Sulfation_core</description>
     <site>
-      <residue>Y</residue>
+      <residue>STY</residue>
       <prositeRule>PDOC00003</prositeRule>
     </site>
-    <residues aa="Y" prositeRule="PDOC00003"/>
+    <residues aa="STY" prositeRule="PDOC00003"/>
     <delta monoisotopic="79.9568" average="80.0642"/>
     <sprotFT><![CDATA[(Sulfotyrosine|Sulfoserine|Sulfothreonine).*]]></sprotFT>
   </oneModRes>
@@ -1507,6 +1536,14 @@ description="Gamma-carboxyglutamic_acid">
       <residue>MHW</residue>
     </site>
     <residues aa="MHW"/>
+    <delta monoisotopic="15.9949" average="15.999"/>
+  </oneModRes>
+  <oneModRes type="aaModif" name="Oxidation_HW">
+    <description>Oxidation</description>
+    <site>
+      <residue>HW</residue>
+    </site>
+    <residues aa="HW"/>
     <delta monoisotopic="15.9949" average="15.999"/>
   </oneModRes>
   <oneModRes type="aaModif" name="Oxidation_M">
@@ -1585,6 +1622,47 @@ description="Gamma-carboxyglutamic_acid">
     </site>
     <residues aa="KR" cterm="yes"/>
     <delta monoisotopic="4.02912" average="4.02956"/>
+  </oneModRes>
+  <oneModRes type="aaModif" name="Guanidination">
+    <description>Guanidination</description>
+    <site>
+      <residue>K</residue>
+    </site>
+    <residues aa="K"/>
+    <delta monoisotopic="42.0218" average="42.0382"/>
+  </oneModRes>
+  <oneModRes type="aaModif" name="ICAT_light">
+    <description>ICAT light</description>
+    <site>
+      <residue>C</residue>
+    </site>
+    <residues aa="C"/>
+    <delta monoisotopic="227.1270" average="227.2644"/>
+  </oneModRes>
+  <oneModRes type="aaModif" name="ICAT_heavy">
+    <description>ICAT heavy</description>
+    <site>
+      <residue>C</residue>
+    </site>
+    <residues aa="C"/>
+    <delta monoisotopic="236.1572" average="236.1983"/>
+  </oneModRes>
+  <oneModRes type="aaModif" name="iTRAQ_KY">
+    <description>iTRAQ KY</description>
+    <site>
+      <residue>KY</residue>
+    </site>
+    <residues aa="KY"/>
+    <delta monoisotopic="144.10206" average="144.1543"/>
+  </oneModRes>
+  <oneModRes type="aaModif" name="iTRAQ_nterm">
+    <description>iTRAQ N-term</description>
+    <site>
+      <residue>.</residue>
+      <nterm/>
+    </site>
+    <residues aa="." nterm="yes"/>
+    <delta monoisotopic="144.10206" average="144.1543"/>
   </oneModRes>
 
  </modRes>

@@ -271,16 +271,17 @@ sub twigPMCmpd{
 ############# EO peptMatchesXml
 
 use File::Basename;
-use Time::localtime;
 use File::Find::Rule;
 use Digest::MD5 qw(md5);
+use File::Glob qw(:glob);
+use Time::localtime;
 my %md52sp;
 sub readDTA{
   my ($this)=@_;
 
   my $src=$this->source();
   my @files;
-  $src=~s/ /\\ /g;
+  #$src=~s/ /\\ /g;
   if(-d $src){
     @files=File::Find::Rule->file()->name( qr/\.dta$/i)->in($src);
     carp "no *.dta  file within $src" unless @files;
@@ -390,6 +391,10 @@ sub pklContinuity{
   return 1;
 }
 
+
+use Time::localtime;
+
+
 sub readMGF{
   my ($this)=@_;
   my $src=$this->source();
@@ -398,6 +403,7 @@ sub readMGF{
   my $pd=InSilicoSpectro::Spectra::PhenyxPeakDescriptor->new("moz intensity chargemask");
   $this->set('parentPD', $pd);
   $this->set('fragPD', $pd);
+
 
   $this->set('jobId', (basename $src));
   $this->set('date', sprintf("%4d-%2.2d-%2.2d",localtime->year()+1900, localtime->mon()+1, localtime->mday()));

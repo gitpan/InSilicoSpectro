@@ -65,6 +65,7 @@ Alexandre Masselot, www.genebio.com
 =cut
 
 use Carp;
+use Time::localtime;
 use InSilicoSpectro::Utils::io;
 use InSilicoSpectro::Spectra::PhenyxPeakDescriptor;
 use InSilicoSpectro::Spectra::MSMSSpectra;
@@ -81,6 +82,10 @@ use InSilicoSpectro::Spectra::MSMSSpectra;
        mgf=>{
 	     type=>'msms',
 	     ref=>"InSilicoSpectro::Spectra::MSMSSpectra"
+	    },
+       'mgf.pmf'=>{
+	     type=>'msms',
+	     ref=>"InSilicoSpectro::Spectra::MSSpectra"
 	    },
        'peptMatches'=>{
 			   type=>'msms',
@@ -99,7 +104,12 @@ use InSilicoSpectro::Spectra::MSMSSpectra;
 		 write=>\&writeMGF,
 		 description=>"Mascot generic format (mgf)"
 		},
+	   'mgf.pmf'=>{read=>\&readMGF,
+		       write=>\&writeMGF,
+		       description=>"Mascot generic format (mgf)"
+		      },
 	      );
+
 
 sub new{
   my $class=shift;
@@ -188,7 +198,6 @@ sub guessFormat{
 
 sub set{
   my ($this, $name, $val)=@_;
-
   $this->{$name}=$val;
 }
 
@@ -292,6 +301,7 @@ sub writeTxt{
 
 sub writeMGF{
   my ($this)=@_;
+  warn "NO writeMGF fo MSSpectra implemeneted";
   return;
 }
 
@@ -343,6 +353,60 @@ $shift  <ple:PeakLists>
 $shift  </ple:PeakLists>
 $shift</ple:PeakListExport>
 ";
+}
+
+sub read{
+  my ($this)=@_;
+
+  my $fmt=$this->format();
+  croak "InSilicoSpectro::Spectra::MSSpectra: no reading handler is defined for format [$fmt]" unless defined $handlers{$fmt}{read};
+
+
+  my $h=$this->get('sampleInfo');
+  if(defined $h){
+    $h->{sampleNumber}=0 unless defined $h->{sampleNumber};
+    $h->{instrument}='n/a' unless defined $h->{instrument};
+    $h->{instrumentId}='n/a' unless defined $h->{instrumentId};
+    $h->{spectrumType}='pmf' unless defined $h->{spectrumType};
+  }else{
+    $this->set('sampleInfo', {sampleNumber=>0, instrument=>"n/a", instrumentId=>"n/a", spectrumType=>"pmf"});
+  }
+  $handlers{$fmt}{read}->($this);
+}
+
+sub readMGF{
+  my ($this)=@_;
+  my $src=$this->source();
+  my $fd;
+  CORE::open ($fd, "<$src") or croak "cannot open [<$src]: $!";
+
+  my $pd=InSilicoSpectro::Spectra::PhenyxPeakDescriptor->new("moz intensity");
+  $this->set('peakDescriptor', $pd);
+
+  $this->set('jobId', (basename $src));
+  $this->set('date', sprintf("%4d-%2.2d-%2.2d",localtime->year()+1900, localtime->mon()+1, localtime->mday()));
+  $this->set('time',sprintf("%2.2d:%2.2d:%2.2d", localtime->hour(), localtime->min(), localtime->sec()));
+
+  #msms step
+  my %md52sp;
+  my $iCmpd;
+  $this->spectrum([]);
+  while(<$fd>){
+    chomp;
+    s/\s+$//;
+    if(/^COM=(.*)/i){
+      my $t=$1;
+      $t=~s/\s+$//;
+      $t=~s/^\s+//;
+      $this->set('title', $t)if $t=~/\S/;
+      next;
+    }
+    if(/^([\d\.]+)\s+([\d\.]+)/){
+      push @{$this->spectrum()}, [$1, $2];
+    }
+    last if (/^BEGIN IONS/i);
+  }
+  close $fd;
 }
 
 

@@ -148,7 +148,6 @@ use InSilicoSpectro::Spectra::MSRun;
 use InSilicoSpectro::Spectra::MSSpectra;
 use InSilicoSpectro::Spectra::Filter::MSFilterCollection;
 
-eval{
   $InSilicoSpectro::Utils::io::VERBOSE=$verbose;
 
   if((defined $showInputFmt) or (defined $showOutputFmt)){
@@ -196,9 +195,6 @@ eval{
 	$sp->set('sampleInfo', \%sampleInfo) if defined %sampleInfo;
 	$sp->setSampleInfo('sampleNumber', $is++);
 	$sp->open();
-	
-	
-	  
       } else {
 	croak "not possible to set multiple file in with format [$inFormat]" if $#fileIn>0;
 	$InSilicoSpectro::Spectra::MSRun::handlers{$inFormat}{read}->($run);
@@ -222,10 +218,3 @@ eval{
   }
 
   $run->write($outformat, ">$outfile");
-};
-
-if ($@){
-  print STDERR "error trapped in main\n";
-  carp $@;
-}
- 

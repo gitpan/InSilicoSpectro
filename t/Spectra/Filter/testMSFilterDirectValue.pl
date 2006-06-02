@@ -2,10 +2,8 @@
 use strict;
 use Carp;
 use Pod::Usage;
-BEGIN {
-  use Test::More tests=>17;
-  use_ok( 'InSilicoSpectro::Spectra::Filter::MSFilter' );
- }
+use Test::More tests=>17;
+use_ok( 'InSilicoSpectro::Spectra::Filter::MSFilter' );
 
 =head1 NAME
 
