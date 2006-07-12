@@ -50,6 +50,10 @@ A dictionnary holds all the enzymes, based on their key
 
 Returns a list of all the enzymes, sorted by name
 
+=head3 registerModResHandler([\&sub])
+
+get/set a subroutine to be called whenever a new modres is instanciated (for example, register into MassCalaculator
+
 =head1 METHODS
 
 =head3 my $mr=InSilicoSpectro::InSilico::ModRes->new([$h])
@@ -75,6 +79,22 @@ Set if the modif is peptide C/N terminus (or just returns the current status is 
 =head3 $mr->protNTerm([$val]);
 
 Set if the modif is protein C/N terminus (or just returns the current status is no value is passed to the function)
+
+=head3 $mr->seq2pos($seq);
+
+returns an array of position where the modif can appear on sequence $seq.
+
+This array contains
+
+=over 4
+
+=item [-1] if it can be attributed nterm
+
+=item [length $seq] if it can be attributer cterm
+
+=item else, a list of indices, starting at 0 for the first AA of the sequence
+
+=back
 
 =head3 $mr->set($name, $val)
 
@@ -124,8 +144,10 @@ Alexandre Masselot, www.genebio.com
 our (@ISA, @EXPORT, @EXPORT_OK, $isInit, %dico, %re2Modif);
 @ISA = qw(Exporter);
 
-@EXPORT = qw(&init &getFromDico &getList &getModifFromSprotFT &twig_addModRes);
+@EXPORT = qw(&init &getFromDico &getList &getModifFromSprotFT &twig_addModRes &registerModResHandler);
 @EXPORT_OK = ();
+
+our $rsRegisterModResHandler;
 
 sub new{
   my $pkg=shift;
@@ -261,6 +283,25 @@ sub getModifFromSprotFT{
 }
 
 
+#--------------------------------- positions
+
+sub seq2pos{
+  my ($this, $seq)=@_;
+  my @pos;
+  my $re=$this->regexp;
+  if($this->nTerm){
+    push @pos, -1 if $seq=~/$re/;
+  }elsif($this->cTerm){
+    push @pos, length $seq if $seq=~/$re/;
+
+  }else{
+    while ($seq=~/$re/g){
+      push @pos, pos($seq)-1;
+    }
+}
+  return @pos;
+}
+
 #--------------------------------- init
 
 use XML::Twig;
@@ -346,6 +387,9 @@ sub twig_addModRes{
   }
 
 #  $mr->add2Dico();
+  if(registerModResHandler()){
+    registerModResHandler->($mr);
+  }
 
 }
 
@@ -355,7 +399,6 @@ sub getXMLTwigElt{
   XML::Twig::Elt->new()->parse("<description>$this->{description}</description>")->paste(last_child=>$el);
   if($this->{site}){
     XML::Twig::Elt->new()->parse("<site><residue>$this->{site}{residue}</residue></site>")->paste(last_child=>$el);
-    
   }else{
     XML::Twig::Elt->new()->parse("<siteRegexp>$this->{regexpStr}</siteRegexp>")->paste(last_child=>$el);
   }
@@ -366,5 +409,12 @@ sub getXMLTwigElt{
   return $el;
 }
 
+sub registerModResHandler{
+  my $sub=shift;
+  if($sub){
+    $rsRegisterModResHandler=$sub;
+  }
+  return $rsRegisterModResHandler;
+}
 # -------------------------------   misc
 return 1;

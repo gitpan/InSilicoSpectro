@@ -304,6 +304,7 @@ sub twigMzxml_readCmpd{
    my $title="scan_num=".$el->atts->{num};
    $title.=";retentionTime=".$el->atts->{retentionTime} if defined $el->atts->{retentionTime};
    $cmpd->set('title', $title);
+   $cmpd->set('acquTime', $el->atts->{retentionTime}) if $el->atts->{retentionTime};
 
    my $elprec=$el->first_child('precursorMz');
    my $c=InSilicoSpectro::Spectra::MSSpectra::string2chargemask($elprec->atts->{precursorCharge})
@@ -479,7 +480,15 @@ sub twigMzdata_readCmpd{
    @a=$el->get_xpath('mzArrayBinary/data');
    my $e=$a[0];
 
-   ($e->atts->{precision} eq 32)?(my $unpack_precision="f*"):($e->atts->{precision} eq 64)?(my $unpack_precision="d*"):InSilicoSpectro::Utils::io::croakIt "parsing not yet defined for <peaks precision!=32 or 64> tag (".($e->atts->{precision}).")";
+   my $precision=$e->atts->{precision}+0;
+   my $unpack_precision;
+   if($precision==32){
+     $unpack_precision="f*";
+   }elsif ($precision==64){
+     $unpack_precision="d*"
+   }else{
+     InSilicoSpectro::Utils::io::croakIt "parsing not yet defined for <peaks precision!=32 or 64> tag (".($e->atts->{precision}).")";
+   }
 
    InSilicoSpectro::Utils::io::croakIt "parsing not yet defined for <peaks endian!=\"little\"> tag (".($e->atts->{endian}).")" if $e->atts->{endian} ne "little";
 
@@ -489,7 +498,15 @@ sub twigMzdata_readCmpd{
    @a=$el->get_xpath('intenArrayBinary/data');
    my $e=$a[0];
 
-   ($e->atts->{precision} eq 32)?(my $unpack_precision="f*"):($e->atts->{precision} eq 64)?(my $unpack_precision="d*"):InSilicoSpectro::Utils::io::croakIt "parsing not yet defined for <peaks precision!=32 or 64> tag (".($e->atts->{precision}).")";
+   my $precision=$e->atts->{precision}+0;
+   my $unpack_precision;
+   if($precision==32){
+     $unpack_precision="f*";
+   }elsif ($precision==64){
+     $unpack_precision="d*"
+   }else{
+     InSilicoSpectro::Utils::io::croakIt "parsing not yet defined for <peaks precision!=32 or 64> tag (".($e->atts->{precision}).")";
+   }
 
    InSilicoSpectro::Utils::io::croakIt "parsing not yet defined for <peaks endian!=\"little\"> tag (".($e->atts->{endian}).")" if $e->atts->{endian} ne "little";
    my $o=decode_base64($e->text);

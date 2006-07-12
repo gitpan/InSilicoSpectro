@@ -29,7 +29,7 @@ require Exporter;
 
 our (@ISA, @EXPORT, @EXPORT_OK);
 @ISA = qw(Exporter);
-@EXPORT = qw(readConfigurationFiles getMass setMass setMassType getMassType massFromComposition setModif getModif modifToString getPeptideMass getCorrectCharge digestByRegExp nonSpecificDigestion $digestIndexPept $digestIndexStart $digestIndexEnd $digestIndexNmc $digestIndexMass $digestIndexModif $trypsinRegex $dibasicRegex matchPMF variablePeptide locateModif getSeries setSeries getLoss setLoss getFragType setFragType getFragTypeList setImmonium getImmonium getImmoniumMass getFragmentMasses matchSpectrumClosest matchSpectrumGreedy cmpFragTypes $invalidElementCall);
+@EXPORT = qw(readConfigurationFiles getMass setMass setMassType getMassType massFromComposition setModif modifToString getPeptideMass getCorrectCharge digestByRegExp nonSpecificDigestion $digestIndexPept $digestIndexStart $digestIndexEnd $digestIndexNmc $digestIndexMass $digestIndexModif $trypsinRegex $dibasicRegex matchPMF variablePeptide locateModif getSeries setSeries getLoss setLoss getFragType setFragType getFragTypeList setImmonium getImmonium getImmoniumMass getFragmentMasses matchSpectrumClosest matchSpectrumGreedy cmpFragTypes $invalidElementCall);
 @EXPORT_OK = ();
 
 use strict;
@@ -37,6 +37,7 @@ use XML::Twig;
 use Carp;
 use InSilicoSpectro::Utils::io;
 use InSilicoSpectro::InSilico::CleavEnzyme;
+use InSilicoSpectro::InSilico::ModRes;
 use InSilicoSpectro::InSilico::AASequence;
 use InSilicoSpectro::InSilico::Peptide;
 use InSilicoSpectro::Spectra::PeakDescriptor;
@@ -101,8 +102,6 @@ our ($cTerm, $nTerm);
 our %elMass;
 # Description of fragment types
 our (%fragType, %series, %loss, $immoDelta, %immoAA);
-# Description of modification rules
-our %modifRule;
 
 # Predefined regular expressions for representing enzymes
 our $trypsinRegex = qr/(?<=[KR])(?=[^P])/;
@@ -147,8 +146,16 @@ sub init
 					    oneLoss => \&twigAddLoss,
 					    oneFragType => \&twigAddFragType,
 					    oneInternFragType => \&twigAddInternFragType,
-					    oneModRes => \&twigAddModRes,
+					    #oneModRes => \&twigAddModRes,
 					    pretty_print=>'indented'});
+
+
+ #read all the modres already defined and set a handler to register new one afterwards
+  foreach(InSilicoSpectro::InSilico::ModRes::getList()){
+    setModif($_);
+  }
+  InSilicoSpectro::InSilico::ModRes::registerModResHandler(\&InSilicoSpectro::InSilico::MassCalculator::setModif);
+
 
   if (@_){
     foreach (@_){
@@ -319,113 +326,23 @@ sub getMassType
 } # getMassType
 
 
-=head2 setModif($name, $mono, $avg, $residues, $residuesAfter, $terminus)
+=head2 setModif($mr)
 
-Sets the properties of a new modification. Although for most of
-the functions in this module only the mass shift induced by a
-modification is necessary, variablePeptide function needs supplementary
-data about modifications to locate them. Therefore a dedicated
-function for setting modification is required. The parameters are:
+add a InSilico::ModRes object 
 
-=over 4
-
-=item name
-
-The name of the modification.
-
-=item mono
-
-The monoisotopic mass shift.
-
-=item avg
-
-The average mass shift.
-
-=item residues
-
-A string that either contains all the amino acids where the
-modification may occur, or the complementary list of such
-amino acids and in this case the first character in the string
-must be '^'. Alternatively, residues may be equal to '.' to
-say that all amino acids may be modified.
-
-=item residuesAfter
-
-An extra constraint on the amino acid following the modified
-amino acid. The rule for listing the imposed amino acids after
-a modification site is the same as for residues.
-
-=item terminus
-
-This parameter must be set to '-' to indicate a regular
-modification, to 'N' to indicate an N-terminal modification,
-and to 'C' to indicate a C-terminal modification. In case of
-a N- or C-terminal modification, the parameter residues gives
-the list of possible amino acids for the first, respectively
-last, position in the peptide sequence, and the parameter
-residuesAfter gives the constraint on the second, respectively
-penultimate, amino acid.
-
-=back
 
 =cut
+
 sub setModif
 {
-  my ($name, $mono, $avg, $residues, $residuesAfter, $terminus) = @_;
+  my $mr=shift;
+  my $name=$mr->get('name');
 
-  $elMass{"mod_$name"} = [$mono, $avg];
-  my $aaSet = 'ACDEFGHIKLMNPQRSTVWY';
-  if ($residues eq '.'){
-    $residues = $aaSet;
-  }
-  elsif (substr($residues, 0, 1) eq '^'){
-    # Complementary list
-    $residues = substr($residues, 1);
-    my $aa = $aaSet;
-    $aa =~ s/$residues//g;
-    $residues = $aa;
-  }
-  my $okRes = {};
-  foreach (split(//, $residues)){
-    $okRes->{$_} = 1;
-  }
-
-  if ($residuesAfter eq '.'){
-    $residuesAfter = $aaSet;
-  }
-  elsif (substr($residuesAfter, 0, 1) eq '^'){
-    # Complementary list
-    $residuesAfter = substr($residuesAfter, 1);
-    my $aa = $aaSet;
-    $aa =~ s/$residuesAfter//g;
-    $residuesAfter = $aa;
-  }
-  my $okResAfter = {};
-  foreach (split(//, $residuesAfter)){
-    $okResAfter->{$_} = 1;
-  }
-
-  $modifRule{$name} = [$residues, $residuesAfter, $terminus, $okRes, $okResAfter];
+  $elMass{"mod_$name"} = [$mr->{delta_monoisotopic}, $mr->{delta_average}];
 
 } # setModif
 
 
-=head2 getModif
-
-This function returns the characteristics of a modification.
-Namely it returns a vector containing the mass shift (according
-to the current mass type), the list of possible residues, the
-list of imposed residues at the next position, and the terminus
-status ('-', 'C', or 'N').
-
-=cut
-sub getModif
-{
-  my ($name) = @_;
-
-  return (getMass("mod_$name"), $modifRule{$name}[0], $modifRule{$name}[1], $modifRule{$name}[2]);
-
-} # getModif
 
 
 # -----------------------------------------------------------
@@ -1659,28 +1576,14 @@ sub variablePeptide
     if (!defined($elMass{"mod_$name"})){
       croak("Unknown modification in variablePeptide: [$name]");
     }
-
+    
     # locates and adds
-    my $terminus = $modifRule{$name}[2];
-    if ($terminus eq '-'){
-      # Non terminal modification
-      for (my $i = 0; $i < $len; $i++){
-	if ($modifRule{$name}[3]{$pept[$i]} && (($i == $len-1) || $modifRule{$name}[4]{$pept[$i+1]})){
-	  if (length($fixedModif[$i+1]) > 0){
-	    if ($fixedModif[$i+1] ne $name){
-	      croak("Multiple fixed modification [$name]+[$fixedModif[$i+1]] at pos [$i] in variablePeptide");
-	    }
-	  }
-	  else{
-	    # Sets the modification
-	    $fixedModif[$i+1] = $name;
-	  }
-	}
-      }
-    }
-    elsif ($terminus eq 'N'){
+    my $mr=InSilicoSpectro::InSilico::ModRes::getFromDico($name);
+    my @modpos=$mr->seq2pos($peptSeq);
+    
+    if ($mr->nTerm){
       # N-term modification
-      if ($modifRule{$name}[3]{$pept[0]} && ((length($peptSeq) == 1) || $modifRule{$name}[4]{$pept[1]})){
+      if (@modpos){
 	if (length($fixedModif[0]) > 0){
 	  if ($fixedModif[0] ne $name){
 	    croak("Multiple fixed modification [$name] at N-term in variablePeptide");
@@ -1692,9 +1595,9 @@ sub variablePeptide
 	}
       }
     }
-    elsif ($terminus eq 'C'){
+    elsif ($mr->cTerm){
       # C-term modification
-      if ($modifRule{$name}[3]{$pept[$len-1]} && ((length($peptSeq) == 1) || $modifRule{$name}[4]{$pept[$len-2]})){
+      if (@modpos){
 	if (length($fixedModif[$len+1]) > 0){
 	  if ($fixedModif[$len+1] ne $name){
 	    croak("Multiple fixed modification [$name] at C-term in variablePeptide");
@@ -1705,11 +1608,23 @@ sub variablePeptide
 	  $fixedModif[$len+1] = $name;
 	}
       }
+    }else{      # Non terminal modification
+      foreach my $i (@modpos){
+	if (length($fixedModif[$i+1]) > 0){
+	  if ($fixedModif[$i+1] ne $name){
+	    croak("Multiple fixed modification [$name]+[$fixedModif[$i+1]] at pos [$i] in variablePeptide");
+	  }
+	}
+	else{
+	  # Sets the modification
+	  $fixedModif[$i+1] = $name;
+	}
+      }
     }
   }
-
+    
   # Separates fixed from localized variable modifications as given by the parameter modif
-  for (my $i = 0; $i < $len+2; $i++){
+    for (my $i = 0; $i < $len+2; $i++){
     if (length($modif[$i]) > 0){
       if (index($modif[$i], '(*)') == 0){
 	# Adds variable modif by checking that they are all different
@@ -1749,36 +1664,17 @@ sub variablePeptide
 
   # Locates variable modifications
   foreach my $name (@{$varModif}){
+    my $mr=InSilicoSpectro::InSilico::ModRes::getFromDico($name);
+    my @modpos=$mr->seq2pos($peptSeq);
     # Checks modification
     if (!defined($elMass{"mod_$name"})){
       croak("Unknown modification in variablePeptide: [$name]");
     }
 
     # locates and adds
-    my $terminus = $modifRule{$name}[2];
-    if ($terminus eq '-'){
-      # Non terminal modification
-      for (my $i = 0; $i < $len; $i++){
-	if ((length($fixedModif[$i+1]) == 0) && $modifRule{$name}[3]{$pept[$i]} && (($i == $len-1) || $modifRule{$name}[4]{$pept[$i+1]})){
-	  # Checks it is new for this position
-	  my $new = 1;
-	  for (my $j = 0; $j < @{$varModif[$i+1]}; $j++){
-	    if ($name eq $varModif[$i+1][$j]){
-	      $new = 0;
-	      last;
-	    }
-	  }
-
-	  # Adds
-	  if ($new){
-	    push(@{$varModif[$i+1]}, $name);
-	  }
-	}
-      }
-    }
-    elsif ($terminus eq 'N'){
+    if ($mr->nTerm){
       # N-term modification
-      if ((length($fixedModif[0]) == 0) && $modifRule{$name}[3]{$pept[0]} && ((length($peptSeq) == 1) || $modifRule{$name}[4]{$pept[1]})){
+      if (@modpos){
 	# Checks it is new for this position
 	my $new = 1;
 	for (my $j = 0; $j < @{$varModif[0]}; $j++){
@@ -1794,9 +1690,9 @@ sub variablePeptide
 	}
       }
     }
-    elsif ($terminus eq 'C'){
+    elsif ($mr->cTerm){
       # C-term modification
-      if ((length($fixedModif[$len+1]) == 0) && $modifRule{$name}[3]{$pept[$len-1]} && ((length($peptSeq) == 1) || $modifRule{$name}[4]{$pept[$len-2]})){
+      if (@modpos){
 	# Checks it is new for this position
 	my $new = 1;
 	for (my $j = 0; $j < @{$varModif[$len+1]}; $j++){
@@ -1811,7 +1707,26 @@ sub variablePeptide
 	  push(@{$varModif[$len+1]}, $name);
 	}
       }
+    }else
+      {
+      # Non terminal modification
+      foreach my $i(@modpos){
+	# Checks it is new for this position
+	my $new = 1;
+	for (my $j = 0; $j < @{$varModif[$i+1]}; $j++){
+	  if ($name eq $varModif[$i+1][$j]){
+	    $new = 0;
+	    last;
+	  }
+	}
+	
+	# Adds
+	if ($new){
+	  push(@{$varModif[$i+1]}, $name);
+	}
+      }
     }
+
   }
 
 #  print STDERR "$peptSeq\n",join(':',@modif),"$modif\n\nFound modifications:\n";
@@ -1974,26 +1889,11 @@ sub locateModif
     }
 
     # locates and adds
-    my $terminus = $modifRule{$name}[2];
-    if ($terminus eq '-'){
-      # Non terminal modification
-      for (my $i = 0; $i < $len; $i++){
-	if ($modifRule{$name}[3]{$pept[$i]} && (($i == $len-1) || $modifRule{$name}[4]{$pept[$i+1]})){
-	  if (length($fixedModif[$i+1]) > 0){
-	    if ($fixedModif[$i+1] ne $name){
-	      croak("Multiple fixed modification [$name]+[$fixedModif[$i+1]] at pos [$i] in variablePeptide");
-	    }
-	  }
-	  else{
-	    # Sets the modification
-	    $fixedModif[$i+1] = $name;
-	  }
-	}
-      }
-    }
-    elsif ($terminus eq 'N'){
+    my $mr=InSilicoSpectro::InSilico::ModRes::getFromDico($name);
+    my @modpos=$mr->seq2pos($peptSeq);
+    if ($mr->nTerm){
       # N-term modification
-      if ($modifRule{$name}[3]{$pept[0]} && ((length($peptSeq) == 1) || $modifRule{$name}[4]{$pept[1]})){
+      if (@modpos){
 	if (length($fixedModif[0]) > 0){
 	  if ($fixedModif[0] ne $name){
 	    croak("Multiple fixed modification [$name] at N-term in variablePeptide");
@@ -2005,9 +1905,9 @@ sub locateModif
 	}
       }
     }
-    elsif ($terminus eq 'C'){
+    elsif ($mr->cTerm){
       # C-term modification
-      if ($modifRule{$name}[3]{$pept[$len-1]} && ((length($peptSeq) == 1) || $modifRule{$name}[4]{$pept[$len-2]})){
+      if (@modpos){
 	if (length($fixedModif[$len+1]) > 0){
 	  if ($fixedModif[$len+1] ne $name){
 	    croak("Multiple fixed modification [$name] at C-term in variablePeptide");
@@ -2016,6 +1916,20 @@ sub locateModif
 	else{
 	  # Sets the modification
 	  $fixedModif[$len+1] = $name;
+	}
+      }
+    }
+    else{
+      # Non terminal modification
+      foreach my $i (@modpos){
+	if (length($fixedModif[$i+1]) > 0){
+	  if ($fixedModif[$i+1] ne $name){
+	    croak("Multiple fixed modification [$name]+[$fixedModif[$i+1]] at pos [$i] in variablePeptide");
+	  }
+	}
+	else{
+	  # Sets the modification
+	  $fixedModif[$i+1] = $name;
 	}
       }
     }
@@ -2067,31 +1981,12 @@ sub locateModif
       croak("Unknown modification in variablePeptide: [$name]");
     }
 
+    my $mr=InSilicoSpectro::InSilico::ModRes::getFromDico($name);
+    my @modpos=$mr->seq2pos($peptSeq);
     # locates and adds
-    my $terminus = $modifRule{$name}[2];
-    if ($terminus eq '-'){
-      # Non terminal modification
-      for (my $i = 0; $i < $len; $i++){
-	if ((length($fixedModif[$i+1]) == 0) && $modifRule{$name}[3]{$pept[$i]} && (($i == $len-1) || $modifRule{$name}[4]{$pept[$i+1]})){
-	  # Checks it is new for this position
-	  my $new = 1;
-	  for (my $j = 0; $j < @{$varModif[$i+1]}; $j++){
-	    if ($name eq $varModif[$i+1][$j]){
-	      $new = 0;
-	      last;
-	    }
-	  }
-
-	  # Adds
-	  if ($new){
-	    push(@{$varModif[$i+1]}, $name);
-	  }
-	}
-      }
-    }
-    elsif ($terminus eq 'N'){
+    if ($mr->nTerm){
       # N-term modification
-      if ((length($fixedModif[0]) == 0) && $modifRule{$name}[3]{$pept[0]} && ((length($peptSeq) == 1) || $modifRule{$name}[4]{$pept[1]})){
+      if (@modpos){
 	# Checks it is new for this position
 	my $new = 1;
 	for (my $j = 0; $j < @{$varModif[0]}; $j++){
@@ -2107,9 +2002,9 @@ sub locateModif
 	}
       }
     }
-    elsif ($terminus eq 'C'){
+    elsif ($mr->cTerm){
       # C-term modification
-      if ((length($fixedModif[$len+1]) == 0) && $modifRule{$name}[3]{$pept[$len-1]} && ((length($peptSeq) == 1) || $modifRule{$name}[4]{$pept[$len-2]})){
+      if (@modpos){
 	# Checks it is new for this position
 	my $new = 1;
 	for (my $j = 0; $j < @{$varModif[$len+1]}; $j++){
@@ -2122,6 +2017,24 @@ sub locateModif
 	# Adds
 	if ($new){
 	  push(@{$varModif[$len+1]}, $name);
+	}
+      }
+    }
+    else{
+      # Non terminal modification
+      foreach my $i (@modpos){
+	# Checks it is new for this position
+	my $new = 1;
+	for (my $j = 0; $j < @{$varModif[$i+1]}; $j++){
+	  if ($name eq $varModif[$i+1][$j]){
+	    $new = 0;
+	    last;
+	  }
+	}
+	
+	# Adds
+	if ($new){
+	  push(@{$varModif[$i+1]}, $name);
 	}
       }
     }

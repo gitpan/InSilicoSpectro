@@ -551,7 +551,7 @@ sub modifAt
     $this->{modifType} = 'MS/MS';
     undef($this->{mass});
   }
-  return $this->{modif}[$pos+1] = $modif;
+  return $this->{modif}[$pos+1];
 
 } # modifAt
 

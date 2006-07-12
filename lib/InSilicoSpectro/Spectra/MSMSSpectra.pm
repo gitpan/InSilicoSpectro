@@ -414,7 +414,7 @@ sub readMGF{
   my $iCmpd;
   while(<fd>){
     chomp;
-    s/\s+$//;
+    s/[\s\cA]+$//;
     if (/^CHARGE=(.*)/i) {
       $this->set('defaultCharge', InSilicoSpectro::Spectra::MSSpectra::string2chargemask($1));
       next;
@@ -430,6 +430,7 @@ sub readMGF{
       my ($moz, $int)=(-1, 1);
       my @pl;
       while (<fd>) {
+	s/[\s\cA]+$//;
 	chomp;
 	next unless /\S/;
 	if(/^TITLE=(.*)/i){
