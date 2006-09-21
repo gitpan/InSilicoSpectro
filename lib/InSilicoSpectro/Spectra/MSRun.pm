@@ -231,11 +231,12 @@ my $pd_mzint=InSilicoSpectro::Spectra::PhenyxPeakDescriptor->new("moz intensity"
 my $pd_mzintcharge=InSilicoSpectro::Spectra::PhenyxPeakDescriptor->new("moz intensity chargemask");
 my $is=0;
 
+my $twigmzxml;
 sub readMzXml{
   my ($this, $file)=@_;
   $file=$this->{source} unless defined $file;
 
-  my $twig=XML::Twig->new(twig_handlers=>{
+  $twigmzxml=XML::Twig->new(twig_handlers=>{
 					  'scan[@msLevel="1"]'=>sub {twigMzxml_addPMFSpectrum($this, $_[0], $_[1])},
 					  'scan[@msLevel="2"]'=>sub {twigMzxml_addMSMSSpectrum($this, $_[0], $_[1])},
 					  'instrument'=>sub {twigMzxml_setInstrument($this, $_[0], $_[1])},
@@ -244,7 +245,7 @@ sub readMzXml{
 			 );
   (-r $file) or InSilicoSpectro::Utils::io::croakIt "cannot read [$file]";
   print STDERR "xml parsing [$file]\n" if $InSilicoSpectro::Utils::io::VERBOSE;
-  $twig->parsefile($file) or InSilicoSpectro::Utils::io::croakIt "cannot parse [$file]: $!";
+  $twigmzxml->parsefile($file) or InSilicoSpectro::Utils::io::croakIt "cannot parse [$file]: $!";
   undef $spmsms;
   $is=$this->getNbSpectra();
 }

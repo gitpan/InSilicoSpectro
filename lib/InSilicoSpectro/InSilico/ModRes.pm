@@ -144,7 +144,7 @@ Alexandre Masselot, www.genebio.com
 our (@ISA, @EXPORT, @EXPORT_OK, $isInit, %dico, %re2Modif);
 @ISA = qw(Exporter);
 
-@EXPORT = qw(&init &getFromDico &getList &getModifFromSprotFT &twig_addModRes &registerModResHandler);
+@EXPORT = qw(&init &getFromDico &getList &getModifFromSprotFT &twig_addModRes &registerModResHandler $isInit);
 @EXPORT_OK = ();
 
 our $rsRegisterModResHandler;

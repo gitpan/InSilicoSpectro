@@ -491,7 +491,7 @@ sub readMGF{
 
 #--------------- BTDX format 
 my %itemSortIndex=(
-		   mass=>0,
+		   moz=>0,
 		   intensity=>1,
 		   charge=>2
 		  );
@@ -503,7 +503,7 @@ sub sortIndex{
   return $itemSortIndex{$a}<=>$itemSortIndex{$b};
 }
 my %btdxConversionItems=(
-			 mz=>'mass',
+			 mz=>'moz',
 			 z=>'charge',
 			 i=>'intensity',
 			 sn=>'snratio',
