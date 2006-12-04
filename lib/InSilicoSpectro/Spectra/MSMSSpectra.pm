@@ -76,7 +76,7 @@ sampling info. $val is either a reference to a hash, or a string such as 'tag1=v
 
 Get an instance parameter.
 
-=head3 $sp->getSize()
+=head3 $sp->size()
 
 Returns the number of compounds
 
@@ -92,6 +92,11 @@ rem: native dta contains only one ms/ms spectrum. dtas can be concatenated, sepa
 
 header line format is m/z  intensity charge
 
+=head1 EXPORT
+
+=head 3 $MERGE_MULTIPLE_PREC_CHARGES
+
+if true, spectra with same framgementa data and coherent precursor info but diferent charges will be merged into one multiple-charge spectrum. [default=1];
 
 =head1 EXAMPLES
 
@@ -104,7 +109,7 @@ InSilicoSpectro::Spectra::MSSpectra InSilicoSpectro::Spectra::MSMSCmpd, Phenyx::
 
 =head1 COPYRIGHT
 
-Copyright (C) 2004-2005  Geneva Bioinformatics www.genebio.com
+Copyright (C) 2004-2007  Geneva Bioinformatics www.genebio.com
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -126,11 +131,12 @@ Alexandre Masselot, Pierre-Alain Binz, www.genebio.com
 
 =cut
 
+our $MERGE_MULTIPLE_PREC_CHARGES=1;
 
 require Exporter;
 our (@ISA,@EXPORT,@EXPORT_OK, %handlers);
 @ISA=qw(InSilicoSpectro::Spectra::MSSpectra);
-@EXPORT=qw(&getReadFmtList &getwriteFmtList &getFmtDescr);
+@EXPORT=qw(&getReadFmtList &getwriteFmtList &getFmtDescr $MERGE_MULTIPLE_PREC_CHARGES);
 @EXPORT_OK=qw();
 
 
@@ -144,6 +150,7 @@ use InSilicoSpectro::Spectra::MSMSCmpd;
 	   dta=>{read=>\&readDTA,
 		},
 	   pkl=>{read=>\&readDTA,
+		 write=>\&writePKL,
 		},
 	   mgf=>{read=>\&readMGF,
 		 write=>\&writeMGF,
@@ -169,7 +176,7 @@ use InSilicoSpectro::Spectra::MSMSCmpd;
 sub new{
   my ($class, $h) = @_;
 
-  my $dvar = {};
+  my $dvar = $class->SUPER::new(persistent=>1);
   bless $dvar, $class;
 
   if(defined $h){
@@ -194,6 +201,7 @@ sub new{
 
 sub read{
   my ($this)=@_;
+  $this=$this->FC_getme if $InSilicoSpectro::Spectra::MSSpectra::USE_FILECACHED;
 
   my $fmt=$this->format();
   croak "InSilicoSpectro::Spectra::MSMSSpectra: no reading handler is defined for format [$fmt]" unless defined $handlers{$fmt}{read};
@@ -211,12 +219,28 @@ sub read{
   $handlers{$fmt}{read}->($this);
 }
 
+sub childText{
+  my ($el, $path)=@_;
+  return undef unless $el;
+  if(my $kid=$el->first_child($path)){
+    return $kid->text;
+  }
+  return undef unless $path=~s/.*?://;
+  if(my $kid=$el->first_child($path)){
+    return $kid->text;
+  }
+
+  return undef;
+}
+
 sub readTwigEl{
   my ($this, $el)=@_;
+  $this=$this->FC_getme if $InSilicoSpectro::Spectra::MSSpectra::USE_FILECACHED;
   my $pd=InSilicoSpectro::Spectra::PhenyxPeakDescriptor->new();
-  $this->set('jobId',$el->get_xpath("idj:JobId"));
-  $this->set('date', $el->get_xpath("idj:date"));
-  $this->set('time', $el->get_xpath("idj:time"));
+  $this->set('jobId',childText($el, "idj:JobId"));
+  $this->set('date', childText($el, "ple:date"));
+  $this->set('time', childText($el, "ple:time"));
+  $this->set('origFile', childText($el, "ple:origFile"));
 
   my $elpl=$el->first_child("ple:PeakLists");
   $pd->readTwigEl($elpl->first_child("ple:ItemOrder"));
@@ -239,6 +263,7 @@ sub readTwigEl{
 #############  peptMatchesXml
 sub readPeptMatchesXml{
  my ($this)=@_;
+  $this=$this->FC_getme if $InSilicoSpectro::Spectra::MSSpectra::USE_FILECACHED;
  my $file=$this->source();
   my $twig=XML::Twig->new(twig_handlers=>{
 					  'idi:header'=>sub {twigPMHeader($this, $_[0], $_[1])},
@@ -252,6 +277,7 @@ sub readPeptMatchesXml{
 
 sub twigPMHeader{
   my ($this, $t, $el)=@_;
+  $this=$this->FC_getme if $InSilicoSpectro::Spectra::MSSpectra::USE_FILECACHED;
   $this->set('jobId', 'n/a');
   $this->set('date', $el->first_child('idi:date'));
   $this->set('time', $el->first_child('idi:time'));
@@ -264,9 +290,10 @@ sub twigPMHeader{
 
 sub twigPMCmpd{
   my ($this, $t, $el)=@_;
+  $this=$this->FC_getme if $InSilicoSpectro::Spectra::MSSpectra::USE_FILECACHED;
   my $cmpd=InSilicoSpectro::Spectra::MSMSCmpd->new;
   $cmpd->readTwigEl($el->get_xpath("ple:peptide"), $this->get('parentPD'), $this->get('fragPD'));
-    $this->addCompound($cmpd);
+  $this->addCompound($cmpd);
 }
 ############# EO peptMatchesXml
 
@@ -279,12 +306,40 @@ my %md52sp;
 sub readDTA{
   my ($this)=@_;
 
+  $this=$this->FC_getme if $InSilicoSpectro::Spectra::MSSpectra::USE_FILECACHED;
   my $src=$this->source();
   my @files;
   #$src=~s/ /\\ /g;
   if(-d $src){
     @files=File::Find::Rule->file()->name( qr/\.dta$/i)->in($src);
     carp "no *.dta  file within $src" unless @files;
+  }if($src=~/\.(tar|tgz|tar\.gz)$/i){
+    require Archive::Tar;
+    require File::Spec;
+    require File::Temp;
+    my $tar=Archive::Tar->new;
+    my $tmpdir=File::Spec->tmpdir;
+    $tar->read($src,$src =~ /\.(tgz|tar\.gz)$/i);
+    foreach ($tar->list_files()){
+      my ($fh, $tmp)=File::Temp::tempfile("$tmpdir/".(basename $_."-XXXXX"), UNLINK=>1);
+      $tar->extract_file($_, $tmp);
+      close $fh;
+      push @files, $tmp;
+    }
+  }elsif($src=~/\.(zip)$/i){
+    require Archive::Zip;
+    require File::Spec;
+    require File::Temp;
+    my $tmpdir=File::Spec->tmpdir;
+    my $zip = Archive::Zip->new();
+    die "ZIP read error in [$src]" unless $zip->read( $src ) == Archive::Zip::AZ_OK;
+    my @members = $zip->members();
+    foreach my $mb (@members) {
+      my ($fdtmp, $tmp)=File::Temp::tempfile("$tmpdir/".(basename $_."-XXXXX"), UNLINK=>1);
+      $mb->extractToFileNamed($tmp);
+      push @files, $tmp;
+      close $fdtmp;
+    }
   }else{
     push @files, glob $src;
   }
@@ -352,7 +407,7 @@ sub readDTA{
       local $/;
       my $md5=md5($contents);
       my $name=($this->{origFile}||(basename $fname)).".".($isp++);
-      if (defined $md52sp{$md5}) {
+      if ($MERGE_MULTIPLE_PREC_CHARGES && defined $md52sp{$md5}) {
 	my $cmpd=$md52sp{$md5};
 	my $msk=$cmpd->getParentData(2);
 	$msk|=(1<<$c);
@@ -371,7 +426,7 @@ sub readDTA{
 	  push @pl,\@tmp;
 	}
 	$cmpd->set('fragments', \@pl);
-    $this->addCompound($cmpd);
+	$this->addCompound($cmpd);
       }
     }
     close *fd;
@@ -397,6 +452,7 @@ use Time::localtime;
 
 sub readMGF{
   my ($this)=@_;
+  $this=$this->FC_getme if $InSilicoSpectro::Spectra::MSSpectra::USE_FILECACHED;
   my $src=$this->source();
   open (*fd, "<$src") or croak "cannot open [<$src]: $!";
 
@@ -469,7 +525,7 @@ sub readMGF{
 	    $contents.="\n".(join ':', @$_);
 	  }
 	  my $md5=md5($contents);
-	  if (defined $md52sp{$md5}) {
+	  if ($MERGE_MULTIPLE_PREC_CHARGES && defined $md52sp{$md5}) {
 	    my $cmpd=$md52sp{$md5};
 	    my $msk=$cmpd->getParentData(2);
 	    $msk|=$charge;
@@ -516,6 +572,7 @@ my $twigBtdxPeakAttChargeIndex;
 use XML::Twig;
 sub readBTDX{
   my ($this)=@_;
+  $this=$this->FC_getme if $InSilicoSpectro::Spectra::MSSpectra::USE_FILECACHED;
 
   my $src=$this->source();
   croak "input file [$src] is not readable" unless -r $src;
@@ -529,6 +586,7 @@ sub readBTDX{
 
 sub twigBtdxReadCmpd{
   my ($this, $t, $el)=@_;
+  $this=$this->FC_getme if $InSilicoSpectro::Spectra::MSSpectra::USE_FILECACHED;
 #  my @tmp=qw(intensity mass charge pouet mass machin);
 #  print "sorted:".(join ':', (sort {sortIndex($a, $b)} @tmp))."\n";
 
@@ -616,6 +674,7 @@ sub twigBtdxAtt2PeakDecriptorString{
 use SelectSaver;
 sub write{
   my ($this, $format, $out)=@_;
+  $this=$this->FC_getme if $InSilicoSpectro::Spectra::MSSpectra::USE_FILECACHED;
   croak "InSilicoSpectro::Spectra:MSMSSpectra:write: no handler defined for format [$format] (".getWriteFmtList().")\n" unless defined $handlers{$format}{write};
 
   my $fdOut=(new SelectSaver(InSilicoSpectro::Utils::io->getFD(">$out") or die "cannot open [$out]: $!")) if defined $out;
@@ -644,11 +703,13 @@ sub write{
 
 sub writePLE{
   my ($this, $shift)=@_;
+  $this=$this->FC_getme if $InSilicoSpectro::Spectra::MSSpectra::USE_FILECACHED;
   my $transformChargeMask=1;
 
   $this->{key}="sample_$this->{sampleInfo}{sampleNumber}" unless  $this->{key};
 
 print "$shift<ple:PeakListExport key=\"$this->{key}\" spectrumType=\"msms\" xmlns:ple=\"http://www.phenyx-ms.com/namespaces/PeakListExport.html\">
+$shift  <ple:origFile>".($this->origFile)."</ple:origFile>
 $shift  <ple:date>".($this->get('date'))."</ple:date>
 $shift  <ple:time>".($this->get('time'))."</ple:time>
 $shift  <ple:PeakDetectionAlg>
@@ -693,10 +754,24 @@ $shift</ple:PeakListExport>
 
 sub writeMGF{
   my ($this)=@_;
+  $this=$this->FC_getme if $InSilicoSpectro::Spectra::MSSpectra::USE_FILECACHED;
+  $this=$this->FC_getme if $InSilicoSpectro::Spectra::MSSpectra::USE_FILECACHED;
   my $transformChargeMask=1;
   if(defined $this->get('compounds')){
     foreach (@{$this->get('compounds')}){
+      next unless defined $_;
       $_->writeMGF($transformChargeMask);
+    }
+  }
+}
+sub writePKL{
+  my ($this)=@_;
+  $this=$this->FC_getme if $InSilicoSpectro::Spectra::MSSpectra::USE_FILECACHED;
+  my $transformChargeMask=1;
+  if(defined $this->get('compounds')){
+    foreach (@{$this->get('compounds')}){
+      next unless defined $_;
+      $_->writePKL($transformChargeMask);
     }
   }
 }
@@ -704,6 +779,7 @@ sub writeMGF{
 
 sub makePmf{
   my ($this)=@_;
+  $this=$this->FC_getme if $InSilicoSpectro::Spectra::MSSpectra::USE_FILECACHED;
 
   my %h;
   foreach (keys %$this){
@@ -733,6 +809,7 @@ sub makePmf{
 
 sub set{
   my ($this, $name, $val)=@_;
+  $this=$this->FC_getme if $InSilicoSpectro::Spectra::MSSpectra::USE_FILECACHED;
 
   if ($name eq 'sampleInfo'){
     $this->{sampleInfo}={};
@@ -753,18 +830,21 @@ sub set{
 
 sub addSampleInfoTag{
   my ($this, $name, $val)=@_;
+  $this=$this->FC_getme if $InSilicoSpectro::Spectra::MSSpectra::USE_FILECACHED;
   $this->{sampleInfo}{$name}=$val;
 }
 
 sub addCompound{
   my ($this, $cmpd)=@_;
-  $cmpd->{key}="sample_$this->{sampleInfo}{sampleNumber}%"."cmpd_".($this->getSize()||0) unless defined $this->{key};
+  $cmpd->{key}="sample_$this->{sampleInfo}{sampleNumber}%"."cmpd_".($this->getSize()||0) unless defined $cmpd->{key};
   $cmpd->title2acquTime;
   push @{$this->{compounds}}, $cmpd;
+  $cmpd->{compoundNumber}=(scalar(@{$this->{compounds}})-1) unless defined $cmpd->{compoundNumber};
 }
 
 sub get{
   my ($this, $name)=@_;
+  $this=$this->FC_getme if $InSilicoSpectro::Spectra::MSSpectra::USE_FILECACHED;
   return $this->{$name};
 }
 
@@ -772,6 +852,7 @@ sub get{
 #to ensure correct ExpSpectrum inheritance
 sub spectrum{
   my ($this, $val) = @_;
+  $this=$this->FC_getme if $InSilicoSpectro::Spectra::MSSpectra::USE_FILECACHED;
 
   if (defined($val)){
     $this->{compounds}=$val;
@@ -784,6 +865,7 @@ sub spectrum{
 ###FIXME change into size()
 sub getSize{
   my $this=$_[0];
+  $this=$this->FC_getme if $InSilicoSpectro::Spectra::MSSpectra::USE_FILECACHED;
   return (defined $this->{compounds})?(scalar @{$this->{compounds}}):undef;
 }
 sub size{

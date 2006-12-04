@@ -8,6 +8,7 @@ WriteMakefile
                            'Archive::Tar' => '0',
                            'Archive::Zip' => '0',
                            'Compress::Zlib' => '0',
+                           'Data::Serializer' => '0',
                            'Digest::MD5' => '0',
                            'File::Find::Rule' => '0',
                            'File::Temp' => '0',

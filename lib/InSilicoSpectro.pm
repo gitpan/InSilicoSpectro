@@ -218,7 +218,7 @@ our (@ISA, @EXPORT, @EXPORT_OK, $VERSION);
 
 @EXPORT = qw($VERSION &saveInSilicoDef &init &getInSilicoDefFiles $DEF_FILENAME_ENV);
 @EXPORT_OK = ();
-$VERSION = "0.9.25";
+$VERSION = "1.0.4";
 
 our $DEF_FILENAME_ENV='INSILICOSPECTRO_DEFFILE';
 
@@ -260,8 +260,11 @@ sub init{
     print STDERR "no default found, opening config file from Phenyx::Config::GlobalParam\n" if $InSilicoSpectro::Utils::io::VERBOSE;
     require Phenyx::Config::GlobalParam;
     Phenyx::Config::GlobalParam::readParam(undef, 1);
-    require Phenyx::Manage::User;
-    my $tmp=Phenyx::Manage::User->new(name=>'default')->getFile('insilicodef.xml');
+    my $tmp;
+    eval "
+      use Phenyx::Manage::User;
+      \$tmp=Phenyx::Manage::User->new(name=>'default')->getFile('insilicodef.xml');
+    " or confess "error during eval statmeent: $!";
     push @tmp, $tmp;
   }
   @tmp or croak "must provide at least one  file argument";

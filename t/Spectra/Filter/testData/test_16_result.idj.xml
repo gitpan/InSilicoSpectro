@@ -8,8 +8,9 @@
   </idj:header>
   <anl:AnalysisList xmlns:anl="http://www.phenyx-ms.com/namespaces/AnalysisList.html">
     <ple:PeakListExport key="sample_0" spectrumType="msms" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
-      <ple:date></ple:date>
-      <ple:time></ple:time>
+      <ple:origFile></ple:origFile>
+      <ple:date>2004-03-25</ple:date>
+      <ple:time>15:46:38</ple:time>
       <ple:PeakDetectionAlg>
         <ple:ProgramName>InSilicoSpectro::Spectra::MSMSSpectra</ple:ProgramName>
         <ple:ProgramVersion></ple:ProgramVersion>
@@ -24,8 +25,8 @@
         <ple:item type="charge"/>
       </ple:ItemOrder>
         <ple:MSMSRun>
-          <ple:sample instrumentId="n/a" spectrumType="msms" sampleNumber="0" instrument="n/a"/>
-          <ple:peptide key="sample_0%cmpd_0" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:sample instrumentId="n/a" sampleNumber="0" instrument="n/a" spectrumType="msms"/>
+          <ple:peptide key="sample_0%cmpd_0" compoundNumber="0" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1014.168 1 1]]></ple:ParentMass>
@@ -42,7 +43,7 @@
 1015.813353 2252.620000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_1" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_1" compoundNumber="1" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1165.5179 1 1]]></ple:ParentMass>
@@ -59,7 +60,7 @@
 1167.847713 815.700000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_2" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_2" compoundNumber="2" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1246.599 1 1]]></ple:ParentMass>
@@ -76,7 +77,7 @@
 1250.881733 3855.310000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_3" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_3" compoundNumber="3" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1323.7061 1 1]]></ple:ParentMass>
@@ -85,7 +86,7 @@
 1325.099415 1032.640000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_4" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_4" compoundNumber="4" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1014.2 1 1]]></ple:ParentMass>
@@ -102,7 +103,7 @@
 1015.846723 3229.490000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_5" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_5" compoundNumber="5" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1211.656 1 1]]></ple:ParentMass>
@@ -119,7 +120,7 @@
 1216.637789 1764.720000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_6" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_6" compoundNumber="6" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1227.67 1 1]]></ple:ParentMass>
@@ -134,7 +135,7 @@
 1235.215757 2167.640000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_7" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_7" compoundNumber="7" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1178.571 1 1]]></ple:ParentMass>
@@ -151,7 +152,7 @@
 1180.997979 8983.240000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_8" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_8" compoundNumber="8" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1195.597 1 1]]></ple:ParentMass>
@@ -168,7 +169,7 @@
 1200.474990 5556.500000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_9" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_9" compoundNumber="9" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1211.595 1 1]]></ple:ParentMass>
@@ -185,7 +186,7 @@
 1215.505844 14886.390000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_10" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_10" compoundNumber="10" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1227.595 1 1]]></ple:ParentMass>
@@ -202,7 +203,7 @@
 1239.401105 9866.530000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_11" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_11" compoundNumber="11" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1178.531 1 1]]></ple:ParentMass>
@@ -219,7 +220,7 @@
 1179.794897 4300.700000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_12" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_12" compoundNumber="12" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1211.548 1 1]]></ple:ParentMass>
@@ -236,7 +237,7 @@
 1221.443526 17001.400000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_13" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_13" compoundNumber="13" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1227.552 1 1]]></ple:ParentMass>
@@ -253,7 +254,7 @@
 1229.868068 13706.380000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_14" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_14" compoundNumber="14" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[921.44 1 1]]></ple:ParentMass>
@@ -270,7 +271,7 @@
 922.899163 10448.460000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_15" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_15" compoundNumber="15" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1178.525 1 1]]></ple:ParentMass>
@@ -287,7 +288,7 @@
 1183.238256 4157.690000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_16" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_16" compoundNumber="16" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1211.538 1 1]]></ple:ParentMass>
@@ -304,7 +305,7 @@
 1224.476491 11775.470000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_17" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_17" compoundNumber="17" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1227.5341 1 1]]></ple:ParentMass>
@@ -321,7 +322,7 @@
 1229.979938 19537.800000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_18" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_18" compoundNumber="18" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1064.483 1 1]]></ple:ParentMass>
@@ -338,7 +339,7 @@
 1068.327282 5755.490000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_19" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_19" compoundNumber="19" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1178.525 1 1]]></ple:ParentMass>
@@ -355,7 +356,7 @@
 1179.923109 4757.830000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_20" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_20" compoundNumber="20" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1211.549 1 1]]></ple:ParentMass>
@@ -372,7 +373,7 @@
 1225.739403 7246.360000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_21" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_21" compoundNumber="21" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1227.543 1 1]]></ple:ParentMass>
@@ -389,7 +390,7 @@
 1228.799341 16271.140000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_22" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_22" compoundNumber="22" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1147.587 1 1]]></ple:ParentMass>
@@ -406,7 +407,7 @@
 1152.376940 5945.970000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_23" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_23" compoundNumber="23" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1178.547 1 1]]></ple:ParentMass>
@@ -423,7 +424,7 @@
 1181.003562 3230.700000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_24" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_24" compoundNumber="24" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1195.575 1 1]]></ple:ParentMass>
@@ -440,7 +441,7 @@
 1197.892777 7905.880000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_25" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_25" compoundNumber="25" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1211.574 1 1]]></ple:ParentMass>
@@ -457,7 +458,7 @@
 1223.862656 4232.910000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_26" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_26" compoundNumber="26" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1147.6021 1 1]]></ple:ParentMass>
@@ -474,7 +475,7 @@
 1152.528662 3105.020000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_27" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_27" compoundNumber="27" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1178.569 1 1]]></ple:ParentMass>
@@ -491,7 +492,7 @@
 1179.913633 5303.140000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_28" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_28" compoundNumber="28" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1195.593 1 1]]></ple:ParentMass>
@@ -508,7 +509,7 @@
 1197.944592 5699.610000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_29" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_29" compoundNumber="29" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1211.59 1 1]]></ple:ParentMass>
@@ -525,7 +526,7 @@
 1218.748950 1393.540000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_30" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_30" compoundNumber="30" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1178.564 1 1]]></ple:ParentMass>
@@ -542,7 +543,7 @@
 1182.268711 3005.170000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_31" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_31" compoundNumber="31" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1195.585 1 1]]></ple:ParentMass>
@@ -559,7 +560,7 @@
 1197.023181 4903.430000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_32" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_32" compoundNumber="32" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1211.573 1 1]]></ple:ParentMass>
@@ -576,7 +577,7 @@
 1218.866008 4398.870000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_33" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_33" compoundNumber="33" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1068.449 1 1]]></ple:ParentMass>
@@ -593,7 +594,7 @@
 1074.320647 7243.230000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_34" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_34" compoundNumber="34" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1195.5551 1 1]]></ple:ParentMass>
@@ -610,7 +611,7 @@
 1200.531880 6167.360000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_35" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_35" compoundNumber="35" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1211.557 1 1]]></ple:ParentMass>
@@ -627,7 +628,7 @@
 1211.607071 7884.770000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_36" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_36" compoundNumber="36" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1227.551 1 1]]></ple:ParentMass>
@@ -644,7 +645,7 @@
 1234.533536 8651.940000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_37" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_37" compoundNumber="37" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1124.543 1 1]]></ple:ParentMass>
@@ -661,7 +662,7 @@
 1125.966002 5799.400000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_38" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_38" compoundNumber="38" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1211.59 1 1]]></ple:ParentMass>
@@ -678,7 +679,7 @@
 1213.044832 6067.040000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_39" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_39" compoundNumber="39" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1227.589 1 1]]></ple:ParentMass>
@@ -695,7 +696,7 @@
 1234.697090 3163.520000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_40" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_40" compoundNumber="40" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1323.6949 1 1]]></ple:ParentMass>
@@ -707,7 +708,7 @@
 1329.797490 857.190000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_41" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_41" compoundNumber="41" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1124.551 1 1]]></ple:ParentMass>
@@ -724,7 +725,7 @@
 1125.978814 11174.900000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_42" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_42" compoundNumber="42" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1246.6021 1 1]]></ple:ParentMass>
@@ -741,7 +742,7 @@
 1248.993652 3506.440000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_43" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_43" compoundNumber="43" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1275.71 1 1]]></ple:ParentMass>
@@ -758,7 +759,7 @@
 1278.143401 4189.750000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_44" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_44" compoundNumber="44" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1323.709 1 1]]></ple:ParentMass>
@@ -775,7 +776,7 @@
 1326.169927 4651.710000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_45" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_45" compoundNumber="45" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1138.636 1 1]]></ple:ParentMass>
@@ -790,7 +791,7 @@
 1147.635640 2642.630000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_46" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_46" compoundNumber="46" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[964.67798 1 1]]></ple:ParentMass>
@@ -804,7 +805,7 @@
 967.065737 1716.220000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_47" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_47" compoundNumber="47" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1138.557 1 1]]></ple:ParentMass>
@@ -821,7 +822,7 @@
 1140.767694 4032.600000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_48" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_48" compoundNumber="48" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1195.598 1 1]]></ple:ParentMass>
@@ -837,7 +838,7 @@
 1198.013337 3305.690000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_49" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_49" compoundNumber="49" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[974.50299 1 1]]></ple:ParentMass>
@@ -854,7 +855,7 @@
 976.022218 2551.020000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_50" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_50" compoundNumber="50" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1138.5551 1 1]]></ple:ParentMass>
@@ -871,7 +872,7 @@
 1142.838008 3520.280000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_51" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_51" compoundNumber="51" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1195.595 1 1]]></ple:ParentMass>
@@ -888,7 +889,7 @@
 1199.362407 3682.470000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_52" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_52" compoundNumber="52" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1211.582 1 1]]></ple:ParentMass>
@@ -905,7 +906,7 @@
 1219.928152 1217.150000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_53" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_53" compoundNumber="53" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1178.616 1 1]]></ple:ParentMass>
@@ -921,7 +922,7 @@
 1187.260302 2296.570000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_54" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_54" compoundNumber="54" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1195.642 1 1]]></ple:ParentMass>
@@ -938,7 +939,7 @@
 1200.431313 2818.000000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_55" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_55" compoundNumber="55" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1211.637 1 1]]></ple:ParentMass>
@@ -954,7 +955,7 @@
 1214.195410 1353.570000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_56" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_56" compoundNumber="56" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1227.6379 1 1]]></ple:ParentMass>
@@ -971,7 +972,7 @@
 1239.724664 1910.630000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_57" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_57" compoundNumber="57" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1178.625 1 1]]></ple:ParentMass>
@@ -982,7 +983,7 @@
 1183.888822 4860.020000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_58" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_58" compoundNumber="58" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1195.6479 1 1]]></ple:ParentMass>
@@ -999,7 +1000,7 @@
 1201.713624 3704.420000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_59" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_59" compoundNumber="59" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1211.635 1 1]]></ple:ParentMass>
@@ -1014,7 +1015,7 @@
 1211.691593 2936.710000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_60" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_60" compoundNumber="60" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1225.658 1 1]]></ple:ParentMass>
@@ -1029,7 +1030,7 @@
 1228.090152 3081.300000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_61" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_61" compoundNumber="61" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1178.6281 1 1]]></ple:ParentMass>
@@ -1041,7 +1042,7 @@
 1183.546638 1345.790000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_62" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_62" compoundNumber="62" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1195.649 1 1]]></ple:ParentMass>
@@ -1058,7 +1059,7 @@
 1199.478042 3058.130000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_63" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_63" compoundNumber="63" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1225.653 1 1]]></ple:ParentMass>
@@ -1073,7 +1074,7 @@
 1230.898983 2444.920000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_64" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_64" compoundNumber="64" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1014.141 1 1]]></ple:ParentMass>
@@ -1090,7 +1091,7 @@
 1014.206945 3941.300000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_65" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_65" compoundNumber="65" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1034.489 1 1]]></ple:ParentMass>
@@ -1107,7 +1108,7 @@
 1036.861515 4215.140000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_66" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_66" compoundNumber="66" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1195.583 1 1]]></ple:ParentMass>
@@ -1124,7 +1125,7 @@
 1199.323862 2838.940000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_67" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_67" compoundNumber="67" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1178.611 1 1]]></ple:ParentMass>
@@ -1138,7 +1139,7 @@
 1181.091495 1309.140000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_68" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_68" compoundNumber="68" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1195.635 1 1]]></ple:ParentMass>
@@ -1155,7 +1156,7 @@
 1199.332886 2601.670000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_69" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_69" compoundNumber="69" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1333.661 1 1]]></ple:ParentMass>
@@ -1172,7 +1173,7 @@
 1336.002527 1885.930000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_70" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_70" compoundNumber="70" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1178.568 1 1]]></ple:ParentMass>
@@ -1189,7 +1190,7 @@
 1186.854867 2089.700000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_71" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_71" compoundNumber="71" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1195.592 1 1]]></ple:ParentMass>
@@ -1206,7 +1207,7 @@
 1195.677690 7671.730000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_72" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_72" compoundNumber="72" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1211.588 1 1]]></ple:ParentMass>
@@ -1223,7 +1224,7 @@
 1219.089503 3788.340000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_73" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_73" compoundNumber="73" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1333.615 1 1]]></ple:ParentMass>
@@ -1238,7 +1239,7 @@
 1333.729998 4163.120000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_74" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_74" compoundNumber="74" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1300.578 1 1]]></ple:ParentMass>
@@ -1255,7 +1256,7 @@
 1312.745048 9392.030000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_75" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_75" compoundNumber="75" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1333.5959 1 1]]></ple:ParentMass>
@@ -1272,7 +1273,7 @@
 1333.658196 24107.200000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_76" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_76" compoundNumber="76" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1349.592 1 1]]></ple:ParentMass>
@@ -1289,7 +1290,7 @@
 1360.849055 22504.040000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_77" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_77" compoundNumber="77" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1195.611 1 1]]></ple:ParentMass>
@@ -1306,7 +1307,7 @@
 1199.323862 2549.730000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_78" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_78" compoundNumber="78" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1317.647 1 1]]></ple:ParentMass>
@@ -1323,7 +1324,7 @@
 1335.560571 2552.590000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_79" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_79" compoundNumber="79" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1812.8101 1 1]]></ple:ParentMass>
@@ -1340,7 +1341,7 @@
 1815.166173 1928.260000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_80" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_80" compoundNumber="80" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1314.568 1 1]]></ple:ParentMass>
@@ -1357,7 +1358,7 @@
 1321.587176 23613.160000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_81" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_81" compoundNumber="81" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1659.745 1 1]]></ple:ParentMass>
@@ -1374,7 +1375,7 @@
 1663.402814 4701.670000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_82" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_82" compoundNumber="82" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1778.7729 1 1]]></ple:ParentMass>
@@ -1391,7 +1392,7 @@
 1778.901717 6802.560000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_83" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_83" compoundNumber="83" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1014.137 1 1]]></ple:ParentMass>
@@ -1408,7 +1409,7 @@
 1022.449481 3670.710000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_84" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_84" compoundNumber="84" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1249.603 1 1]]></ple:ParentMass>
@@ -1425,7 +1426,7 @@
 1254.300585 6472.440000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_85" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_85" compoundNumber="85" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1283.5649 1 1]]></ple:ParentMass>
@@ -1442,7 +1443,7 @@
 1298.304308 20757.560000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_86" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_86" compoundNumber="86" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1283.5649 1 1]]></ple:ParentMass>
@@ -1459,7 +1460,7 @@
 1284.742821 1840.510000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_87" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_87" compoundNumber="87" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1533.6899 1 1]]></ple:ParentMass>
@@ -1476,7 +1477,7 @@
 1536.102878 9135.350000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_88" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_88" compoundNumber="88" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1866.567 1 1]]></ple:ParentMass>
@@ -1493,7 +1494,7 @@
 569.097903 34051.340000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_89" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_89" compoundNumber="89" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1531.666 1 1]]></ple:ParentMass>
@@ -1510,7 +1511,7 @@
 1541.250160 11842.050000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_90" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_90" compoundNumber="90" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1579.67 1 1]]></ple:ParentMass>
@@ -1527,7 +1528,7 @@
 1579.713505 28514.660000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_91" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_91" compoundNumber="91" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1577.6071 1 1]]></ple:ParentMass>
@@ -1544,7 +1545,7 @@
 1588.158783 13487.950000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_92" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_92" compoundNumber="92" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1283.603 1 1]]></ple:ParentMass>
@@ -1561,7 +1562,7 @@
 1285.938414 4556.210000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_93" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_93" compoundNumber="93" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1354.668 1 1]]></ple:ParentMass>
@@ -1578,7 +1579,7 @@
 1368.070376 10455.480000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_94" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_94" compoundNumber="94" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1494.761 1 1]]></ple:ParentMass>
@@ -1595,7 +1596,7 @@
 1497.046052 4694.400000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_95" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_95" compoundNumber="95" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1952.97 1 1]]></ple:ParentMass>
@@ -1612,7 +1613,7 @@
 1955.560024 4441.860000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_96" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_96" compoundNumber="96" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1478.74 1 1]]></ple:ParentMass>
@@ -1629,7 +1630,7 @@
 1481.121128 2298.530000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_97" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_97" compoundNumber="97" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1494.73 1 1]]></ple:ParentMass>
@@ -1646,7 +1647,7 @@
 1494.785642 14845.230000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_98" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_98" compoundNumber="98" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1846.9969 1 1]]></ple:ParentMass>
@@ -1663,7 +1664,7 @@
 1849.247719 4729.120000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_99" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_99" compoundNumber="99" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1479.816 1 1]]></ple:ParentMass>
@@ -1680,7 +1681,7 @@
 1481.266734 5600.250000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_100" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_100" compoundNumber="100" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1629.837 1 1]]></ple:ParentMass>
@@ -1697,7 +1698,7 @@
 1629.872130 16267.980000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_101" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_101" compoundNumber="101" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[2109.8821 1 1]]></ple:ParentMass>
@@ -1714,7 +1715,7 @@
 2109.953732 16650.870000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_102" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_102" compoundNumber="102" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1283.574 1 1]]></ple:ParentMass>
@@ -1731,7 +1732,7 @@
 1289.611806 2513.200000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_103" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_103" compoundNumber="103" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1478.739 1 1]]></ple:ParentMass>
@@ -1748,7 +1749,7 @@
 1490.626651 8612.580000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_104" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_104" compoundNumber="104" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1125.6021 1 1]]></ple:ParentMass>
@@ -1765,7 +1766,7 @@
 1127.929807 2543.030000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_105" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_105" compoundNumber="105" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1448.677 1 1]]></ple:ParentMass>
@@ -1782,7 +1783,7 @@
 1451.061739 5225.010000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_106" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_106" compoundNumber="106" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1586.787 1 1]]></ple:ParentMass>
@@ -1799,7 +1800,7 @@
 1590.571946 2674.170000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_107" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_107" compoundNumber="107" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[2096.873 1 1]]></ple:ParentMass>
@@ -1816,7 +1817,7 @@
 2099.382543 2311.610000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_108" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_108" compoundNumber="108" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1211.558 1 1]]></ple:ParentMass>
@@ -1833,7 +1834,7 @@
 1213.866500 6944.170000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_109" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_109" compoundNumber="109" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1273.662 1 1]]></ple:ParentMass>
@@ -1850,7 +1851,7 @@
 1273.738977 14931.470000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_110" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_110" compoundNumber="110" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1521.734 1 1]]></ple:ParentMass>
@@ -1867,7 +1868,7 @@
 1526.372906 3574.400000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_111" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_111" compoundNumber="111" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1725.75 1 1]]></ple:ParentMass>
@@ -1884,7 +1885,7 @@
 1730.474624 8117.120000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_112" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_112" compoundNumber="112" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1195.541 1 1]]></ple:ParentMass>
@@ -1901,7 +1902,7 @@
 1204.088454 10538.650000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_113" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_113" compoundNumber="113" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1211.533 1 1]]></ple:ParentMass>
@@ -1918,7 +1919,7 @@
 1214.021424 3282.480000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_114" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_114" compoundNumber="114" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1491.75 1 1]]></ple:ParentMass>
@@ -1935,7 +1936,7 @@
 1491.734142 14484.070000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_115" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_115" compoundNumber="115" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[925.797 1 1]]></ple:ParentMass>
@@ -1952,7 +1953,7 @@
 933.875402 2921.740000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_116" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_116" compoundNumber="116" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1046.642 1 1]]></ple:ParentMass>
@@ -1969,7 +1970,7 @@
 1046.708105 12415.350000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_117" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_117" compoundNumber="117" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1570.769 1 1]]></ple:ParentMass>
@@ -1979,7 +1980,7 @@
 1573.434065 773.330000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_118" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_118" compoundNumber="118" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[925.802 1 1]]></ple:ParentMass>
@@ -1996,7 +1997,7 @@
 934.611965 3506.110000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_119" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_119" compoundNumber="119" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[925.73999 1 1]]></ple:ParentMass>
@@ -2013,7 +2014,7 @@
 928.265512 3825.210000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_120" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_120" compoundNumber="120" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[925.81897 1 1]]></ple:ParentMass>
@@ -2028,7 +2029,7 @@
 927.886534 1683.230000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_121" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_121" compoundNumber="121" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1014.244 1 1]]></ple:ParentMass>
@@ -2045,7 +2046,7 @@
 1021.280917 1764.490000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_122" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_122" compoundNumber="122" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1283.623 1 1]]></ple:ParentMass>
@@ -2062,7 +2063,7 @@
 1285.071604 7424.590000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_123" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_123" compoundNumber="123" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1491.8 1 1]]></ple:ParentMass>
@@ -2079,7 +2080,7 @@
 1491.824081 29724.890000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_124" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_124" compoundNumber="124" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1593.858 1 1]]></ple:ParentMass>
@@ -2096,7 +2097,7 @@
 1599.792505 1907.750000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_125" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_125" compoundNumber="125" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[2045.08 1 1]]></ple:ParentMass>
@@ -2113,7 +2114,7 @@
 2045.077120 8529.860000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_126" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_126" compoundNumber="126" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1494.7629 1 1]]></ple:ParentMass>
@@ -2130,7 +2131,7 @@
 1499.309488 7283.770000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_127" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_127" compoundNumber="127" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1593.834 1 1]]></ple:ParentMass>
@@ -2147,7 +2148,7 @@
 1600.998264 11977.580000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_128" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_128" compoundNumber="128" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1625.83 1 1]]></ple:ParentMass>
@@ -2164,7 +2165,7 @@
 1633.038099 12720.620000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_129" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_129" compoundNumber="129" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[2458.2051 1 1]]></ple:ParentMass>
@@ -2181,7 +2182,7 @@
 2461.812342 3395.950000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_130" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_130" compoundNumber="130" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[902.41901 1 1]]></ple:ParentMass>
@@ -2198,7 +2199,7 @@
 904.739836 4224.490000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_131" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_131" compoundNumber="131" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[925.84802 1 1]]></ple:ParentMass>
@@ -2215,7 +2216,7 @@
 927.289973 5735.570000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_132" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_132" compoundNumber="132" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[917.38599 1 1]]></ple:ParentMass>
@@ -2232,7 +2233,7 @@
 931.045271 2500.330000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_133" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_133" compoundNumber="133" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[925.75299 1 1]]></ple:ParentMass>
@@ -2249,7 +2250,7 @@
 931.020661 2339.630000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_134" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_134" compoundNumber="134" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1034.153 1 1]]></ple:ParentMass>
@@ -2266,7 +2267,7 @@
 1041.251641 2375.490000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_135" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_135" compoundNumber="135" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[925.79303 1 1]]></ple:ParentMass>
@@ -2283,7 +2284,7 @@
 934.482925 2971.000000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_136" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_136" compoundNumber="136" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1034.222 1 1]]></ple:ParentMass>
@@ -2300,7 +2301,7 @@
 1044.594893 5372.620000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_137" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_137" compoundNumber="137" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[2171.238 1 1]]></ple:ParentMass>
@@ -2311,7 +2312,7 @@
 2176.232209 914.300000 ?
 ]]></ple:peaks>
           </ple:peptide>
-          <ple:peptide key="sample_0%cmpd_138" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
+          <ple:peptide key="sample_0%cmpd_138" compoundNumber="138" xmlns:ple="http://www.phenyx-ms.com/namespaces/PeakListExport.html">
             <ple:PeptideDescr><![CDATA[030508_BSA_TF_CA.mgf]]></ple:PeptideDescr>
             <ple:acquTime></ple:acquTime>
             <ple:ParentMass><![CDATA[1014.274 1 1]]></ple:ParentMass>
@@ -2331,5 +2332,8 @@
         </ple:MSMSRun>
       </ple:PeakLists>
     </ple:PeakListExport>
+    <Msms2PmfKeysRelation><![CDATA[
+]]>
+    </Msms2PmfKeysRelation>
   </anl:AnalysisList>
 </idj:IdentificationJob>

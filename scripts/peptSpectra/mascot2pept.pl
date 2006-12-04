@@ -57,6 +57,8 @@ found in the .dat file(s):
 
 =item minimum peptide sequence length
 
+=item minimum ion score to read a peptide from the .dat file (simple pre-filtering)
+
 =back
 
 To be selected a peptide must have an ion score larger than
@@ -67,7 +69,8 @@ is found for a protein, then all the ones having an ion score higher than the mi
 are nonetheless selected.
 
 During the parsing of the file, each spectrum is associated with the peptide that gives the best match.
-That is, all multiple interpretations of a spectrum are lost in favor of the best one.
+That is, all multiple interpretations of a spectrum are lost in favor of the best one. Moreover, all
+peptides with score less than the basic score (typically 5) are not read.
 
 It is possible to restrict the exported peptides to an imposed charge state. All the peptides participate in the
 selection (criterion on the number of distinct peptides per protein), but only the ones having the imposed
@@ -96,25 +99,28 @@ use InSilicoSpectro;
 use InSilicoSpectro::InSilico::MassCalculator;
 
 my ($help, $verbose);
+my $basicScore = 5.0;
 my $minScore = 20.0;
 my $saveScore = 1.0e+100;
 my $minProtScore = 40.0;
 my $minNumPept = 2;
 my $minLen = 6;
 my $instrument = 'n/a';
-my ($imposedCharge, $fasta);
+my ($imposedCharge, $fasta, $outputScore);
 
 if (!GetOptions('help' => \$help,
                 'h' => \$help,
 		'imposedcharge=i' => \$imposedCharge,
                 'fasta=s' => \$fasta,
+		'basicscore=f' => \$basicScore,
+		'outputscore=f' => \$outputScore,
 		'minscore=f' => \$minScore,
 		'savescore=f' => \$saveScore,
 		'minnumpept=i' => \$minNumPept,
 		'minprotscore=f' => \$minProtScore,
 		'minlen=i' => \$minLen,
 		'instrument=s' => \$instrument,
-                'verbose' => \$verbose) || defined($help))
+                'verbose' => \$verbose) || defined($help) || (defined($outputScore) && (($basicScore > $outputScore) || ($outputScore > $minScore))) || (!defined($outputScore) && ($basicScore > $minScore)) || ($minScore > $saveScore))
 {
   print STDERR "Usage: xml2pept.pl [options] idJobs
 \t-help
@@ -122,15 +128,20 @@ if (!GetOptions('help' => \$help,
 \t-verbose
 \t--fasta=fname
 \t--imposedcharge=int
-\t--minscore=float     [minimum ion score, default=$minScore]
+\t--minscore=float     [minimum ion score to count the peptide, default=$minScore]
 \t--savescore=float    [save ion score, default=$saveScore]
+\t--outputscore=float  [minimum ion score to output the peptide, default=$outputScore]
 \t--minprotscore=float [minimum protein score, default=$minProtScore]
 \t--minnumpept=int     [minimum number of distinct peptides for one protein, default=$minNumPept]
 \t--minlen=int         [minimum peptide length, default=$minLen]
-\t--instrument=string  [instrument used, default='$instrument'\n";
+\t--basicscore=float   [minimum ion score to read a peptide from the file, default=$basicScore]
+\t--instrument=string  [instrument used, default='$instrument']
+
+Note: It is mandatory that basicscore <= outputscore <= minscore <= savescore\n";
   exit(0);
 }
 
+$outputScore = $minScore if (!defined($outputScore));
 InSilicoSpectro::init();
 
 my $correctPeptide;
@@ -198,7 +209,7 @@ my %modifConv = (
 		 'Ubiquitination II (K)' => '"Ubiquitin_1mc'
 		);
 
-my $cmdLine = "mascot2pept.pl".(defined($verbose)?' -verbose':'').(defined($imposedCharge)?" --imposedcharge=$imposedCharge":'').(defined($fasta)?" --fasta=$fasta":'')." --minscore=$minScore --savescore=$saveScore --minnumpept=$minNumPept --minprotscore=$minProtScore --instrument=$instrument --minlen=$minLen";
+my $cmdLine = "mascot2pept.pl".(defined($verbose)?' -verbose':'').(defined($imposedCharge)?" --imposedcharge=$imposedCharge":'').(defined($fasta)?" --fasta=$fasta":'')." --basicscore=$basicScore --minscore=$minScore --savescore=$saveScore --minnumpept=$minNumPept --minprotscore=$minProtScore --instrument=$instrument --minlen=$minLen";
 my @time = localtime();
 my $date = sprintf("%d-%02d-%02d", 1900+$time[5], 1+$time[4], $time[3]);
 my $time = sprintf("%02d:%02d:%02d", $time[2], $time[1], $time[0]);
@@ -222,15 +233,17 @@ print <<end_of_xml;
 end_of_xml
 
 # Parses files
-my (%cmpd, %prot, %distinct, @fixedModif, @variableModif);
 use XML::Parser;
 our $file;
+my (%cmpd, %prot, %query, @fixedModif, @variableModif);
 foreach $file (@ARGV){
   print STDERR "Parsing $file\n" if ($verbose);
-
   undef(%cmpd);
   undef(%prot);
-  undef(%distinct);
+  undef(%query);
+  undef(@fixedModif);
+  undef(@variableModif);
+
   if ($file =~ /\.gz$/){
     open(F, "gunzip -c $file |") || print STDERR "Warning, cannot open [$file]: $!";
   }
@@ -240,53 +253,90 @@ foreach $file (@ARGV){
   mascotParse(\*F);
   close(F);
 
-  # Number of peptides per protein
-  my %pept;
-  foreach my $query (keys(%cmpd)){
-    # All the spectra
-    if ($cmpd{$query}{pept}){
-      # Only the ones that were assigned to a peptide
-      $pept{$cmpd{$query}{protAC}}{$cmpd{$query}{pept}} = 1;
+  # Only keeps in %prot and %query the best score for each peptide
+  foreach my $query (keys(%query)){
+    my @scores = sort {$a <=> $b} values(%{$query{$query}{ac}});
+    my $bestScore = $scores[-1];
+    #print STDERR "Best score for $query is $bestScore\n";
+    foreach my $ac (keys(%{$query{$query}{ac}})){
+      if ($prot{$ac}{queries}{$query}{score} < $bestScore){
+	#print STDERR "  eliminate $query from prot $ac ($prot{$ac}{queries}{$query}{score})\n";
+	undef($prot{$ac}{queries}{$query});
+	undef($query{$query}{ac}{$ac});
+      }
     }
   }
-  my %numPept;
-  foreach my $protAC (keys(%pept)){
-    $numPept{$protAC} = scalar(keys(%{$pept{$protAC}}));
+
+  # Detects proteins identified by the same set of peptides exactly
+  my %pattern;
+  foreach my $ac (keys(%prot)){
+    my $pattern = join('|', sort({$a <=> $b} keys(%{$prot{$ac}{queries}})));
+    if ($pattern{$pattern}){
+      # Another protein has the same set of queries
+      #print STDERR "Protein $ac shares its peptides with $pattern{$pattern} [$pattern]\n";
+      undef($prot{$ac});
+    }
+    else{
+      $pattern{$pattern} = $ac;
+    }
+  }
+
+  # Number of distinct peptides per protein that are above $minScore
+  my (%numPept, %distinct);
+  foreach my $ac (keys(%prot)){
+    my %pept;
+    foreach my $query (keys(%{$prot{$ac}{queries}})){
+      my $score = $prot{$ac}{queries}{$query}{score};
+      my $pept = $prot{$ac}{queries}{$query}{pept};
+      $pept{$pept} = 1 if ($score > $minScore);
+      if ($score > $distinct{$ac}{$pept}){
+	$distinct{$ac}{$pept} = $score;
+      }
+    }
+    $numPept{$ac} = scalar(keys(%pept));
   }
 
   # Protein score
   my %protScore;
-  foreach my $ac (keys(%distinct)){
+  foreach my $ac (keys(%prot)){
     foreach my $score (values(%{$distinct{$ac}})){
       $protScore{$ac} += $score;
     }
+    #print STDERR "$ac has $numPept{$ac} distinct peptides and score $protScore{$ac} (".join('+',sort {$a<=>$b} values(%{$distinct{$ac}})).")\n";
   }
 
   # Selects and print peptide/spectrum matches
-  foreach my $query (keys(%cmpd)){
-    if ((!$fasta || (index($correctPeptide, $cmpd{$query}{pept}) != -1)) && (length($cmpd{$query}{pept}) >= $minLen) && (index($cmpd{$query}{pept}, 'B') == -1) && (index($cmpd{$query}{pept}, 'Z') == -1) && (index($cmpd{$query}{pept}, 'X') == -1) && (!$imposedCharge || ($imposedCharge == $cmpd{$query}{charge})) && ((($protScore{$cmpd{$query}{protAC}} >= $minProtScore) && ($numPept{$cmpd{$query}{protAC}} >= $minNumPept)) || ($cmpd{$query}{score} >= $saveScore))){
-      my $peptide = $cmpd{$query}{pept};
-      my $modif = convertMascotModif($peptide, $cmpd{$query}{modif});
-      if ($modif){
-	my @modif = split(/:/, $modif);
-	my $theoMass = getPeptideMass(pept=>$peptide, modif=>\@modif);
-	my ($charge, $moz2) = getCorrectCharge($theoMass, $cmpd{$query}{expMoz});
-	print <<end_of_xml;
+  my %alreadyCmpd;
+  foreach my $ac (sort {-$protScore{$a} <=> -$protScore{$b}} keys(%prot)){
+    foreach my $query (keys(%{$prot{$ac}{queries}})){
+      #print STDERR "$ac: Query $query already output by $alreadyCmpd{$query} (".join(',',keys(%{$query{$query}{ac}})).")\n" if ($alreadyCmpd{$query});
+      if (!$alreadyCmpd{$query}){
+	my $peptide = $prot{$ac}{queries}{$query}{pept};
+	if ((!$fasta || (index($correctPeptide, $peptide) != -1)) && (length($peptide) >= $minLen) && (index($peptide, 'B') == -1) && (index($peptide, 'Z') == -1) && (index($peptide, 'X') == -1) && ($prot{$ac}{queries}{$query}{score} >= $outputScore) && ((($protScore{$ac} >= $minProtScore) && ($numPept{$ac} >= $minNumPept)) || ($prot{$ac}{queries}{$query}{score} >= $saveScore))){
+	  my $modif = convertMascotModif($peptide, $prot{$ac}{queries}{$query}{modif});
+	  if ($modif){
+	    my @modif = split(/:/, $modif);
+	    my $theoMass = getPeptideMass(pept=>$peptide, modif=>\@modif);
+	    my ($charge, $moz2) = getCorrectCharge($theoMass, $cmpd{$query}{expMoz});
+	    next unless (!$imposedCharge || ($imposedCharge == $charge));
+	    $alreadyCmpd{$query} = $ac;
+
+	    print <<end_of_xml;
       <idi:OneIdentification>
         <idi:answer>
           <idi:sequence>$peptide</idi:sequence>
           <idi:modif>$modif</idi:modif>
           <idi:charge>$charge</idi:charge>
 end_of_xml
-	if ($cmpd{$query}{rt}){
-	  print "          <idi:retentionTime>$cmpd{$query}{rt}</retentionTime>\n";
-	}
-	print <<end_of_xml;
+	    if ($cmpd{$query}{rt}){
+	      print "          <idi:retentionTime>$cmpd{$query}{rt}</retentionTime>\n";
+	    }
+	    print <<end_of_xml;
         </idi:answer>
         <idi:source>
           <idi:file>$file</idi:file>
-          <idi:proteinId>$cmpd{$query}{protAC}</idi:proteinId>
-          <idi:peptScore>$cmpd{$query}{score}</idi:peptScore>
+          <idi:proteinId>$ac</idi:proteinId>
+          <idi:peptScore>$prot{$ac}{queries}{$query}{score}</idi:peptScore>
         </idi:source>
         <ple:peptide xmlns:ple="namespace/PeakListExport.html">
         <ple:PeptideDescr>$cmpd{$query}{expMass} $cmpd{$query}{intensity} $cmpd{$query}{charge}</ple:PeptideDescr>
@@ -296,9 +346,11 @@ $cmpd{$query}{massList}]]></ple:peaks>
         </ple:peptide>
       </idi:OneIdentification>
 end_of_xml
-      }
-      else{
-	print STDERR "Cannot use peptide [$peptide] because one modification has no InSilicoSpectro equivalent [$cmpd{$query}{modif}]\n" if ($verbose);
+	  }
+	  else{
+	    print STDERR "Cannot use peptide [$peptide] because one modification has no InSilicoSpectro equivalent [$prot{$ac}{queries}{$query}{modif}]\n" if ($verbose);
+	  }
+	}
       }
     }
   }
@@ -344,6 +396,19 @@ sub mascotParse
     if (/^Content-Type: +application\/x\-Mascot; +name="parameters"/){
       parseParameters($F);
     }
+    elsif (/^q(\d+)_p(\d+)=(.*)/){
+      my $query = $1;
+      my ($nmc, $mass, $delta, $nIons, $pept, $nUsed1, $modif, $score, $ionSeries, $nUsed2, $nUsed3, @part) = split(/[,;:]/, $3);
+      if ($score >= $basicScore){
+	for (my $i = 0; $i < @part; $i += 5){
+	  my $ac = $part[$i];
+	  $prot{$ac}{queries}{$query}{score} = $score;
+	  $prot{$ac}{queries}{$query}{pept} = $pept;
+	  $prot{$ac}{queries}{$query}{modif} = $modif;
+	  $query{$query}{ac}{$ac} = $score;
+	}
+      }
+    }
     elsif (/^qmass(\d+)=(.+)/){
       $cmpd{$1}{expMass} = $2;
     }
@@ -355,34 +420,6 @@ sub mascotParse
     }
     elsif (/^Content\-Type: +application\/x\-Mascot; +name="query(\d+)"/){
       parseOneExpSpectrum($1, $F);
-    }
-    elsif (/^h(\d+)=(.+)/){
-      my @part = split(/,/, $2);
-      $prot{$1}{ac} = $part[0];
-    }
-    elsif (/^h(\d+)_text=(.+)/){
-      $prot{$1}{descr} = $2;
-    }
-    elsif (/^h(\d+)_q(\d+)=(.+)/){
-      if ($3 ne '-1'){
-	my $query = $2;
-	my $hit = $1;
-	my @part = split(/,/, $3);
-	my $pept = $part[6];
-	my $modif = $part[8];
-	my $score = $part[9];
-	if (($score > $minScore) && ($cmpd{$query}{score} < $score)){
-	  $cmpd{$query}{score} = $score;
-	  $cmpd{$query}{pept} = $pept;
-	  $cmpd{$query}{modif} = $modif;
-	  $cmpd{$query}{protAC} = $prot{$hit}{ac};
-	  $cmpd{$query}{hit} = $hit;
-	}
-	# Prepares the computation of the protein score
-	if ($score > $distinct{$prot{$hit}{ac}}{$pept}){
-	  $distinct{$prot{$hit}{ac}}{$pept} = $score;
-	}
-      }
     }
   }
 

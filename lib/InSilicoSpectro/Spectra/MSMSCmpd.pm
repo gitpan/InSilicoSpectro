@@ -26,6 +26,10 @@ General framework for ms/ms compound (fragmenetaion spectra)
 
 Try to deduce acquisition from the title (and @title2acquTime_regexes) if it was not defined
 
+=head3 $sp->precursor_charges()
+
+Return an array of the possible for the precursor
+
 =head1 COPYRIGHT
 
 Copyright (C) 2004-2005  Geneva Bioinformatics www.genebio.com
@@ -67,14 +71,15 @@ unit=>'min',
 					},
 			     Bruker_HCT=>{unit=>'min',
 					  qr=>qr/\(rt=([\d\.]+)\)/i,
-					       }
+					 },
+					
 
 			    );
 
 sub new{
   my ($class, $h) = @_;
 
-  my $dvar = {};
+  my $dvar = $class->SUPER::new();
   bless $dvar, $class;
 
   if(defined $h){
@@ -110,6 +115,7 @@ Ex
 
 sub setParentData{
   my ($this, $v1, $v2)=@_;
+  $this=$this->FC_getme if $InSilicoSpectro::Spectra::MSSpectra::USE_FILECACHED;
   if((ref $v1) eq 'ARRAY'){
     $this->{parentData}=$v1;
   }else{
@@ -125,7 +131,22 @@ if $i is defined, returns argument index $i. If not, it returns the array with a
 
 sub getParentData{
   my ($this, $i)=@_;
+  $this=$this->FC_getme if $InSilicoSpectro::Spectra::MSSpectra::USE_FILECACHED;
   return (defined $i)?$this->{parentData}[$i]:$this->{parentData};
+}
+
+sub precursor_charges{
+  my $this=shift;
+  my $icharge=$this->get('parentPD')->getFieldIndex('charge');
+  if(defined $icharge){
+    return split /,/, $this->getParentData()->[$icharge];
+  }
+  my $ichargemask=$this->get('parentPD')->getFieldIndex('chargemask');
+  if(defined $ichargemask){
+    my @ret=InSilicoSpectro::Spectra::MSSpectra::chargemask2array($this->getParentData()->[$ichargemask]);
+    return @ret;
+  }
+  croak "neither cherge nor chergemask in parent data descriptor";
 }
 
 #--------------- cmpd data
@@ -141,6 +162,7 @@ add a list of peaks
 
 sub addPeaks{
   my ($this, $pl)=@_;
+  $this=$this->FC_getme if $InSilicoSpectro::Spectra::MSSpectra::USE_FILECACHED;
   foreach(@$pl){
     $this->addOnePeak($_);
   }
@@ -148,6 +170,7 @@ sub addPeaks{
 
 sub addOnePeak{
   my ($this, $p)=@_;
+  $this=$this->FC_getme if $InSilicoSpectro::Spectra::MSSpectra::USE_FILECACHED;
   push @{$this->{fragments}}, $p;
 }
 
@@ -161,6 +184,7 @@ sub addOnePeak{
 
 sub set{
   my ($this, $name, $val)=@_;
+  $this=$this->FC_getme if $InSilicoSpectro::Spectra::MSSpectra::USE_FILECACHED;
 
   $this->{$name}=$val;
 }
@@ -171,6 +195,7 @@ sub set{
 
 sub get{
   my ($this, $name)=@_;
+  $this=$this->FC_getme if $InSilicoSpectro::Spectra::MSSpectra::USE_FILECACHED;
   return $this->{$name};
 }
 
@@ -196,6 +221,7 @@ sub title2acquTime{
 ## we redeclare here method to hide the problem
 sub spectrum{
   my ($this, $a)=@_;
+  $this=$this->FC_getme if $InSilicoSpectro::Spectra::MSSpectra::USE_FILECACHED;
   if(defined $a){
     $this->set('fragments', $a);
   }
@@ -203,13 +229,17 @@ sub spectrum{
 }
 ################################
 sub peakDescriptor{
-  return $_[0]->get('fragPD');
+  my $this=shift;
+
+  $this=$this->FC_getme if $InSilicoSpectro::Spectra::MSSpectra::USE_FILECACHED;
+  return $this->get('fragPD');
 }
 
 # -------------------------------- I/O
 #the peakdescriptor
 sub readTwigEl{
   my ($this, $el, $pdPar, $pdFrag)=@_;
+  $this=$this->FC_getme if $InSilicoSpectro::Spectra::MSSpectra::USE_FILECACHED;
   $this->set('parentPD', $pdPar);
   $this->set('fragPD', $pdFrag);
   $this->set('title', ($el->first_child('PeptideDescr')||$el->first_child('ple:PeptideDescr'))->text);
@@ -225,13 +255,19 @@ sub readTwigEl{
 
 sub writePLE{
   my ($this, $shift, $transformCharge)=@_;
+  $this=$this->FC_getme if $InSilicoSpectro::Spectra::MSSpectra::USE_FILECACHED;
 
   return unless ($this->get('fragments') && scalar @{$this->get('fragments')}>1);
 
-  print "$shift<ple:peptide key=\"$this->{key}\" xmlns:ple=\"http://www.phenyx-ms.com/namespaces/PeakListExport.html\">
+  print "$shift<ple:peptide key=\"$this->{key}\" compoundNumber=\"$this->{compoundNumber}\" xmlns:ple=\"http://www.phenyx-ms.com/namespaces/PeakListExport.html\">
 $shift  <ple:PeptideDescr><![CDATA[".$this->get('title')."]]></ple:PeptideDescr>
 $shift  <ple:acquTime>".$this->get('acquTime')."</ple:acquTime>
-$shift  <ple:ParentMass><![CDATA[".$this->get('parentPD')->sprintData($this->getParentData(), $transformCharge)."]]></ple:ParentMass>
+";
+  my $scan=$this->get('scan');
+  if($scan){
+    print "$shift  <ple:scan start='$scan->{start}' end='$scan->{end}'/>\n";
+  }
+print "$shift  <ple:ParentMass><![CDATA[".$this->get('parentPD')->sprintData($this->getParentData(), $transformCharge)."]]></ple:ParentMass>
 $shift  <ple:peaks><![CDATA[\n";
   foreach (@{$this->get('fragments')}){
     print $this->get('fragPD')->sprintData($_, $transformCharge)."\n";
@@ -243,6 +279,7 @@ $shift  <ple:peaks><![CDATA[\n";
 sub writeMGF{
   my ($this, $transformCharge)=@_;
 
+  $this=$this->FC_getme if $InSilicoSpectro::Spectra::MSSpectra::USE_FILECACHED;
 my $icharge=$this->get('parentPD')->getFieldIndex('charge');
 my $ichargemask=$this->get('parentPD')->getFieldIndex('chargemask');
   print "BEGIN IONS
@@ -267,6 +304,33 @@ PEPMASS=".$this->get('parentPD')->sprintData($this->getParentData(), $transformC
   print "END IONS\n\n";
 }
 
+sub writePKL{
+  my ($this, $transformCharge)=@_;
+
+  $this=$this->FC_getme if $InSilicoSpectro::Spectra::MSSpectra::USE_FILECACHED;
+  my $icharge=$this->get('parentPD')->getFieldIndex('charge');
+  my $ichargemask=$this->get('parentPD')->getFieldIndex('chargemask');
+my $imoz=$this->get('parentPD')->getFieldIndex('moz');
+my $iint=$this->get('parentPD')->getFieldIndex('intensity');
+
+  my $headline= "#".$this->get('title')."\n";
+  $headline.=$this->getParentData()->[$imoz]." ".$this->getParentData()->[$iint];
+
+  my $chargeStr;
+  if(defined $icharge){
+    $chargeStr=$this->getParentData()->[$icharge];
+  }elsif(defined $ichargemask){
+    $chargeStr=(InSilicoSpectro::Spectra::MSSpectra::chargemask2string($this->getParentData()->[$ichargemask]));
+  }
+  foreach (split /,/, $chargeStr){
+    print "$headline $_\n";
+    foreach (@{$this->get('fragments')}){
+      print $_->[0]." ".$_->[1]."\n";
+    }
+    print "\n";
+  }
+}
+
 
 
 =head3 label([$name], [$value])
@@ -277,6 +341,7 @@ gets or sets a label to this compound and saves it in the hash 'label' with an o
 
 sub label{
   my ($this, $name, $value) = @_;
+  $this=$this->FC_getme if $InSilicoSpectro::Spectra::MSSpectra::USE_FILECACHED;
 
   if(defined $name){
     $this->{label}->{$name}= $value;

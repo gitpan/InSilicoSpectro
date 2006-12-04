@@ -1,38 +1,5 @@
 package InSilicoSpectro::Spectra::ExpSpectrum;
 
-# Perl object class for representing mass spectra
-
-# Copyright (C) 2005 Jacques Colinge and Alexandre Masselot
-
-# This library is free software; you can redistribute it and/or
-# modify it under the terms of the GNU Lesser General Public
-# License as published by the Free Software Foundation; either
-# version 2.1 of the License, or (at your option) any later version.
-
-# This library is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-# Lesser General Public License for more details.
-
-# You should have received a copy of the GNU Lesser General Public
-# License along with this library; if not, write to the Free Software
-# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
-use strict;
-require Exporter;
-use Carp;
-
-our (@ISA, @EXPORT, @EXPORT_OK);
-@ISA = qw(Exporter);
-
-@EXPORT = qw();
-@EXPORT_OK = ();
-
-our %visibleAttr = (peakDescriptor=>1, spectrum=>1);
-
-return 1;
-
-
 =head1 NAME
 
 InSilicoSpectro::Spectra::ExpSpectrum - A class for representing spectra.
@@ -95,13 +62,51 @@ last line. Properties of a peak are separated by a tab character.
 
 Returns the result of toString.
 
+=head1 COPYRIGHT
+
+Copyright (C) 2004-2006  Geneva Bioinformatics www.genebio.com
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+=head1 AUTHORS
+
+Alexandre Masselot, www.genebio.com
+
+Jacques Colinge
+
 =cut
+
+use strict;
+require Exporter;
+use Carp;
+
+
+our (@ISA, @EXPORT, @EXPORT_OK);
+@ISA = qw(Exporter);
+
+@EXPORT = qw();
+@EXPORT_OK = ();
+
+our %visibleAttr = (peakDescriptor=>1, spectrum=>1);
+
 
 sub new
 {
   my $pkg = shift;
 
-  my $spec = {};
+  my $spec={};
   my $class = ref($pkg) || $pkg;
   bless($spec, $class);
 
@@ -123,11 +128,6 @@ sub new
 } # new
 
 
-=head2 peakDescriptor([$pd])
-
-Accessor and modifier of the attribute peakDescriptor.
-
-=cut
 sub peakDescriptor
 {
   my ($this, $pd) = @_;
@@ -170,9 +170,12 @@ use overload '""' => \&toString;
 sub toString{
   my $this = shift;
   my $string;
-  my @spectrum = @{$this->spectrum()};
-  foreach (@spectrum){
-    $string .= join("\t", @$_)."\n";
+  if($this->spectrum()){
+    my @spectrum = @{$this->spectrum()};
+    foreach (@spectrum){
+      next unless ref($_) eq 'ARRAY^';
+      $string .= join("\t", @$_)."\n";
+    }
   }
   return $string;
 }

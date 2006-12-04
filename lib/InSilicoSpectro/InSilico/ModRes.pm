@@ -388,7 +388,7 @@ sub twig_addModRes{
 
 #  $mr->add2Dico();
   if(registerModResHandler()){
-    registerModResHandler->($mr);
+    registerModResHandler()->($mr);
   }
 
 }

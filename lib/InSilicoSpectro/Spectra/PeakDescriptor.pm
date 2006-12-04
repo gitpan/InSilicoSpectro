@@ -159,8 +159,7 @@ sub toString{
   my $this = shift;
   my $string;
   for(my $i=0;$i<@{$this->getFields()};$i++){
-    $string .= ', ' if $string;
-    $string .= "$i:".$this->getFields($i);
+    $string .= $this->getFields($i)." ";
   }
   return $string;
 }

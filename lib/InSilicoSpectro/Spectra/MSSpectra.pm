@@ -4,10 +4,12 @@ package InSilicoSpectro::Spectra::MSSpectra;
 #use UNIVERSAL qw(isa);
 
 use InSilicoSpectro::Spectra::ExpSpectrum;
+use InSilicoSpectro::Utils::FileCached;
 require Exporter;
 our (@ISA,@EXPORT,@EXPORT_OK, %hFmt, %handlers);
-@ISA=qw (InSilicoSpectro::Spectra::ExpSpectrum);
-@EXPORT=qw(&string2chargemask &chargemask2string &charge2mgfStr &guessFormat &getFmtDescr);
+our $USE_FILECACHED=0;
+@ISA=qw (InSilicoSpectro::Utils::FileCached InSilicoSpectro::Spectra::ExpSpectrum );
+@EXPORT=qw(&string2chargemask &chargemask2string &charge2mgfStr &guessFormat &getFmtDescr $USE_FILECACHED);
 @EXPORT_OK=qw();
 
 =head1 MSSpectra
@@ -18,25 +20,41 @@ General framework for ms spectra
 
 =head1 my $sp=InSilicoSpectro::Spectra::MSSpectra->new(%h|ExpSpectrum|MSSpectra)
 
-=head1 my $sp->source ([$filename])
+=head1 $sp->source ([$filename])
 
 Set or get the source file (where the data is)
 
-=head1 my $sp->origFile([$filename])
+=head1 $sp->origFile([$filename])
 
 Set or get the original file (where the data was)
 
-=head1 my $sp->format ([$strinf])
+=head1 $sp->format ([$strinf])
 
 Set or get the source file format
 
-=head1 my $sp->title([$string])
+=head1 $sp->title([$string])
 
 Set or get the title
 
-=head1 my $sp->defaultCharge ([$string])
+=head1 $sp->defaultCharge ([$string])
 
 Set or get the defaultCharge
+
+=head3 $sp->setSampleInfo(name, value);
+
+set a name/value for sample info
+
+=head3 $sp->getSampleInfo(name);
+
+get a sampleinfo value
+
+=head1 GLOBAL VARIABLES
+
+=head2 $USE_FILECACHED=boolean
+
+set to 1 (default) will activate the use of FileCached system 
+
+
 
 =head1 COPYRIGHT
 
@@ -63,6 +81,7 @@ Alexandre Masselot, www.genebio.com
 
 
 =cut
+
 
 use Carp;
 use Time::localtime;
@@ -104,6 +123,10 @@ use InSilicoSpectro::Spectra::MSMSSpectra;
 		 write=>\&writeMGF,
 		 description=>"Mascot generic format (mgf)"
 		},
+	   pkl=>{
+		 write=>\&writePKL,
+		 description=>"PKL"
+		},
 	   'mgf.pmf'=>{read=>\&readMGF,
 		       write=>\&writeMGF,
 		       description=>"Mascot generic format (mgf)"
@@ -113,8 +136,10 @@ use InSilicoSpectro::Spectra::MSMSSpectra;
 
 sub new{
   my $class=shift;
+  my %h=@_;
 
-  my $spec={spectra=>[]};
+  my $spec=$USE_FILECACHED?InSilicoSpectro::Utils::FileCached->new(persistent=>$h{persistent}):{};
+  $spec->{spectra}=[];
   bless $spec, $class;
   if (ref($_[0]) && (ref($_[0]) ne 'HASH') && $_[0]->isa('InSilicoSpectro::Spectra::ExpSpectrum')){
     %$spec = %{$_[0]};
@@ -123,10 +148,16 @@ sub new{
     %$spec = %{$_[0]};
   }
   else{
-    my %h=(ref($_[0] eq 'HASH'))?%{$_[0]}:@_;
+    my %h=(ref($_[0]) eq 'HASH')?%{$_[0]}:@_;
     foreach (keys(%h)){
       next unless /\S/;
-      $spec->$_($h{$_});
+      next if /(persistent|msms2pmfRelation|key2spectrum)/;
+      if(ref ($h{$_}) eq 'ARRAY'){
+	my @tmp=@{$h{$_}};
+	$spec->$_(\@tmp);
+      }else{
+	$spec->$_($h{$_});
+      }
     }
   }
 
@@ -151,6 +182,7 @@ use File::Basename;
 sub open{
   my ($this)=@_;
 
+  $this=$this->FC_getme if $USE_FILECACHED;
   $this->guessFormat();
 
   my $fmt=$this->format;
@@ -175,6 +207,7 @@ sub guessFormat{
   my $src;
   my $isobj;
   if((ref $this) eq 'InSilicoSpectro::Spectra::MSSpectra'){
+    $this=$this->FC_getme if $USE_FILECACHED;
     return if defined $this->{format};
     $this->source($src) or croak "InSilicoSpectro::Spectra::MSSpectra:guessFormat not possible as not source was defined";
     $isobj=1;
@@ -198,23 +231,33 @@ sub guessFormat{
 
 sub set{
   my ($this, $name, $val)=@_;
+  $this=$this->FC_getme if $USE_FILECACHED;
   $this->{$name}=$val;
 }
 
 sub setSampleInfo{
   my ($this, $name, $val)=@_;
+  $this=$this->FC_getme if $USE_FILECACHED;
   $this->{sampleInfo}{$name}=$val;
+}
+
+sub getSampleInfo{
+  my ($this, $name)=@_;
+  $this=$this->FC_getme if $USE_FILECACHED;
+  return $this->{sampleInfo}{$name};
 }
 
 
 sub get{
   my ($this, $name)=@_;
+  $this=$this->FC_getme if $USE_FILECACHED;
   return $this->{$name};
 }
 
 sub srcFile{
   my ($this, $val) = @_;
 
+  $this=$this->FC_getme if $USE_FILECACHED;
   if (defined($val)){
     $this->{srcFile}=$val;
   }
@@ -224,6 +267,7 @@ sub srcFile{
 sub source{
   my ($this, $val) = @_;
 
+  $this=$this->FC_getme if $USE_FILECACHED;
   if (defined($val)){
     $this->{source}=$val;
   }
@@ -234,6 +278,7 @@ sub source{
 #to ensure correct ExpSpectrum inheritance
 sub spectra{
   my ($this, $val) = @_;
+  $this=$this->FC_getme if $USE_FILECACHED;
   return $this->spectrum($val);
 
 #  if (defined($val)){
@@ -246,6 +291,7 @@ sub spectra{
 sub origFile{
   my ($this, $val) = @_;
 
+  $this=$this->FC_getme if $USE_FILECACHED;
   if (defined($val)){
     $this->{origFile}=$val;
   }
@@ -255,6 +301,7 @@ sub origFile{
 sub format{
   my ($this, $val) = @_;
 
+  $this=$this->FC_getme if $USE_FILECACHED;
   if (defined($val)){
     $this->{format}=$val;
   }
@@ -264,6 +311,7 @@ sub format{
 sub title{
   my ($this, $val) = @_;
 
+  $this=$this->FC_getme if $USE_FILECACHED;
   if (defined($val)){
     $this->{title}=$val;
   }
@@ -273,6 +321,7 @@ sub title{
 sub defaultCharge{
   my ($this, $val) = @_;
 
+  $this=$this->FC_getme if $USE_FILECACHED;
   if (defined($val)){
     $this->{defaultCharge}=$val;
   }
@@ -284,6 +333,7 @@ sub defaultCharge{
 use SelectSaver;
 sub write{
   my ($this, $format, $out)=@_;
+  $this=$this->FC_getme if $USE_FILECACHED;
   croak "InSilicoSpectro::Spectra:MSMSSpectra:write: no handler defined for format [$format] (".getWriteFmtList().")\n" unless defined $handlers{$format}{write};
 
   my $fdOut=(new SelectSaver(InSilicoSpectro::Utils::io->getFD(">$out") or die "cannot open [$out]: $!")) if defined $out;
@@ -292,6 +342,7 @@ sub write{
 
 sub writeTxt{
   my ($this)=@_;
+  $this=$this->FC_getme if $USE_FILECACHED;
   print "#sampleNumber=".$this->get('sampleNumber')."\n";
   foreach(@{$this->spectrum()}){
     print "".(join ' ', @$_)."\n";
@@ -301,15 +352,26 @@ sub writeTxt{
 
 sub writeMGF{
   my ($this)=@_;
-  warn "NO writeMGF fo MSSpectra implemeneted";
+  $this=$this->FC_getme if $USE_FILECACHED;
+  warn "NO writeMGF fo MSSpectra implemented";
+  return;
+}
+
+sub writePKL{
+  my ($this)=@_;
+  $this=$this->FC_getme if $USE_FILECACHED;
+  warn "NO writePKL fo MSSpectra implemented";
   return;
 }
 
 sub writePLE{
   my ($this, $shift)=@_;
+  $this=$this->FC_getme if $USE_FILECACHED;
   my $transformChargeMask=1;
+  $this->{key}="pmf_$this->{sampleInfo}{sampleNumber}" unless  $this->{key};
 
-print "$shift<ple:PeakListExport spectrumType=\"ms\" xmlns:ple=\"http://www.phenyx-ms.com/namespaces/PeakListExport.html\">
+  print "$shift<ple:PeakListExport spectrumType=\"pmf\" xmlns:ple=\"http://www.phenyx-ms.com/namespaces/PeakListExport.html\">
+$shift  <ple:origFile>".($this->origFile)."</ple:origFile>
 $shift  <ple:date>".($this->get('date'))."</ple:date>
 $shift  <ple:time>".($this->get('time'))."</ple:time>
 $shift  <ple:PeakDetectionAlg>
@@ -325,30 +387,32 @@ $shift  <ple:PeakLists>
   print "$shift    <ple:MSRun>
 ";
   #print sample line
-  if(defined $this->get('sampleInfo')){
+  if (defined $this->get('sampleInfo')) {
     my $h=$this->get('sampleInfo');
     print "$shift      <ple:sample";
-    foreach (keys %$h){
+    foreach (keys %$h) {
       print " $_=\"$h->{$_}\"";
     }
     print "/>\n";
-  }else{
+  } else {
     croak "No sample info available when saving to ple ".$this->source;
   }
   #print
-  if(defined $this->get('wellInfo')){
-  my $h=$this->get('wellInfo');
+  if (defined $this->get('wellInfo')) {
+    my $h=$this->get('wellInfo');
     print "$shift      <ple:$_>$h->{$_}</ple:$_>\n";
   }
   print "$shift      <ple:AcquNumber>".$this->get('AcquNumber')."</ple:AcquNumber>\n" if defined $this->get('AcquNumber');
-  print "$shift      <ple:peaks><![CDATA[\n";
+  print "$shift      <ple:description><![CDATA[".$this->title."]]></ple:description>\n";
 
-  if(defined $this->spectrum()){
-    foreach (@{$this->spectrum()}){
+  print "$shift      <ple:peaks key='$this->{key}'><![CDATA[\n";
+
+  if (defined $this->spectrum()) {
+    foreach (@{$this->spectrum()}) {
       print "".(join "\t", @$_)."\n";
     }
   }
-   print "]]></ple:peaks>\n";
+  print "]]></ple:peaks>\n";
   print "$shift    </ple:MSRun>
 $shift  </ple:PeakLists>
 $shift</ple:PeakListExport>
@@ -358,6 +422,7 @@ $shift</ple:PeakListExport>
 sub read{
   my ($this)=@_;
 
+  $this=$this->FC_getme if $USE_FILECACHED;
   my $fmt=$this->format();
   croak "InSilicoSpectro::Spectra::MSSpectra: no reading handler is defined for format [$fmt]" unless defined $handlers{$fmt}{read};
 
@@ -374,8 +439,39 @@ sub read{
   $handlers{$fmt}{read}->($this);
 }
 
+sub readTwigEl{
+  my ($this, $el)=@_;
+
+  $this=$this->FC_getme if $USE_FILECACHED;
+  $this->set('date', $el->get_xpath("idj:date"));
+  $this->set('time', $el->get_xpath("idj:time"));
+
+  my $pd=InSilicoSpectro::Spectra::PhenyxPeakDescriptor->new();
+  my $elpl=$el->first_child("ple:PeakLists");
+  $pd->readTwigEl($elpl->first_child("ple:ItemOrder"));
+  $this->set('peakDescriptor', $pd);
+  my $elsi=($elpl->get_xpath("ple:MSRun/ple:sample"))[0];
+  foreach ($elsi->att_names){
+    $this->setSampleInfo($_, $elsi->att($_));
+  }
+  my $elpeaks=($elpl->get_xpath("ple:MSRun/ple:peaks"))[0];
+
+  $this->set('title', ($elpl->get_xpath("ple:MSRun/ple:description"))[0]->text);
+  $this->set('key', $elpeaks->atts->{key});
+  my $peaksstr=($elpl->get_xpath("ple:MSRun/ple:peaks"))[0]->text;
+  $this->spectrum([]);
+  foreach (split /\n/, $peaksstr){
+    chomp;
+    next unless /\S/;
+    my @tmp=split;
+    push @{$this->spectrum()}, \@tmp;
+  }
+}
+
+
 sub readMGF{
   my ($this)=@_;
+  $this=$this->FC_getme if $USE_FILECACHED;
   my $src=$this->source();
   my $fd;
   CORE::open ($fd, "<$src") or croak "cannot open [<$src]: $!";
@@ -443,6 +539,17 @@ sub chargemask2string{
   }
   $ret=~s/,$//;
   return $ret;
+}
+
+sub chargemask2array{
+  my ($msk)=@_;
+
+  return undef unless defined $msk;
+  my @ret;
+  for(0..31){
+    push @ret, $_ if (1<<$_)&$msk;;
+  }
+  return @ret;
 }
 
 sub charge2mgfStr{

@@ -40,7 +40,6 @@ Alexandre Masselot, Roman Mylonas, www.genebio.com
 $|=1;		        #  flush immediately;
 
 BEGIN{
-  push @INC, '../../lib';
   eval{
    require DefEnv;
    DefEnv::read();
@@ -59,28 +58,28 @@ if($isCGI){
 
 BEGIN{
   $isCGI=$ENV{GATEWAY_INTERFACE}=~/CGI/;
-  sub carp_error{
-    my $msg=shift;
-    if ($isCGI){
-      my $q=new CGI;
-      error($q, $msg);
-    }else{
-      print STDERR $msg;
-    }
-  }
-  CGI::Carp::set_message(\&carp_error) if $isCGI;
+#  sub carp_error{
+#    my $msg=shift;
+#    if ($isCGI){
+#      my $q=new CGI;
+#      error($q, $msg);
+#    }else{
+#      print STDERR $msg;
+#    }
+#  }
+#  CGI::Carp::set_message(\&carp_error) if $isCGI;
 
-  sub error(){
-    my($q, $msg)=@_;
-    #  $q->header;
-    print $q->start_html(-title=>"$0 - ms/ms peaklist converter",
-			 -author=>'alexandre.masselot@genebio.com',
-			 -BGCOLOR=>'white');
-    print "<center><h1>$0</h1></center>\n";
-    print  "<pre>$msg</pre>\n";
-    $q->end_html;
-    exit;
-  }
+#  sub error(){
+#    my($q, $msg)=@_;
+#    #  $q->header;
+#    print $q->start_html(-title=>"$0 - ms/ms peaklist converter",
+#			 -author=>'alexandre.masselot@genebio.com',
+#			 -BGCOLOR=>'white');
+#    print "<center><h1>$0</h1></center>\n";
+#    print  "<pre>$msg</pre>\n";
+#    $q->end_html;
+#    exit;
+#  }
 }
 
 use InSilicoSpectro::Spectra::MSRun;
@@ -315,6 +314,7 @@ print <<EOT;
       </div>
       </td>
     </tr>
+    <tr><td>Extra convertSpectra.pl arguments</td><td><input type='textfield' name='convertspectraxtraargs' size=80/></td>
   </table>
   <input type="submit" value="convert"/>
   </form>
@@ -356,6 +356,7 @@ my $defaultCharge=$query->param('defaultcharge') || die "must provide default pa
 my $title=$query->param('title');
 my $filter=$query->param('filter');
 my $filter_activated=$query->param('activation_filter');
+my $convertSpectraXtraArgs=$query->param('convertspectraxtraargs');
 
 my $help=$query->param('help');
 pod2usage(-verbose=>2, -exitval=>2) if(defined $help);
@@ -367,6 +368,7 @@ $cookies{outputformat}=$outputFormat;
 $cookies{defaultcharge}=$defaultCharge;
 $cookies{filter}=$filter;
 $cookies{filter_activated}=$filter_activated;
+$cookies{convertspectraxtraargs}=$convertSpectraXtraArgs;
 
 use File::Basename;
 use File::Temp qw(tempfile);
@@ -383,58 +385,74 @@ while (<$fhin>){
 close $fhin;
 close $fhout;
 
-my @fileIn;
-if($fileIn =~ /\.(tgz|tar\.gz|tar)$/i){
-  use Archive::Tar;
-  my $tar=Archive::Tar->new;
-  $tar->read($finTmp,$fileIn =~ /\.(tgz|tar\.gz)$/i);
-  foreach ($tar->list_files()){
-    my ($fdtmp, $tmp)=tempfile(SUFFIX=>$inputFormat, UNLINK=>1);
-    $tar->extract_file($_, $tmp);
-    push @fileIn, {format=>$inputFormat, file=>$tmp, origFile=>basename($_)};
-    close $fdtmp;
-  }
-}else{
-  if($fileIn=~/\.gz$/i){
-    my (undef , $ftmp)=tempfile(UNLINK=>1);
-    print STDERR "fin=$finTmp\n";
-    InSilicoSpectro::Utils::io::uncompressFile($finTmp, {remove=>0, dest=>$ftmp});
-    $fileIn=~s/\.gz$//i;
-    $fileIn=~s/\.tgz$/.tar/i;
-  }
-  if($fileIn=~s/\.zip$//i){
-    die ".zip not yet implemented";
-  }
-  @fileIn=({file=>$finTmp, origFile=>basename($fileIn)});
-}
 
 
-my $run=InSilicoSpectro::Spectra::MSRun->new();
-$run->set('defaultCharge', InSilicoSpectro::Spectra::MSSpectra::string2chargemask($defaultCharge));
-$run->set('title', $title);
-$run->set('format', $inputFormat);
-$run->set('origFile', basename $fileIn);
-$run->set('source', $finTmp);
+#my @fileIn;
+#if($fileIn =~ /\.(tgz|tar\.gz|tar)$/i){
+#  use Archive::Tar;
+#  my $tar=Archive::Tar->new;
+#  $tar->read($finTmp,$fileIn =~ /\.(tgz|tar\.gz)$/i);
+#  foreach ($tar->list_files()){
+#    my ($fdtmp, $tmp)=tempfile(SUFFIX=>$inputFormat, UNLINK=>1);
+#    $tar->extract_file($_, $tmp);
+#    push @fileIn, {format=>$inputFormat, file=>$tmp, origFile=>basename($_)};
+#    close $fdtmp;
+#  }
+#}elsif($fileIn=~s/\.zip$//i){
+#  eval{
+#    require Archive::Zip;
+#  };
+#  if ($@) {
+#    die "cannot open .zip format (missing Archive::Zip): $@";
+#  }
+#  my $zip = Archive::Zip->new();
+#  die "ZIP read error in [$finTmp]" unless $zip->read( $finTmp ) == Archive::Zip::AZ_OK;
+#  my @members = $zip->members();
+#  foreach my $mb (@members) {
+#    my ($fdtmp, $tmp)=tempfile(SUFFIX=>$inputFormat, UNLINK=>0);
+#    $mb->extractToFileNamed($tmp);
+#    push @fileIn, {format=>$inputFormat, file=>$tmp, origFile=>basename($mb->externalFileName())};
+#    close $fdtmp;
+#  }
+#} else {
+#  if($fileIn=~/\.gz$/i){
+#    my (undef , $ftmp)=tempfile(UNLINK=>1);
+#    print STDERR "fin=$finTmp\n";
+#    InSilicoSpectro::Utils::io::uncompressFile($finTmp, {remove=>0, dest=>$ftmp});
+#    $fileIn=~s/\.gz$//i;
+#    $fileIn=~s/\.tgz$/.tar/i;
+#  }
 
-my $is=0;
-foreach (@fileIn){
-  unless (defined $InSilicoSpectro::Spectra::MSRun::handlers{$inputFormat}{read}) {
-    my %h;
-    foreach (keys %$run) {
-      next if /^spectra$/;
-      $h{$_}=$run->{$_};
-    }
-    my $sp=InSilicoSpectro::Spectra::MSSpectra->new(%h);
-    $sp->{source}=$_->{file};
-    $sp->{origFile}=$_->{origFile};
-    $sp->{title}="$title";
-    $run->addSpectra($sp);
-    $sp->open();
-  } else {
-    die "not possible to set multiple file in with format [$inputFormat]" if $#fileIn>0;
-    $InSilicoSpectro::Spectra::MSRun::handlers{$inputFormat}{read}->($run);
-  }
-}
+#  @fileIn=({file=>$finTmp, origFile=>basename($fileIn)});
+#}
+
+
+#my $run=InSilicoSpectro::Spectra::MSRun->new();
+#$run->set('defaultCharge', InSilicoSpectro::Spectra::MSSpectra::string2chargemask($defaultCharge));
+#$run->set('title', $title);
+#$run->set('format', $inputFormat);
+#$run->set('origFile', basename $fileIn);
+#$run->set('source', $finTmp);
+
+#my $is=0;
+#foreach (@fileIn){
+#  unless (defined $InSilicoSpectro::Spectra::MSRun::handlers{$inputFormat}{read}) {
+#    my %h;
+#    foreach (keys %$run) {
+#      next if /^spectra$/;
+#      $h{$_}=$run->{$_};
+#    }
+#    my $sp=InSilicoSpectro::Spectra::MSSpectra->new(%h);
+#    $sp->{source}=$_->{file};
+#    $sp->{origFile}=$_->{origFile};
+#    $sp->{title}="$title";
+#    $run->addSpectra($sp);
+#    $sp->open();
+#  } else {
+#    die "not possible to set multiple file in with format [$inputFormat]" if $#fileIn>0;
+#    $InSilicoSpectro::Spectra::MSRun::handlers{$inputFormat}{read}->($run);
+#  }
+#}
 
 my $dest=basename $fileIn;
 $dest=~s/\.$inputFormat//i;
@@ -449,13 +467,32 @@ print $query->header(-type=>'text/plain',
 		     -attachment=>$dest,
 		    );
 
+
+my $cmd="convertSpectra.pl --version";
+my $version=`$cmd`;
+chomp $version;
+die "no convertSpectra.pl executable was found in $ENV{PATH}. \n".join ("\n", %ENV)."\nfix your path..." unless defined $version;
+
+$cmd="convertSpectra.pl";
+my $cmdArgs="--in=$inputFormat:$finTmp ";
+$cmdArgs.=" --defaultcharge='$defaultCharge'" if $defaultCharge;
+$cmdArgs.=" --title=$title" if $title;
+
 if($filter_activated){
   my $fc = new InSilicoSpectro::Spectra::Filter::MSFilterCollection();
   $fc->readXmlString($filter);
-  $fc->filterSpectra($run);
+  my ($fd, $f)=tempfile(UNLINK=>1, SUFFIX=>".filter.xml");
+  print $fd $filter;
+  close $fd;
+  $cmdArgs.=" --filer=$f";
 }
 
-$run->write($outputFormat, \*STDOUT);
+$cmdArgs.=" $convertSpectraXtraArgs" if $convertSpectraXtraArgs;
+
+$cmd.=" $cmdArgs --out=$outputFormat:-";
+system("$cmd ") && die "cannot execute $cmd";
+
+#$run->write($outputFormat, \*STDOUT);
 
 
 __DATA__

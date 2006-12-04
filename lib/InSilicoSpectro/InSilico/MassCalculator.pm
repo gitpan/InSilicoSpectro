@@ -1574,7 +1574,7 @@ sub variablePeptide
   foreach my $name (@{$fixedModif}){
     # Checks modification
     if (!defined($elMass{"mod_$name"})){
-      croak("Unknown modification in variablePeptide: [$name]");
+      croak(__FILE__."(".__LINE__.") Unknown fixed modification in variablePeptide: [$name]");
     }
     
     # locates and adds
@@ -1639,7 +1639,7 @@ sub variablePeptide
 	    push(@{$varModif[$i]}, $list[$j]);
 	  }
 	  else{
-	    croak("Unknown modification in variablePeptide: [$list[$j]]");
+	    croak(__FILE__."(".__LINE__.") Unknown localized modification in variablePeptide: [$list[$j]]");
 	  }
 	}
       }
@@ -1656,7 +1656,7 @@ sub variablePeptide
 	  }
 	}
 	else{
-	  croak("Unknown modification in variablePeptide: [$modif[$i]]");
+	  croak(__FILE__."(".__LINE__.") Unknown modification in variablePeptide: [$modif[$i]]");
 	}
       }
     }
@@ -1668,7 +1668,7 @@ sub variablePeptide
     my @modpos=$mr->seq2pos($peptSeq);
     # Checks modification
     if (!defined($elMass{"mod_$name"})){
-      croak("Unknown modification in variablePeptide: [$name]");
+      croak(__FILE__."(".__LINE__.") Unknown variable modification in variablePeptide: [$name]");
     }
 
     # locates and adds
@@ -1885,7 +1885,8 @@ sub locateModif
   foreach my $name (@{$fixedModif}){
     # Checks modification
     if (!defined($elMass{"mod_$name"})){
-      croak("Unknown modification in variablePeptide: [$name]");
+      print STDERR "".(join "\n", %elMass)."\n";
+      croak(__FILE__."(".__LINE__.") Unknown modification in variablePeptide: [$name]");
     }
 
     # locates and adds
@@ -1951,7 +1952,7 @@ sub locateModif
 	    push(@{$varModif[$i]}, $list[$j]);
 	  }
 	  else{
-	    croak("Unknown modification in variablePeptide: [$list[$j]]");
+	    croak(__FILE__."(".__LINE__.") Unknown modification in variablePeptide: [$list[$j]]");
 	  }
 	}
       }
@@ -1968,7 +1969,7 @@ sub locateModif
 	  }
 	}
 	else{
-	  croak("Unknown modification in variablePeptide: [$modif[$i]]");
+	  croak(__FILE__."(".__LINE__.") Unknown modification in variablePeptide: [$modif[$i]]");
 	}
       }
     }
@@ -1978,7 +1979,7 @@ sub locateModif
   foreach my $name (@{$varModif}){
     # Checks modification
     if (!defined($elMass{"mod_$name"})){
-      croak("Unknown modification in variablePeptide: [$name]");
+      croak(__FILE__."(".__LINE__.") Unknown modification in variablePeptide: [$name]");
     }
 
     my $mr=InSilicoSpectro::InSilico::ModRes::getFromDico($name);

@@ -91,11 +91,15 @@ Alexandre Masselot, www.genebio.com
 our (@ISA,@EXPORT,@EXPORT_OK, $VERBOSE);
 @ISA = qw(Exporter);
 
-@EXPORT = qw(&getFD $VERBOSE &compressFile &uncompressFile &zipFiles &getMD5 &croakIt);
+@EXPORT = qw(&getFD $VERBOSE &compressFile &uncompressFile &zipFiles &getMD5 &croakIt &isInteractive);
 @EXPORT_OK = ();
 
 use Carp;
 use File::Glob qw(:glob);
+
+sub isInteractive{
+  return -t STDIN && -t STDOUT;
+}
 
 sub getFD{
   my ($this, $v)=@_;

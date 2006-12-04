@@ -85,6 +85,11 @@ checks if the different values provided by the xml are valid.
 
 puts a score for each peak into filterValue. The score is higher for peaks with high intensities but gets lower if they're in a region with high-intensity peaks and or a lot of peaks. A high weightIntensity-value puts more weight into regions of high peaks. A high weightDensity-value puts  more weight into regions of high peak density.
 
+=item $sf->selectPeakWindow();
+
+divides the whole a moz-adefined number of bands and makes a normalization of the intensities in each of those bands. 
+
+
 =item $sf->fragment([$val]);
 
 gets the values (moz, intensity) from the fragments of the currentSpectra (has to be an MSCmpd). The results are stored into filterValue. Which values should be extracted can be selected by $val, otherwise the next name in the filterName is used.
@@ -216,9 +221,6 @@ sub readXmlFilterType{
 #################################################
 ### computeFilterValue and the methods it uses
 
-use Statistics::Basic::Mean;
-use Statistics::Basic::StdDev;
-
 #to set the precision of float-values after comma used by method compare_float
 my $precision = 5;
 
@@ -229,18 +231,19 @@ my $precision = 5;
 
 sub smartPeaks{
   my $this= shift;
+  require Statistics::Basic::Mean;
+  require Statistics::Basic::StdDev;
 
   my @moz;
   my @int;
-  
+
   #use this variable in case, there's no peak at all in the spectra
   my $peaks=0;
-  
+
   foreach(@{$this->currentSpectra()->spectrum()}){
     #push @{$this->filterValue()}, $_->[$pdInd];
     push @int, $_->[$this->{fragPD}->{intensity}];
     push @moz, $_->[$this->{fragPD}->{moz}];
-    
   }
 
   my $win_size= $this->param()->{winSize};
@@ -250,7 +253,7 @@ sub smartPeaks{
   my @mean_win_int;
 
   my $last=0;
-  
+
   #go through the whole spectrum
   #for(my $i=$min_moz; &compare_float($i+$win_size, '<=', $max_moz+$step_size, $precision); $i+= $step_size){
   for(my $i=$min_moz; $i+$win_size <= $max_moz+$step_size; $i+= $step_size){
@@ -344,6 +347,8 @@ sub smartPeaks{
 
 sub balance{
  my $this= shift;
+  require Statistics::Basic::Mean;
+  require Statistics::Basic::StdDev;
 
 
  if(ref($this->currentSpectra()) ne 'InSilicoSpectro::Spectra::MSMSCmpd'){
@@ -568,11 +573,16 @@ sub goodDiff{
   #calculate goodDiff for actual compound 
   }else{
 
-   
     #load the amino acid-masses from insilicodef.xml
     if(!defined $this->{aaMasses}){
 
-      InSilicoSpectro::init();
+#    print "".__FILE__.":".__LINE__.": problem between here\n";
+
+    InSilicoSpectro::init();
+    
+ #   print "".__FILE__.":".__LINE__.": and here??\n";
+
+
 
       my @aa_list= qw/A C D E F G H I K L M N P Q R S T V W Y/;
 
@@ -587,6 +597,8 @@ sub goodDiff{
 
       $this->{aaMasses}->{mono}= \@mono;
       $this->{aaMasses}->{average}= \@average;
+
+
 
     }
 
@@ -874,6 +886,124 @@ sub isotopes{
 
 # takes off the neighbouring peaks close to the selected ones (change number to select by selectStrongest)
 # the region where the peaks should be taken off can be adjusted by banishRange
+
+
+sub selectPeakWindow{
+  my $this= shift;
+
+#  print ($this->currentSpectra()->{title}, "\n");
+
+  croak "banishNeighbors can only be applied on level: peaks\n" unless($this->{level} eq 'peaks');
+
+
+  my $action_type= $this->{actionType};
+  my $window_nr= $this->param()->{nrWindows};
+
+
+  #get moz and int
+    my @moz;
+    my @int;
+
+    foreach (@{$this->currentSpectra()->spectrum()}) {
+      #push @{$this->filterValue()}, $_->[$pdInd];
+      push @int, $_->[$this->{fragPD}->{intensity}];
+      push @moz, $_->[$this->{fragPD}->{moz}];
+    }
+
+    my $moz_min= min(@moz);
+    my $moz_max= max(@moz);
+    my $moz_range= $moz[$#moz]-$moz[0];
+
+    my $win_size= $moz_range/$window_nr;
+
+    my $pos= 0;
+    my $current_max_moz= $moz_min+ $win_size;
+
+
+  if($action_type eq 'algorithm'){
+    my $peak_nr = $this->param()->{nrPeaksTotal};
+    my $peak_nr_window= int($this->param()->{nrPeaksTotal}/$window_nr);
+
+    #print "peaks to selcet: $peak_nr_window\n";
+
+    my @to_keep;
+
+    #loop through all the windows
+    for (my $j=0; $j<$window_nr; $j++) {
+      my $old_pos= $pos;
+
+      #print ("part from ", $moz[$old_pos], " to ", $current_max_moz, ": \n");
+      my $win_int_max= 0;
+
+      my @win_int;
+
+      #loop trouhg all the peaks in one window
+      while (($moz[$pos]<=$current_max_moz) and ($pos<$#moz)) {
+	push @win_int, $int[$pos];
+	$pos++;
+      }
+
+      my $threshold= ((sort{$b <=> $a} @win_int)[$peak_nr_window-1]);
+      #if there are less nr than u want
+      $threshold= min(@win_int) if(! defined $threshold);
+      #if theres nothing at all
+      next if(! defined $threshold);
+
+      #print ("pekas in wind: ", scalar(@win_int), "\n");
+      #print ("higest", max(@win_int), "\n");
+
+      #print ("lowest", min(@win_int), "\n");
+
+      #print "threshold: $threshold\n";
+
+      for (my $i=$old_pos; $i<$pos; $i++) {
+	push @to_keep, $i if $int[$i]>=$threshold;
+	#print "$int[$i]\t$threshold\n";
+      }
+      $current_max_moz+= $win_size;
+    }
+
+    #print "*******************************************\n";
+    #foreach(@to_keep){
+        #print "$_\n";
+    #}
+    
+
+    @{$this->currentSpectra()->spectra}=  @{$this->currentSpectra()->spectra}[@to_keep];
+
+  }else{
+
+    my @filter_value;
+
+    #loop through all the windows
+    for (my $j=0; $j<$window_nr; $j++) {
+      my $old_pos= $pos;
+
+      #print ("part from ", $moz[$old_pos], " to ", $current_max_moz, ": \n");
+      my $win_int_max= 0;
+
+      #loop trouhg all the peaks in one window
+      while (($moz[$pos]<=$current_max_moz) and ($pos<$#moz)) {
+	#     print ($moz[$pos], "\t", $int[$pos], "\n");
+	$win_int_max= $int[$pos] if $int[$pos]>$win_int_max;
+	$pos++;
+      }
+
+      #loop again trough peaks to divide by max-int
+      for (my $i=$old_pos; $i<$pos; $i++) {
+	push @filter_value, ($int[$i]/$win_int_max);
+	#print ($moz[$i], "\t", $int[$i], "\n");
+      }
+
+      $current_max_moz+= $win_size;
+    }
+
+    $this->filterValue(\@filter_value);
+
+  }
+
+}
+
 
 
 sub banishNeighbors{

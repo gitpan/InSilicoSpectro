@@ -19,6 +19,10 @@ Instanciate a new SaxIndexMaker
 
 =head2 $sim->readXmlIndexMaker($file)
 
+=head2 $sim->readXmlIndexMaker(file=>$file)
+
+=head2 $sim->readXmlIndexMaker(contents=>$xmlcontents)
+
 Read what is to be caught and put into the index. xmlIndexMaker files follows the format
 
 =begin text
@@ -172,21 +176,35 @@ sub new{
 ########
 
 use XML::Twig;
-
+use File::Spec;
 sub readXmlIndexMaker{
-   my ($this, $file)=@_;
+  my $this=shift;
+  my %hprms;
+  my $file;
+  if(scalar(@_)==1){
+    $hprms{file}=shift;
+    $file=$hprms{file};
+  }else{
+    %hprms=@_;
+  }
+  use File::Temp qw(tempfile);
+  if($hprms{contents}){
+    my ($fh, $tempfile)=tempfile("indexmaker-XXXXXX", DIR=> File::Spec->tmpdir(), UNLINK=>1);
+    $file=$tempfile;
+    print $fh $hprms{contents};
+    close $fh;
+  }
 
-   $this->{source}{indexMaker}=$file;
-
-   #delete the prvious element paths to record
-   $this->{recordPaths}={};
-   my $twig=XML::Twig->new(twig_handlers=>{
-					   'elementToIndex'=>sub {twig_addElementToIndex($this, $_[0], $_[1])},
-					   pretty_print=>'indented'
-					   }
-			   );
-   $twig->parsefile($file) or InSilicoSpectro::Utils::io::croakIt "cannot parse [$file]: $!";
-
+  $this->{source}{indexMaker}=$file;
+  #delete the prvious element paths to record
+  $this->{recordPaths}={};
+  my $twig=XML::Twig->new(twig_handlers=>{
+					  'elementToIndex'=>sub {twig_addElementToIndex($this, $_[0], $_[1])},
+					  pretty_print=>'indented'
+					 }
+			 );
+  $twig->parsefile($file) or InSilicoSpectro::Utils::io::croakIt "cannot parse [$file]: $!";
+  
 }
 
 sub twig_addElementToIndex{

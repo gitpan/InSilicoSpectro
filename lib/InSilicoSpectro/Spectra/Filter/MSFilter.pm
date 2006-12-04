@@ -216,8 +216,19 @@ sub filterSpectra{
 	$this->{fragPD}->{intensity}= $this->currentSpectra()->get('peakDescriptor')->getFieldIndex('intensity');
 	$this->{fragPD}->{moz}= $this->currentSpectra()->get('peakDescriptor')->getFieldIndex('moz');
 	$this->{fragPD}->{chargemask}= $this->currentSpectra()->get('peakDescriptor')->getFieldIndex('chargemask');
-      } else{
-	croak("you cannot use ", ref($sp), "as spectra.\n");
+
+#FIXME: Should get PD's properly!
+      }elsif(ref($sp) eq 'InSilicoSpectro::Spectra::MSMSCmpd'){
+	$this->{fragPD}->{intensity}= 1;
+	$this->{fragPD}->{moz}= 0;
+	$this->{fragPD}->{charge}= 2;
+	
+	$this->{parentPD}->{intensity}= 1;
+	$this->{parentPD}->{moz}= 0;
+	$this->{parentPD}->{charge}= 2;
+
+      }else{
+	croak("you cannot use ", ref($sp), " as spectra.\n");
 	
       }
     }

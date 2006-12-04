@@ -38,6 +38,21 @@
 	</oneExpMsMsSpectrumFilter>
 
 
+        <oneExpMsMsSpectrumFilter spectrumType="msms">
+                <level>peaks</level>
+                <action type="algorithm">
+                       <threshold type="sort">
+                       </threshold>
+                </action>
+                <filterValue type="algorithm">
+                        <name>selectPeakWindow</name>
+                        <param name="nrWindows">10</param>
+                        <param name="nrPeaksTotal">200</param>
+                </filterValue>
+         </oneExpMsMsSpectrumFilter>
+
+
+
 
 
        <oneExpMsMsSpectrumFilter spectrumType="msms" name="dummy">

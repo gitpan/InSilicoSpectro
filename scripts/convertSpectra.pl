@@ -70,6 +70,10 @@ Prints all the possible format for input
 
 Prints all the possible format for output
 
+=item --propertiessave=file
+
+=item --propertiesprefix=string
+
 =item --version
 
 =item --help
@@ -111,7 +115,15 @@ Alexandre Masselot, www.genebio.com
 
 use Getopt::Long;
 use File::Basename;
-my(@fileIn, $fileOut, $showInputFmt, $showOutputFmt, $sampleInfo, $precursorTrustParentCharge, $defaultCharge, $title, $fileFilter, $dpmStr, @skip, $phenyxConfig, $help, $man, $verbose, $showVersion);
+use File::Spec qw(tempfile tempdir);
+use File::Temp;
+use Archive::Tar;
+use Archive::Zip qw( :ERROR_CODES :CONSTANTS);
+
+my(@fileIn, $fileOut, $showInputFmt, $showOutputFmt, $sampleInfo, $precursorTrustParentCharge, $defaultCharge, $title, $fileFilter, $dpmStr, @skip,
+   $excludeKeysFile,
+   $propertiesFile,$propertiesPrefix,
+   $phenyxConfig, $help, $man, $verbose, $showVersion);
 
 use InSilicoSpectro;
 if (!GetOptions(
@@ -126,7 +138,12 @@ if (!GetOptions(
 		"defaultcharge=s"=>\$defaultCharge,
 		"title=s"=>\$title,
 
+		"excludekeysfile=s"=>\$excludeKeysFile,
+
 		"filter=s"=>\$fileFilter,
+
+		"propertiessave=s"=>\$propertiesFile,
+		"propertiesprefix=s"=>\$propertiesPrefix,
 
 		"skip=s@"=>\@skip,
 		"phenyxconfig=s" => \$phenyxConfig,
@@ -183,41 +200,124 @@ foreach (@skip) {
   $run->{read}{skip}{$_}=1;
 }
 my $is=0;
+
+#explodes @file into glob + archive stuff...
+my @tmpFileIn;
+
 foreach (@fileIn) {
   s/ /\\ /g;
-  foreach my $fileIn (glob $_) {
-    my $inFormat;
-    if ($fileIn=~/(.*?):(.*)/) {
-      $run->set('format', $1);
-      $run->set('source', ($2 or \*STDIN));
-      $inFormat=$1;
-    } else {
-      $run->set('source', $fileIn);
-      $inFormat=InSilicoSpectro::Spectra::MSSpectra::guessFormat($fileIn);
-    }
-    unless (defined $InSilicoSpectro::Spectra::MSRun::handlers{$inFormat}{read}) {
-      my %h;
-      foreach (keys %$run) {
-	next if /^spectra$/;
-	$h{$_}=$run->{$_};
-      }
-      my $sp=InSilicoSpectro::Spectra::MSSpectra->new(%h);
-      $run->addSpectra($sp);
-      $sp->set('sampleInfo', \%sampleInfo) if defined %sampleInfo;
-      $sp->setSampleInfo('sampleNumber', $is++);
-      $sp->open();
-    } else {
-      croak "not possible to set multiple file in with format [$inFormat]" if $#fileIn>0;
-      $InSilicoSpectro::Spectra::MSRun::handlers{$inFormat}{read}->($run);
-    }
+  foreach my $fi (glob $_) {
+    push @tmpFileIn, $fi;
   }
 }
+undef @fileIn;
+while (my $fileIn=shift @tmpFileIn){
+  my ($format, $source);
+  if ($fileIn=~/(.*?):(.*)/) {
+    ($format, $source)=($1, $2);
+  } else {
+    ($format, $source)=(InSilicoSpectro::Spectra::MSSpectra::guessFormat($fileIn), $fileIn);
+  }
+  my $tmpdir=File::Spec->tmpdir;
+  if($source=~/\.(tar|tar\.gz|tgz)/i && $format ne 'dta'){
+    my $tar=Archive::Tar->new;
+    $tar->read($source, $source =~ /gz$/i);
+    foreach ($tar->list_files()){
+      my ($fdtmp, $tmp)=File::Temp::tempfile(SUFFIX=>$format, UNLINK=>1);
+      $tar->extract_file($_, $tmp);
+      push @fileIn, {format=>$format, file=>$tmp, origFile=>basename($_)};
+      close $fdtmp;
+    }
+  }elsif($source=~/\.zip/i && $format ne 'dta'){
+    my $zip=Archive::Zip->new();
+    unless($zip->read($source)==AZ_OK){
+      die "zip/unzip: cannot read archive $source";
+    }else{
+      my @members=$zip->members();
+      foreach (@members){
+	my (undef, $tmp)=File::Temp::tempfile("$tmpdir/".(basename($_->fileName())."-XXXXX"), UNLINK=>1);
+	$zip->extractMemberWithoutPaths($_, $tmp) && croak "cannot extract ".$_->fileName().": $!\n";
+	push @fileIn, {format=>$format, file=>$tmp, origfile=>$_->fileName()};
+      }
+    }
+  }elsif($source=~/\.gz$/i){
+    my (undef, $tmp)=File::Temp::tempfile("$tmpdir/".(basename($source)."-XXXXX"), UNLINK=>1);
+    $source=InSilicoSpectro::Utils::io::uncompressFile($source, {remove=>0, dest=>$tmp});
+    push@tmpFileIn, "$format:$source";
+  }
+
+  push @fileIn, {format=>$format, file=>$source, origFile=>$source};
+}
+
+foreach (@fileIn) {
+  my ($inFormat, $src, $origFile)=($_->{format}, $_->{file}, $_->{origFile});
+  $run->set('format', $inFormat);
+  $run->set('source', $src);
+  $run->set('origFile', $origFile);
+  unless (defined $InSilicoSpectro::Spectra::MSRun::handlers{$inFormat}{read}) {
+    my %h;
+    foreach (keys %$run) {
+      next if /^spectra$/;
+      $h{$_}=$run->{$_};
+    }
+    my $sp=InSilicoSpectro::Spectra::MSSpectra->new(%h);
+    $run->addSpectra($sp);
+    $sp->set('sampleInfo', \%sampleInfo) if defined %sampleInfo;
+    $sp->origFile($origFile);
+    $sp->setSampleInfo('sampleNumber', $is++);
+    $sp->open();
+  } else {
+    croak "not possible to set multiple file in with format [$inFormat]" if $#fileIn>0 and ! $InSilicoSpectro::Spectra::MSRun::handlers{$inFormat}{readMultipleFile};
+    $InSilicoSpectro::Spectra::MSRun::handlers{$inFormat}{read}->($run);
+  }
+}
+
+if($excludeKeysFile){
+  my %xKeys;
+  open (FD, "<$excludeKeysFile") or die "cannot open for reading [$excludeKeysFile] :$!";
+  while (<FD>){
+    chomp;
+    s/\#.*//;
+    s/\s+$//;
+    next unless /\S/;
+    $xKeys{$_}=1;
+  }
+  close FD;
+  my $imax=$run->getNbSpectra()-1;
+  my $i=0;
+  while ($i<=$imax){
+    my $sp=$run->getSpectra($i);
+    if($xKeys{$sp->get('key')}){
+      $run->removeSpectra($i);
+      $i--;
+      $imax;
+    }else{
+      next unless ref($sp) eq 'InSilicoSpectro::Spectra::MSMSSpectra';
+      my $jmax=$sp->size()-1;
+      my $j=0;
+      while ($j<=$jmax){
+	my $cmpd=$sp->get('compounds')->[$j];
+	if($xKeys{$cmpd->get('key')}){
+	  print STDERR "remove $j\n";
+	  splice @{$sp->get('compounds')}, $j, 1;
+	  $j--;
+	  $jmax--;
+	}
+	$j++;
+      }
+    }
+    $i++;
+  }
+}
+
+
 #to filter the spectra
 if ($fileFilter) {
   my $fc = new InSilicoSpectro::Spectra::Filter::MSFilterCollection();
   $fc->readXml($fileFilter);
   $fc->filterSpectra($run);
 }
+
 if ($precursorTrustParentCharge){
   if($precursorTrustParentCharge eq 'medium'){
     my $origpd_cmask;
@@ -316,3 +416,22 @@ if ($fileOut=~/(.*?):(.*)/) {
 
 
 $run->write($outformat, ">$outfile");
+
+if($propertiesFile){
+  require Util::Properties;
+  my $prop=Util::Properties->new();
+  $propertiesPrefix.="." if $propertiesPrefix && $propertiesPrefix!~/\.$/;
+  $prop->file_name($propertiesFile);
+
+  #count nb frag spectra.
+  my $nbFragSp=0;
+  my $imax=$run->getNbSpectra()-1;
+  foreach my $i(0..$imax){
+    my $sp=$run->getSpectra($i);
+    next unless ref($sp) eq 'InSilicoSpectro::Spectra::MSMSSpectra';
+    $nbFragSp+=$sp->size();
+  }
+  $prop->prop_set($propertiesPrefix."msms.nbcompounds", $nbFragSp);
+  
+
+}

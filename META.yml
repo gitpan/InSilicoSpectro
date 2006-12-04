@@ -1,6 +1,6 @@
 ---
 name: InSilicoSpectro
-version: 0.9.25
+version: 1.0.4
 author:
   - 'Alexandre Masselot <alexandre.masselot@genebio.com>, Jacques Colinge <Jacques.Colinge@fh-hagenberg.at>'
 abstract: Open source Perl library for proteomics
@@ -11,6 +11,7 @@ requires:
   Archive::Tar: 0
   Archive::Zip: 0
   Compress::Zlib: 0
+  Data::Serializer: 0
   Digest::MD5: 0
   File::Find::Rule: 0
   File::Temp: 0
@@ -37,7 +38,7 @@ recommends:
 provides:
   InSilicoSpectro:
     file: lib/InSilicoSpectro.pm
-    version: 0.9.25
+    version: 1.0.4
   InSilicoSpectro::InSilico::AASequence:
     file: lib/InSilicoSpectro/InSilico/AASequence.pm
   InSilicoSpectro::InSilico::CleavEnzyme:
@@ -98,6 +99,8 @@ provides:
     file: lib/InSilicoSpectro/Spectra/PeakDescriptor.pm
   InSilicoSpectro::Spectra::PhenyxPeakDescriptor:
     file: lib/InSilicoSpectro/Spectra/PhenyxPeakDescriptor.pm
+  InSilicoSpectro::Utils::FileCached:
+    file: lib/InSilicoSpectro/Utils/FileCached.pm
   InSilicoSpectro::Utils::Files:
     file: lib/InSilicoSpectro/Utils/Files.pm
   InSilicoSpectro::Utils::XML::SaxIndexMaker:

@@ -670,6 +670,20 @@ sub getMass
 } # getMass
 
 
+=head2 getMoZ(charge)
+
+
+=cut
+
+sub getMoZ
+{
+  my $this = shift;
+  my $charge=shift or croak "must provide a charge for Peptide->getMoZ";
+  my $m=$this->getMass();
+  $m-=InSilicoSpectro::InSilico::MassCalculator::getMass('el_H+') if ($this->addProton());
+  return $m/$charge+InSilicoSpectro::InSilico::MassCalculator::getMass('el_H+');
+}
+
 =head2 getLength
 
 Returns peptide sequence length.
