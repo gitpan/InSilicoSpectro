@@ -476,7 +476,7 @@ die "no convertSpectra.pl executable was found in $ENV{PATH}. \n".join ("\n", %E
 $cmd="convertSpectra.pl";
 my $cmdArgs="--in=$inputFormat:$finTmp ";
 $cmdArgs.=" --defaultcharge='$defaultCharge'" if $defaultCharge;
-$cmdArgs.=" --title=$title" if $title;
+$cmdArgs.=" --title='$title'" if $title;
 
 if($filter_activated){
   my $fc = new InSilicoSpectro::Spectra::Filter::MSFilterCollection();

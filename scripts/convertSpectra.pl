@@ -171,7 +171,7 @@ foreach(split /;/, $sampleInfo){
   $sampleInfo{$n}=$v;
 }
 
-die "invalid --trustprecursorcharge=(medium)" if $precursorTrustParentCharge and $precursorTrustParentCharge !~ /^(medium)$/;
+#die "invalid --trustprecursorcharge=(medium)" if $precursorTrustParentCharge and $precursorTrustParentCharge !~ /^(medium)$/;
 
 use InSilicoSpectro::Spectra::MSRun;
 use InSilicoSpectro::Spectra::MSSpectra;
@@ -319,35 +319,60 @@ if ($fileFilter) {
 }
 
 if ($precursorTrustParentCharge){
-  if($precursorTrustParentCharge eq 'medium'){
-    my $origpd_cmask;
-    my $alterpd_charge;
-    my $imax=$run->getNbSpectra()-1;
-    foreach my $i(0..$imax){
-      my $sp=$run->getSpectra($i);
-      next unless ref($sp) eq 'InSilicoSpectro::Spectra::MSMSSpectra';
-      my $jmax=$sp->size()-1;
-      for my $j (0..$jmax){
-	my $cmpd=$sp->get('compounds')->[$j];
-	my $ipdcmask=$cmpd->get('parentPD')->getFieldIndex('chargemask');
-	unless(defined $ipdcmask){
-	  my $ipdcharge=$cmpd->get('parentPD')->getFieldIndex('charge') or die "neither charge not chargemask is defined for cmpd parent \n$cmpd";
-	  if($cmpd->get('parentPD')."" ne "$origpd_cmask"){
-	    $origpd_cmask=$cmpd->get('parentPD');
-	    $alterpd_charge=InSilicoSpectro::Spectra::PhenyxPeakDescriptor->new($origpd_cmask);
-	    $alterpd_charge->getFields()->[$ipdcharge]='chargemask';
-	    $ipdcmask=$ipdcharge;
-	  }else{
-	    $alterpd_charge=$cmpd->get('parentPD');
-	    $ipdcmask=$ipdcharge;
-	  }
-	}
-	$cmpd->getParentData()->[$ipdcmask]|= (1<<3) if $cmpd->getParentData()->[$ipdcmask] & (1<<2);
-	$cmpd->getParentData()->[$ipdcmask]|= (1<<2) if $cmpd->getParentData()->[$ipdcmask] & (1<<3);
+  my %charge2trust;
+  if ($precursorTrustParentCharge eq 'medium') {
+    %charge2trust=(
+		   2=>4+8,
+		   3=>4+8,
+		  );
+  } elsif ($precursorTrustParentCharge=~/\d+:\d+/) {
+    foreach(split/\//, $precursorTrustParentCharge){
+      die "[$_] does not fit /\d+:\d+[,\d+[...]]/" unless /^(\d+):([\d,]+)$/;
+      my $c=$1;
+      my $l=$2;
+      $charge2trust{$c}=0;
+      foreach (split /,/, $l){
+	$charge2trust{$c}|=(1<<$_);
       }
+    }
+  } else {
+    die "unknow --trustprecursorcharge"
+  }
+
+  my $origpd_cmask;
+  my $alterpd_charge;
+  my $imax=$run->getNbSpectra()-1;
+  foreach my $i (0..$imax) {
+    my $sp=$run->getSpectra($i);
+    next unless ref($sp) eq 'InSilicoSpectro::Spectra::MSMSSpectra';
+    my $jmax=$sp->size()-1;
+    for my $j (0..$jmax) {
+      my $cmpd=$sp->get('compounds')->[$j];
+      my $ipdcmask=$cmpd->get('parentPD')->getFieldIndex('chargemask');
+      unless(defined $ipdcmask){
+	my $ipdcharge=$cmpd->get('parentPD')->getFieldIndex('charge') or die "neither charge not chargemask is defined for cmpd parent \n$cmpd";
+	if ($cmpd->get('parentPD')."" ne "$origpd_cmask") {
+	  $origpd_cmask=$cmpd->get('parentPD');
+	  $alterpd_charge=InSilicoSpectro::Spectra::PhenyxPeakDescriptor->new($origpd_cmask);
+	  $alterpd_charge->getFields()->[$ipdcharge]='chargemask';
+	  $ipdcmask=$ipdcharge;
+	} else {
+	  $alterpd_charge=$cmpd->get('parentPD');
+	  $ipdcmask=$ipdcharge;
+	}
+      }
+      my $cmask=$cmpd->getParentData()->[$ipdcmask];
+      foreach (0..31){
+	next unless $cmask & (1<<$_);
+	$cmpd->getParentData()->[$ipdcmask]|=$charge2trust{$_};
+      }
+#      $cmpd->getParentData()->[$ipdcmask]|= (1<<3) if $cmpd->getParentData()->[$ipdcmask] & (1<<2);
+#      $cmpd->getParentData()->[$ipdcmask]|= (1<<2) if $cmpd->getParentData()->[$ipdcmask] & (1<<3);
     }
   }
 }
+
+
 if($dpmStr){
   use InSilicoSpectro;
   InSilicoSpectro::init();

@@ -494,6 +494,11 @@ sub twigMzxml_addPMFSpectrum{
   return if $this->{read}{skip}{pmf};
   my $sp=InSilicoSpectro::Spectra::MSSpectra->new();
 
+  unless ($el->first_child('peaks')){
+    $twig->purge;
+    next;
+  }
+
   $sp->origFile($this->{origFile});
   $sp->set('peakDescriptor', $pd_mzint);
   $sp->setSampleInfo('retentionTime', $el->atts->{retentionTime}) if $el->atts->{retentionTime};
@@ -538,7 +543,6 @@ sub twigMzxml_readCmpd{
     my $rt=$el->atts->{retentionTime};
     $rt=~s/PT([\d\.]+)S/$1/;
     $cmpd->set('acquTime', $rt);
-    print STDERR "RETENTION TIME [$rt]\n";
   }
   $cmpd->set('scan', {start=>$el->atts->{num}, end=>$el->atts->{num}});
 
@@ -691,9 +695,10 @@ sub twigMzdata_readCmpd{
    $cmpd->set('title', $title);
 
    return unless $el->get_xpath('spectrumDesc/spectrumSettings/spectrumInstrument[@msLevel="2"]');
-
    my $xpath='spectrumDesc/precursorList/precursor[@msLevel="1"]/ionSelection/cvParam';
-   my @a=$el->get_xpath($xpath);
+   my $xp_thermobug='spectrumDesc/precursorList/precursor[@msLevel="2"]/ionSelection/cvParam';
+   my @a=($el->get_xpath($xpath), $el->get_xpath($xp_thermobug));
+   
 #   unless (@a){
 #     $xpath=~s/\bacq/spectrum/g;
 #     @a=$el->get_xpath($xpath);
