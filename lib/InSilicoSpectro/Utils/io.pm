@@ -138,7 +138,7 @@ sub uncompressFile{
   print FDOUT $buffer while $gz->gzread($buffer) > 0 ;
 
   croak "Error uncompressing from $fname: $gzerrno" . ($gzerrno+0) if $gzerrno != Z_STREAM_END ;
-  $gz->gzflush("Z_FINISH");
+  #$gz->gzflush("Z_FINISH");
   $gz->gzclose() ;
 
   undef $gz;

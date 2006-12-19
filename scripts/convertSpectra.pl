@@ -54,6 +54,10 @@ Set sample related info example 'instrument=QTOF;instrumentId=xyz'
 
 turn 2+ and 3+ precursor  into (2+ OR 3+)
 
+=item --trustprecursorcharge=1:1/2:2,3/3:2,3,4
+
+(or similar) will attribute 1+=>1+, 2+=>2+ or 3+, 3+=>2+,3+ or 4+.
+
 =item --duplicateprecursormoz=i1:i2
 
 If for example i1=-1 and i2=2, precursor moz will be replicate with -1, +1 and +2 Dalton
@@ -240,7 +244,7 @@ while (my $fileIn=shift @tmpFileIn){
 	push @fileIn, {format=>$format, file=>$tmp, origfile=>$_->fileName()};
       }
     }
-  }elsif($source=~/\.gz$/i){
+  }elsif($source=~/\.gz$/i && $format ne 'dta'){
     my (undef, $tmp)=File::Temp::tempfile("$tmpdir/".(basename($source)."-XXXXX"), UNLINK=>1);
     $source=InSilicoSpectro::Utils::io::uncompressFile($source, {remove=>0, dest=>$tmp});
     push@tmpFileIn, "$format:$source";
@@ -327,7 +331,7 @@ if ($precursorTrustParentCharge){
 		  );
   } elsif ($precursorTrustParentCharge=~/\d+:\d+/) {
     foreach(split/\//, $precursorTrustParentCharge){
-      die "[$_] does not fit /\d+:\d+[,\d+[...]]/" unless /^(\d+):([\d,]+)$/;
+      die "[$_] does not fit /\d+:\d+[</\d+[...]]/" unless /^(\d+):([\d,]+)$/;
       my $c=$1;
       my $l=$2;
       $charge2trust{$c}=0;

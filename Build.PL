@@ -1,5 +1,6 @@
 #!/usr/bin/env perl
 use strict;
+use English;
 
 =head1 NAME
 
@@ -103,13 +104,19 @@ my %requires=(
 	      'File::Temp' => 0,
 	      'Getopt::Long' => 0,
 	      'GD' => 0,
-	      'GD::Graph' => 0,
-	      'GD::Text' => 0,
 	      'MIME::Base64' => 0,
 	      'XML::Parser' => 0,
 	      'XML::SemanticDiff' => '0',
 	      'XML::Twig' => '3.14',
 	     );
+
+if ($OSNAME=~/win/){
+  $requires{'GDGraph'}=0;
+  $requires{'GDTextUtil'}=0;
+}else{
+  $requires{'GD::Graph'}=0;
+  $requires{'GD::Text'}=0;
+}
 
 my %recommends=(
 		'Statistics::Regression'=>0,
