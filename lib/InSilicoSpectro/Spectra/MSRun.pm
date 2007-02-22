@@ -929,6 +929,24 @@ sub compoundKey2sampleCmpdNumbers{
 
 }
 
+sub compoundInfoKeysampleCmpdNumbers{
+  my $this=shift;
+  my %h;
+  my $imax=$this->getNbSpectra()-1;
+  foreach my $i(0..$imax){
+    my $sp=$this->getSpectra($i);
+    next unless ref($sp) eq 'InSilicoSpectro::Spectra::MSMSSpectra';
+    my $sn=$sp->{sampleInfo}{sampleNumber};
+    my $jmax=$sp->size()-1;
+    for my $j (0..$jmax){
+      my $cmpd=$sp->get('compounds')->[$j];
+      $h{"query_".$cmpd->{compoundNumber}}=[$cmpd->{compoundNumber}, $sn];
+    }
+  }
+  return %h;
+
+}
+
 
 use SelectSaver;
 #sub writeIDJ{

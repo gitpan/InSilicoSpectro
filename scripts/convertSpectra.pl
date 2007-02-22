@@ -218,7 +218,7 @@ undef @fileIn;
 while (my $fileIn=shift @tmpFileIn){
   my ($format, $source);
   if ($fileIn=~/(.*?):(.*)/) {
-    ($format, $source)=($1, $2);
+    ($format, $source)=(lc($1), $2);
   } else {
     ($format, $source)=(InSilicoSpectro::Spectra::MSSpectra::guessFormat($fileIn), $fileIn);
   }
