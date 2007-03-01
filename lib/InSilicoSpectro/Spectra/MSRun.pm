@@ -377,8 +377,10 @@ sub twig_addSpectrum{
   if($type eq 'msms'){
     $sp=InSilicoSpectro::Spectra::MSMSSpectra->new();
     $sp->readTwigEl($el);
-    foreach (@{$sp->get('compounds')}){
-      $this->key2spectrum($_->get('key'), $_);
+    if($sp->get('compounds')){
+      foreach (@{$sp->get('compounds')}){
+	$this->key2spectrum($_->get('key'), $_);
+      }
     }
   }elsif($type =~ /^(ms|pmf)$/){
     $sp=InSilicoSpectro::Spectra::MSSpectra->new();
@@ -625,7 +627,7 @@ sub twigMzdata_setDescription{
   $this->set('time',sprintf("%2.2d:%2.2d:%2.2d", localtime->hour(), localtime->min(), localtime->sec()));
 
   @a=$el->get_xpath('instrument/instrumentName');
-  $this->{instrument}{name}=$a[0]->text;
+  $this->{instrument}{name}=$a[0]->text if @a;
 }
 
 sub twigMzdata_addSpectrum{
@@ -650,7 +652,7 @@ sub twigMzdata_addPMFSpectrum{
   my($this, $twig, $el)=@_;
   return if $this->{read}{skip}{pmf};
 
-  warn "warning: twigMzdata_addPMFSpectrum not defined";
+  Carp::cluck "warning: twigMzdata_addPMFSpectrum not defined";
 #  my $sp=InSilicoSpectro::Spectra::MSSpectra->new();
 
 #  $sp->set('peakDescriptor', $pd_mzint);

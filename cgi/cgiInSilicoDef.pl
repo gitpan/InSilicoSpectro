@@ -756,7 +756,7 @@ sub query2cleavEnzyme{
     my $els=XML::Twig::Elt->new()->parse("
 <site>
   <cleavSite>".(uc $q->param('site_cleav'))."</cleavSite>
-  <adjacentSite>".(uc $q->param('site_adjacent'))."</adjacentSite>
+  <adjacentSite>".((uc $q->param('site_adjacent'))||'.')."</adjacentSite>
   <terminus>".(uc $q->param('site_terminus'))."</terminus>
 </site>
 ")->paste(first_child=>$el);;

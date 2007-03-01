@@ -257,7 +257,9 @@ sub makeIndex{
   $this->{catchEndPos}=[];
 
   #launches the parsing process
-  $parser->parse(Source => { SystemId => $sourceFile });
+  open FD, "<$sourceFile" or die "cannot open for reading [$sourceFile]: $!";
+  binmode FD;
+  $parser->parse(Source => { ByteStream => \*FD});
 
   #print the index
   $this->printIndexXml();

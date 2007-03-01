@@ -77,15 +77,6 @@ Alexandre Masselot, www.genebio.com
 
 =cut
 
-BEGIN{
-  use File::Basename;
-  my $bn=dirname $0;
-  push @INC, "$bn/../../lib";
-}
-
-END{
-}
-
 use Getopt::Long;
 my($srcFile, $saveFile, $indexMakerFile, $help, $man);
 
