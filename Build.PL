@@ -102,6 +102,7 @@ my %requires=(
 	      'Data::Serializer'=>0,
 	      'File::Find::Rule' => 0,
 	      'File::Temp' => 0,
+	      'File::Glob' => 0,
 	      'Getopt::Long' => 0,
 	      'GD' => 0,
 	      'MIME::Base64' => 0,
