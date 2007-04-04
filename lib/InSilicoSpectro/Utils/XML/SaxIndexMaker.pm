@@ -257,7 +257,7 @@ sub makeIndex{
   $this->{catchEndPos}=[];
 
   #launches the parsing process
-  open FD, "<$sourceFile" or die "cannot open for reading [$sourceFile]: $!";
+  open FD, "<$sourceFile" or CORE::die "cannot open for reading [$sourceFile]: $!";
   binmode FD;
   $parser->parse(Source => { ByteStream => \*FD});
 
@@ -362,7 +362,7 @@ sub saveEndPos{
 
 sub printIndex{
   my ($this, $out)=@_;
-  my $fdOut=(defined $out)?(new SelectSaver(InSilicoSpectro::Utils::io->getFD($out) or die "cannot open [$out]: $!")):\*STDOUT;
+  my $fdOut=(defined $out)?(new SelectSaver(InSilicoSpectro::Utils::io->getFD($out) or CORE::die "cannot open [$out]: $!")):\*STDOUT;
 
   foreach my $indel(@{$this->{index}}){
     print<<TAG;
@@ -381,7 +381,7 @@ TAG
 use Time::localtime;
 sub printIndexXml{
   my ($this, $out)=@_;
-  my $save=(defined $out)?(new SelectSaver(InSilicoSpectro::Utils::io->getFD($out) or die "cannot open [$out]: $!")):\*STDOUT;
+  my $save=(defined $out)?(new SelectSaver(InSilicoSpectro::Utils::io->getFD($out) or CORE::die "cannot open [$out]: $!")):\*STDOUT;
 
   my $date=sprintf("%4d-%2.2d-%2.2d",localtime->year()+1900, localtime->mon()+1, localtime->mday());
   my $time=sprintf("%2.2d:%2.2d:%2.2d", localtime->hour(), localtime->min(), localtime->sec());

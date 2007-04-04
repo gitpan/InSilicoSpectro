@@ -318,6 +318,16 @@ sub title{
   return $this->{title};
 }
 
+sub hide{
+  my ($this, $val) = @_;
+
+  $this=$this->FC_getme if $USE_FILECACHED;
+  if (defined($val)){
+    $this->{hide}=$val;
+  }
+  return $this->{hide};
+}
+
 sub defaultCharge{
   my ($this, $val) = @_;
 
@@ -334,15 +344,17 @@ use SelectSaver;
 sub write{
   my ($this, $format, $out)=@_;
   $this=$this->FC_getme if $USE_FILECACHED;
+  return if $this->hide;
   croak "InSilicoSpectro::Spectra:MSMSSpectra:write: no handler defined for format [$format] (".getWriteFmtList().")\n" unless defined $handlers{$format}{write};
 
-  my $fdOut=(new SelectSaver(InSilicoSpectro::Utils::io->getFD(">$out") or die "cannot open [$out]: $!")) if defined $out;
+  my $fdOut=(new SelectSaver(InSilicoSpectro::Utils::io->getFD(">$out") or CORE::die "cannot open [$out]: $!")) if defined $out;
   $handlers{$format}{write}->($this);
 }
 
 sub writeTxt{
   my ($this)=@_;
   $this=$this->FC_getme if $USE_FILECACHED;
+  return if $this->hide;
   print "#sampleNumber=".$this->get('sampleNumber')."\n";
   foreach(@{$this->spectrum()}){
     print "".(join ' ', @$_)."\n";
@@ -353,6 +365,7 @@ sub writeTxt{
 sub writeMGF{
   my ($this)=@_;
   $this=$this->FC_getme if $USE_FILECACHED;
+  return if $this->hide;
   warn "NO writeMGF fo MSSpectra implemented";
   return;
 }
@@ -360,6 +373,7 @@ sub writeMGF{
 sub writePKL{
   my ($this)=@_;
   $this=$this->FC_getme if $USE_FILECACHED;
+  return if $this->hide;
   warn "NO writePKL fo MSSpectra implemented";
   return;
 }
@@ -367,6 +381,7 @@ sub writePKL{
 sub writePLE{
   my ($this, $shift)=@_;
   $this=$this->FC_getme if $USE_FILECACHED;
+  return if $this->hide;
   my $transformChargeMask=1;
   $this->{key}="pmf_$this->{sampleInfo}{sampleNumber}" unless  $this->{key};
 

@@ -175,7 +175,7 @@ foreach(split /;/, $sampleInfo){
   $sampleInfo{$n}=$v;
 }
 
-#die "invalid --trustprecursorcharge=(medium)" if $precursorTrustParentCharge and $precursorTrustParentCharge !~ /^(medium)$/;
+#CORE::die "invalid --trustprecursorcharge=(medium)" if $precursorTrustParentCharge and $precursorTrustParentCharge !~ /^(medium)$/;
 
 use InSilicoSpectro::Spectra::MSRun;
 use InSilicoSpectro::Spectra::MSSpectra;
@@ -235,7 +235,7 @@ while (my $fileIn=shift @tmpFileIn){
   }elsif($source=~/\.zip/i && $format ne 'dta'){
     my $zip=Archive::Zip->new();
     unless($zip->read($source)==AZ_OK){
-      die "zip/unzip: cannot read archive $source";
+      CORE::die "zip/unzip: cannot read archive $source";
     }else{
       my @members=$zip->members();
       foreach (@members){
@@ -244,10 +244,12 @@ while (my $fileIn=shift @tmpFileIn){
 	push @fileIn, {format=>$format, file=>$tmp, origfile=>$_->fileName()};
       }
     }
-  }elsif($source=~/\.gz$/i && $format ne 'dta'){
-    my (undef, $tmp)=File::Temp::tempfile("$tmpdir/".(basename($source)."-XXXXX"), UNLINK=>1);
+  }elsif($source=~/(.*)\.gz$/i){
+    my $base=$1;
+    my (undef, $tmp)=File::Temp::tempfile(DIR=>$tmpdir, SUFFIX=>basename($base), UNLINK=>1);
     $source=InSilicoSpectro::Utils::io::uncompressFile($source, {remove=>0, dest=>$tmp});
-    push@tmpFileIn, "$format:$source";
+    push @tmpFileIn, "$format:$source";
+    next;
   }
 
   push @fileIn, {format=>$format, file=>$source, origFile=>$source};
@@ -278,7 +280,7 @@ foreach (@fileIn) {
 
 if($excludeKeysFile){
   my %xKeys;
-  open (FD, "<$excludeKeysFile") or die "cannot open for reading [$excludeKeysFile] :$!";
+  open (FD, "<$excludeKeysFile") or CORE::die "cannot open for reading [$excludeKeysFile] :$!";
   while (<FD>){
     chomp;
     s/\#.*//;
@@ -331,7 +333,7 @@ if ($precursorTrustParentCharge){
 		  );
   } elsif ($precursorTrustParentCharge=~/\d+:\d+/) {
     foreach(split/\//, $precursorTrustParentCharge){
-      die "[$_] does not fit /\d+:\d+[</\d+[...]]/" unless /^(\d+):([\d,]+)$/;
+      CORE::die "[$_] does not fit /\d+:\d+[</\d+[...]]/" unless /^(\d+):([\d,]+)$/;
       my $c=$1;
       my $l=$2;
       $charge2trust{$c}=0;
@@ -340,7 +342,7 @@ if ($precursorTrustParentCharge){
       }
     }
   } else {
-    die "unknow --trustprecursorcharge"
+    CORE::die "unknow --trustprecursorcharge"
   }
 
   my $origpd_cmask;
@@ -354,7 +356,7 @@ if ($precursorTrustParentCharge){
       my $cmpd=$sp->get('compounds')->[$j];
       my $ipdcmask=$cmpd->get('parentPD')->getFieldIndex('chargemask');
       unless(defined $ipdcmask){
-	my $ipdcharge=$cmpd->get('parentPD')->getFieldIndex('charge') or die "neither charge not chargemask is defined for cmpd parent \n$cmpd";
+	my $ipdcharge=$cmpd->get('parentPD')->getFieldIndex('charge') or CORE::die "neither charge not chargemask is defined for cmpd parent \n$cmpd";
 	if ($cmpd->get('parentPD')."" ne "$origpd_cmask") {
 	  $origpd_cmask=$cmpd->get('parentPD');
 	  $alterpd_charge=InSilicoSpectro::Spectra::PhenyxPeakDescriptor->new($origpd_cmask);
@@ -380,7 +382,7 @@ if ($precursorTrustParentCharge){
 if($dpmStr){
   use InSilicoSpectro;
   InSilicoSpectro::init();
-  die "invalid value [$dpmStr] insteadd of --duplicateprecursormoz=i1:i2" unless $dpmStr=~/^([\-\d]+):([\-\d]+)$/;
+  CORE::die "invalid value [$dpmStr] insteadd of --duplicateprecursormoz=i1:i2" unless $dpmStr=~/^([\-\d]+):([\-\d]+)$/;
   my ($min, $max)=($1, $2);
   my $imax=$run->getNbSpectra()-1;
 
@@ -394,11 +396,11 @@ if($dpmStr){
       my $cmpd=$sp->get('compounds')->[$j];
 
       my @charges=$cmpd->precursor_charges();
-      die "cannot duplicate with undefined precursor charges" unless @charges;
+      CORE::die "cannot duplicate with undefined precursor charges" unless @charges;
       foreach my $c(@charges){
 	my $ipdcharge=$cmpd->get('parentPD')->getFieldIndex('charge');
 	unless(defined $ipdcharge){
-	  my $ipdcmask=$cmpd->get('parentPD')->getFieldIndex('chargemask') or die "neither charge not chargemask is defined for cmpd parent \n$cmpd";
+	  my $ipdcmask=$cmpd->get('parentPD')->getFieldIndex('chargemask') or CORE::die "neither charge not chargemask is defined for cmpd parent \n$cmpd";
 	  if($cmpd->get('parentPD')."" ne "$origpd_cmask"){
 	    $origpd_cmask=$cmpd->get('parentPD');
 	    $alterpd_charge=InSilicoSpectro::Spectra::PhenyxPeakDescriptor->new($origpd_cmask);

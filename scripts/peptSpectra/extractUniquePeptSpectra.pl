@@ -75,7 +75,7 @@ if (!GetOptions('help' => \$help,
 # Finds the highest scoring match for each peptide
 my (%score, $pept);
 my $score = -1.0; # Incase it is the old file format
-open(F, $ARGV[0]) || die("Cannot open [$ARGV[0]]: $!");
+open(F, $ARGV[0]) || CORE::die("Cannot open [$ARGV[0]]: $!");
 while (<F>){
   if (/<idi:sequence>([A-Z]+)<\/idi:sequence>/){
     $pept = $1;
@@ -108,11 +108,11 @@ if (defined($random)){
 }
 
 if (defined($unselected)){
-  open(U, ">$unselected") || die("Cannot create [$unselected]: $!");
+  open(U, ">$unselected") || CORE::die("Cannot create [$unselected]: $!");
 }
 
 # Prints the header
-open(F, $ARGV[0]) || die("Cannot open [$ARGV[0]]: $!");
+open(F, $ARGV[0]) || CORE::die("Cannot open [$ARGV[0]]: $!");
 while (<F>){
   print;
   print U if (defined($unselected));

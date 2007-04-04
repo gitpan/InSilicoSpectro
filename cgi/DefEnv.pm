@@ -64,7 +64,7 @@ sub read{
   return unless -e $file;
   return if ($already{$file});
   $already{$file} = 1;
-  open (fd, "<$file") or die "DefEnv::read(): cannot open [$file]: $!";
+  open (fd, "<$file") or CORE::die "DefEnv::read(): cannot open [$file]: $!";
   while(<fd>){
     chomp;
     next unless $_;

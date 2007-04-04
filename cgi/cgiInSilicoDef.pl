@@ -34,7 +34,7 @@ Make a zip archive with the file.
 
 =item opt=1
 
-Does not die if a requested file does not exist
+Does not CORE::die if a requested file does not exist
 
 =item help=1
 
@@ -177,7 +177,7 @@ unless ($defFile){
   use File::Temp qw(tempfile);
   my $tmpdir=File::Spec->tmpdir();
   (undef, $defFile) = tempfile('insilicodef-XXXXX', SUFFIX=>'.xml', UNLINK=>1, DIR=>$tmpdir);
-  my $first=shift @tmp or die "empty list of insilico def files";
+  my $first=shift @tmp or CORE::die "empty list of insilico def files";
   copy $first, $defFile;
   my $merge_obj = XML::Merge->new(filename => $defFile);
   foreach (@tmp){
@@ -188,7 +188,7 @@ unless ($defFile){
 }
 
 my $cat=$query->param('cat');
-die "argument cat=(modres|cleavenzyme)" unless $cat=~/^(modres|cleavenzyme)$/;
+CORE::die "argument cat=(modres|cleavenzyme)" unless $cat=~/^(modres|cleavenzyme)$/;
 
 use XML::Twig;
 my $twig=XML::Twig->new(pretty_print=>'indented');
@@ -276,7 +276,7 @@ if($cat eq 'cleavenzyme'){
     }
     query2cleavEnzyme($query, $el);
     $lockmgr->trylock("$defFile") || croak "can't lock [$defFile]: $!\n";
-    open (fd, ">$defFile") or die "cannot open for writeing [$defFile]: $!";
+    open (fd, ">$defFile") or CORE::die "cannot open for writeing [$defFile]: $!";
     $twig->print(\*fd);
     close fd;
     $lockmgr->unlock("$defFile") || croak "can't unlock [$defFile]: $!\n";
@@ -289,7 +289,7 @@ if($cat eq 'cleavenzyme'){
       $el=$tmp[0];
       $el->delete;
       $lockmgr->trylock("$defFile") || croak "can't lock [$defFile]: $!\n";
-      open (fd, ">$defFile") or die "cannot open for writeing [$defFile]: $!";
+      open (fd, ">$defFile") or CORE::die "cannot open for writeing [$defFile]: $!";
       $twig->print(\*fd);
       close fd;
       $lockmgr->unlock("$defFile") || croak "can't unlock [$defFile]: $!\n";
@@ -510,7 +510,7 @@ if($cat eq 'modres'){
     }
     query2modres($query, $el);
     $lockmgr->trylock("$defFile") || croak "can't lock [$defFile]: $!\n";
-    open (fd, ">$defFile") or die "cannot open for writeing [$defFile]: $!";
+    open (fd, ">$defFile") or CORE::die "cannot open for writeing [$defFile]: $!";
     $twig->print(\*fd);
     close fd;
     $lockmgr->unlock("$defFile") || croak "can't unlock [$defFile]: $!\n";
@@ -522,7 +522,7 @@ if($cat eq 'modres'){
       $el=$tmp[0];
       $el->delete;
       $lockmgr->trylock("$defFile") || croak "can't lock [$defFile]: $!\n";
-      open (fd, ">$defFile") or die "cannot open for writeing [$defFile]: $!";
+      open (fd, ">$defFile") or CORE::die "cannot open for writeing [$defFile]: $!";
       $twig->print(\*fd);
       close fd;
       $lockmgr->unlock("$defFile") || croak "can't unlock [$defFile]: $!\n";

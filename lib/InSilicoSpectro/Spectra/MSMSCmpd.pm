@@ -92,7 +92,7 @@ sub new{
 	$dvar->set($_, $h->{$_});
       }
     }else{
-      die "cannot instanciate new $class with arg of type [".(ref $h)."]";
+      CORE::die "cannot instanciate new $class with arg of type [".(ref $h)."]";
     }
   }
   return $dvar;
@@ -256,6 +256,7 @@ sub readTwigEl{
 sub writePLE{
   my ($this, $shift, $transformCharge)=@_;
   $this=$this->FC_getme if $InSilicoSpectro::Spectra::MSSpectra::USE_FILECACHED;
+  return if $this->hide;
 
   return unless ($this->get('fragments') && scalar @{$this->get('fragments')}>1);
 
@@ -280,6 +281,7 @@ sub writeMGF{
   my ($this, $transformCharge)=@_;
 
   $this=$this->FC_getme if $InSilicoSpectro::Spectra::MSSpectra::USE_FILECACHED;
+  return if $this->hide;
 my $icharge=$this->get('parentPD')->getFieldIndex('charge');
 my $ichargemask=$this->get('parentPD')->getFieldIndex('chargemask');
   print "BEGIN IONS
@@ -308,6 +310,7 @@ sub writePKL{
   my ($this, $transformCharge)=@_;
 
   $this=$this->FC_getme if $InSilicoSpectro::Spectra::MSSpectra::USE_FILECACHED;
+  return if $this->hide;
   my $icharge=$this->get('parentPD')->getFieldIndex('charge');
   my $ichargemask=$this->get('parentPD')->getFieldIndex('chargemask');
 my $imoz=$this->get('parentPD')->getFieldIndex('moz');

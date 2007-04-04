@@ -236,7 +236,7 @@ sub EndTag
 	matchSpectrumGreedy(pept=>$peptide, modif=>$modif, spectrum=>\%spectrum, expSpectrum=>\@peaks, fragTypes=>\@fragTypes, tol=>$tol);
       }
       else{
-	die("Unknown match type [$matchSel]");
+	CORE::die("Unknown match type [$matchSel]");
       }
 
       if (defined($withPlots)){

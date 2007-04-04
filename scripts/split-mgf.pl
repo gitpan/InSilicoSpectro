@@ -87,18 +87,18 @@ if (!GetOptions(
 use File::Temp qw/ tempfile tempdir /;
 use File::Copy;
 
-die "must give --slicesize=n argument" unless defined $sliceSize;
-die "must define --outdir=path/to/dir" unless defined $outDir;
+CORE::die "must give --slicesize=n argument" unless defined $sliceSize;
+CORE::die "must define --outdir=path/to/dir" unless defined $outDir;
 
-mkdir $outDir or die "cannot mkdir [$outDir]: $!" unless (-d $outDir);
+mkdir $outDir or CORE::die "cannot mkdir [$outDir]: $!" unless (-d $outDir);
 
 print "STDERR opening input [-]\n" if $verbose;
-open (fdin, "<$inFile") or die "cannot open for reading [$inFile]: $!";
+open (fdin, "<$inFile") or CORE::die "cannot open for reading [$inFile]: $!";
 
 my $cptSlice;
 my $nSlice=0;
 my $f=newFileSlice();
-open (fdout, ">$f") or die "cannot open file for writing [$f]:!";
+open (fdout, ">$f") or CORE::die "cannot open file for writing [$f]:!";
 while (<fdin>){
   print fdout $_;
   if (/^END IONS\b/){
@@ -109,7 +109,7 @@ while (<fdin>){
       $cptSlice=0;
       close fdout;
       my $f=newFileSlice();
-      open (fdout, ">$f") or die "cannot open file for writing [$f]:!";
+      open (fdout, ">$f") or CORE::die "cannot open file for writing [$f]:!";
     }
   }
 }

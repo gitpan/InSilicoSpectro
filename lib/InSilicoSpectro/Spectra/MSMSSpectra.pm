@@ -189,7 +189,7 @@ sub new{
 	$dvar->set($_, $h->{$_}); 
       }
     }else{
-      die "cannot instanciate new $class with arg of type [".(ref $h)."]";
+      CORE::die "cannot instanciate new $class with arg of type [".(ref $h)."]";
     }
   }
   return $dvar;
@@ -332,7 +332,7 @@ sub readDTA{
     require File::Temp;
     my $tmpdir=File::Spec->tmpdir;
     my $zip = Archive::Zip->new();
-    die "ZIP read error in [$src]" unless $zip->read( $src ) == Archive::Zip::AZ_OK;
+    CORE::die "ZIP read error in [$src]" unless $zip->read( $src ) == Archive::Zip::AZ_OK;
     my @members = $zip->members();
     foreach my $mb (@members) {
       my ($fdtmp, $tmp)=File::Temp::tempfile("$tmpdir/".(basename $_."-XXXXX"), UNLINK=>1);
@@ -675,9 +675,10 @@ use SelectSaver;
 sub write{
   my ($this, $format, $out)=@_;
   $this=$this->FC_getme if $InSilicoSpectro::Spectra::MSSpectra::USE_FILECACHED;
+  return if $this->hide;
   croak "InSilicoSpectro::Spectra:MSMSSpectra:write: no handler defined for format [$format] (".getWriteFmtList().")\n" unless defined $handlers{$format}{write};
 
-  my $fdOut=(new SelectSaver(InSilicoSpectro::Utils::io->getFD(">$out") or die "cannot open [$out]: $!")) if defined $out;
+  my $fdOut=(new SelectSaver(InSilicoSpectro::Utils::io->getFD(">$out") or CORE::die "cannot open [$out]: $!")) if defined $out;
   $handlers{$format}{write}->($this);
 }
 
@@ -704,6 +705,7 @@ sub write{
 sub writePLE{
   my ($this, $shift)=@_;
   $this=$this->FC_getme if $InSilicoSpectro::Spectra::MSSpectra::USE_FILECACHED;
+  return if $this->hide;
   my $transformChargeMask=1;
 
   $this->{key}="sample_$this->{sampleInfo}{sampleNumber}" unless  $this->{key};
@@ -756,6 +758,7 @@ sub writeMGF{
   my ($this)=@_;
   $this=$this->FC_getme if $InSilicoSpectro::Spectra::MSSpectra::USE_FILECACHED;
   $this=$this->FC_getme if $InSilicoSpectro::Spectra::MSSpectra::USE_FILECACHED;
+  return if $this->hide;
   my $transformChargeMask=1;
   if(defined $this->get('compounds')){
     foreach (@{$this->get('compounds')}){
@@ -767,6 +770,7 @@ sub writeMGF{
 sub writePKL{
   my ($this)=@_;
   $this=$this->FC_getme if $InSilicoSpectro::Spectra::MSSpectra::USE_FILECACHED;
+  return if $this->hide;
   my $transformChargeMask=1;
   if(defined $this->get('compounds')){
     foreach (@{$this->get('compounds')}){

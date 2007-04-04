@@ -102,7 +102,6 @@ my %requires=(
 	      'Data::Serializer'=>0,
 	      'File::Find::Rule' => 0,
 	      'File::Temp' => 0,
-	      'File::Glob' => 0,
 	      'Getopt::Long' => 0,
 	      'GD' => 0,
 	      'MIME::Base64' => 0,
@@ -112,6 +111,7 @@ my %requires=(
 	     );
 
 if ($OSNAME=~/win/){
+  $requires{'File::Glob'};
   $requires{'GDGraph'}=0;
   $requires{'GDTextUtil'}=0;
 }else{

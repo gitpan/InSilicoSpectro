@@ -81,7 +81,7 @@ exit(0);
 
 # Counts the peptides
 my $count;
-open(F, $ARGV[0]) || die("Cannot open [$ARGV[0]]: $!");
+open(F, $ARGV[0]) || CORE::die("Cannot open [$ARGV[0]]: $!");
 while (<F>){
   if (/<idi:sequence>/){
     $count++;
@@ -109,9 +109,9 @@ if (defined($out)){
   $setOne = "$out-1.peptSpectra.xml";
   $setTwo = "$out-2.peptSpectra.xml";
 }
-open(S1, ">$setOne") || die("Cannot create [$setOne]: $!");
-open(S2, ">$setTwo") || die("Cannot create [$setTwo]: $!");
-open(F, $ARGV[0]) || die("Cannot open [$ARGV[0]]: $!");
+open(S1, ">$setOne") || CORE::die("Cannot create [$setOne]: $!");
+open(S2, ">$setTwo") || CORE::die("Cannot create [$setTwo]: $!");
+open(F, $ARGV[0]) || CORE::die("Cannot open [$ARGV[0]]: $!");
 while (<F>){
   print S1;
   print S2;

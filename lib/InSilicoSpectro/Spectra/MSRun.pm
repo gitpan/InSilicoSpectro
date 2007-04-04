@@ -231,7 +231,7 @@ my $pmf_regexp = $params{title_pmfregexp};
 
 if( defined $mappingFile )
 	{
-	open( INPUT,"<$mappingFile") or die "can't read $mappingFile: $!";
+	open( INPUT,"<$mappingFile") or CORE::die "can't read $mappingFile: $!";
 	while( my $line = <INPUT> )
 		{
 		chomp($line);
@@ -282,7 +282,7 @@ sub getSpectra{
 
 sub removeSpectra{
   my ($this, $i)=@_;
-  die "must provide a index to MSRun::deleteSpectra" unless defined $i;
+  CORE::die "must provide a index to MSRun::deleteSpectra" unless defined $i;
   splice @{$this->{spectra}->[$i]}, $i, 1;
 }
 
@@ -644,7 +644,7 @@ sub twigMzdata_addSpectrum{
   }elsif($msLevel==2){
     $this->twigMzdata_addMSMSSpectrum($twig, $el);
   }else{
-    die __PACKAGE__."(".__LINE__."): no add spectrum sub for msLevel=[$msLevel]";
+    CORE::die __PACKAGE__."(".__LINE__."): no add spectrum sub for msLevel=[$msLevel]";
   }
 }
 
@@ -823,7 +823,7 @@ sub twigMascotXml_addSpectrum{
   }elsif($msLevel==2){
     $this->twigMascotXml_addMSMSSpectrum($twig, $el);
   }else{
-    die __PACKAGE__."(".__LINE__."): no add spectrum sub for msLevel=[$msLevel]";
+    CORE::die __PACKAGE__."(".__LINE__."): no add spectrum sub for msLevel=[$msLevel]";
   }
   $twig->purge;
 }
@@ -859,7 +859,8 @@ sub twigMascotXml_readCmpd{
    $cmpd->set('fragPD', $spmsms_mascotxml->get('fragPD'));
    $cmpd->set('key', "query_".$el->atts->{number});
 
-   $cmpd->set('title', $el->first_child('StringTitle')->text);
+   my $title=(defined $el->first_child('StringTitle'))?$el->first_child('StringTitle')->text:$cmpd->get('key');
+   $cmpd->set('title', $title);
 
    my %h=(
 	 );
@@ -954,7 +955,7 @@ use SelectSaver;
 #sub writeIDJ{
 #  my ($this, $format, $out)=@_;
 
-#  my $fdOut=(new SelectSaver(InSilicoSpectro::Utils::io->getFD($out) or die "cannot open [$out]: $!")) if defined $out;
+#  my $fdOut=(new SelectSaver(InSilicoSpectro::Utils::io->getFD($out) or CORE::die "cannot open [$out]: $!")) if defined $out;
 #  foreach($this->{spectra}){
 #    next unless defined $_;
 #    $_->write($format);
@@ -965,7 +966,7 @@ use SelectSaver;
 
 sub write{
   my ($this, $format, $out)=@_;
-  my $fdOut=(new SelectSaver(InSilicoSpectro::Utils::io->getFD($out) or die "cannot open [$out]: $!")) if defined $out;
+  my $fdOut=(new SelectSaver(InSilicoSpectro::Utils::io->getFD($out) or CORE::die "cannot open [$out]: $!")) if defined $out;
 
   InSilicoSpectro::Utils::io::croakIt "MSRun::".__LINE__.": no write format for [$format]" unless defined $handlers{$format}{write};
   $handlers{$format}{write}->($this);
@@ -975,7 +976,7 @@ sub write{
 sub writeIDJ{
   my ($this, $out)=@_;
 
-  my $fdOut=(new SelectSaver(InSilicoSpectro::Utils::io->getFD($out) or die "cannot open [$out]: $!")) if defined $out;
+  my $fdOut=(new SelectSaver(InSilicoSpectro::Utils::io->getFD($out) or CORE::die "cannot open [$out]: $!")) if defined $out;
 
 print "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>
 <idj:IdentificationJob xmlns:idj=\"http://www.phenyx-ms.com/namespaces/IdentificationJob.html\">
@@ -996,7 +997,7 @@ print "  </anl:AnalysisList>
 
 sub writePLE{
   my ($this, $shift, $out)=@_;
-  my $fdOut=(new SelectSaver(InSilicoSpectro::Utils::io->getFD($out) or die "cannot open [$out]: $!")) if defined $out;
+  my $fdOut=(new SelectSaver(InSilicoSpectro::Utils::io->getFD($out) or CORE::die "cannot open [$out]: $!")) if defined $out;
 #  print STDERR "# spectra= $#spectra\n";
   foreach(@{$this->get('spectra')}){
     next unless defined $_;
@@ -1013,7 +1014,7 @@ sub writePLE{
 
 sub writeMGF{
   my ($this, $out)=@_;
-  my $fdOut=(new SelectSaver(InSilicoSpectro::Utils::io->getFD($out) or die "cannot open [$out]: $!")) if defined $out;
+  my $fdOut=(new SelectSaver(InSilicoSpectro::Utils::io->getFD($out) or CORE::die "cannot open [$out]: $!")) if defined $out;
   print "COM=$this->{title}\n";
   if(defined $this->{defaultCharge}){
     print "CHARGE=".InSilicoSpectro::Spectra::MSSpectra::charge2mgfStr((InSilicoSpectro::Spectra::MSSpectra::chargemask2string($this->{defaultCharge})))."\n";;
@@ -1027,7 +1028,7 @@ sub writeMGF{
 
 sub writePKL{
   my ($this, $out)=@_;
-  my $fdOut=(new SelectSaver(InSilicoSpectro::Utils::io->getFD($out) or die "cannot open [$out]: $!")) if defined $out;
+  my $fdOut=(new SelectSaver(InSilicoSpectro::Utils::io->getFD($out) or CORE::die "cannot open [$out]: $!")) if defined $out;
   print "#$this->{title}\n";
   foreach(@{$this->get('spectra')}){
     next unless defined $_;

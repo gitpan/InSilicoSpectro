@@ -169,7 +169,7 @@ sub toString{
 }
 sub print{
   my ($this, $out)=@_;
-  my $fdOut=(defined $out)?(new SelectSaver(InSilicoSpectro::Utils::io->getFD($out) or die "cannot open [$out]: $!")):\*STDOUT;
+  my $fdOut=(defined $out)?(new SelectSaver(InSilicoSpectro::Utils::io->getFD($out) or CORE::die "cannot open [$out]: $!")):\*STDOUT;
   print $fdOut $this->toString();
 }
 
@@ -279,7 +279,7 @@ sub init{
 			 );
   if(@listFiles){
     foreach (@listFiles){
-      die "file [$_] is not readable" unless -r $_;
+      CORE::die "file [$_] is not readable" unless -r $_;
       print STDERR "reading CleavEnzyme def from $_\n" if $InSilicoSpectro::Utils::io::VERBOSE;
       $twig->parsefile($_) or InSilicoSpectro::Utils::io::croakIt "cannot parse [$_]: $!";
     }

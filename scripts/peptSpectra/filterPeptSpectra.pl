@@ -90,7 +90,7 @@ if (!GetOptions('help' => \$help,
 $unit = uc($unit);
 InSilicoSpectro::init();
 
-open(F, $ARGV[0]) || die("Cannot open [$ARGV[0]]: $!");
+open(F, $ARGV[0]) || CORE::die("Cannot open [$ARGV[0]]: $!");
 while (<F>){
   print;
   last if (/<idi:Identifications>/);

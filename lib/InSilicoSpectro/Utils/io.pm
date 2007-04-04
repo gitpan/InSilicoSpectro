@@ -161,10 +161,10 @@ sub compressFile{
 
   my $outFile="$fname.gz";
   my $gz = gzopen("$outFile", "wb")
-    or die "Cannot open [$outFile]: $gzerrno\n" ;
+    or CORE::die "Cannot open [$outFile]: $gzerrno\n" ;
   while (<FDIN>) {
     $gz->gzwrite($_) 
-      or die "error writing: $gzerrno\n" ;
+      or CORE::die "error writing: $gzerrno\n" ;
   }
   close FDIN;
   $gz->gzclose;

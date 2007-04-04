@@ -11,7 +11,6 @@ WriteMakefile
                            'Data::Serializer' => '0',
                            'Digest::MD5' => '0',
                            'File::Find::Rule' => '0',
-                           'File::Glob' => '0',
                            'File::Temp' => '0',
                            'GD' => '0',
                            'GD::Graph' => '0',

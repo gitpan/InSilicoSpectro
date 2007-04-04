@@ -233,8 +233,8 @@ sub log10 {
 }
 
 sub getAuthorList{
-  my $m=shift or die "must provide a method name when getAuthorList()";
-  return $authorList{$m} || die "empty author list for method [$m]";
+  my $m=shift or CORE::die "must provide a method name when getAuthorList()";
+  return $authorList{$m} || CORE::die "empty author list for method [$m]";
 }
 
 

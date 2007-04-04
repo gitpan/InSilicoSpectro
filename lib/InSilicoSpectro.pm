@@ -218,14 +218,14 @@ our (@ISA, @EXPORT, @EXPORT_OK, $VERSION);
 
 @EXPORT = qw($VERSION &saveInSilicoDef &init &getInSilicoDefFiles $DEF_FILENAME_ENV);
 @EXPORT_OK = ();
-$VERSION = "1.0.11";
+$VERSION = "1.0.15";
 
 our $DEF_FILENAME_ENV='INSILICOSPECTRO_DEFFILE';
 
 sub saveInSilicoDef{
   my $out=shift;
   $out=">$out" if ((defined $out) and not $out=~/^>/);
-  my $saver=(defined $out)?(new SelectSaver(InSilicoSpectro::Utils::io->getFD($out) or die "cannot open [$out]: $!")):\*STDOUT;
+  my $saver=(defined $out)?(new SelectSaver(InSilicoSpectro::Utils::io->getFD($out) or CORE::die "cannot open [$out]: $!")):\*STDOUT;
   print <<EOT;
 <inSilicoDefinitions>
   <elements/>

@@ -52,7 +52,7 @@ if (!GetOptions('dest=s'=> \$dest,
 }
 
 # Opens and parse
-my $src = $ARGV[0] || die "must provide a resid_xml source (url or file)";
+my $src = $ARGV[0] || CORE::die "must provide a resid_xml source (url or file)";
 
 my $residFile;
 if($src=~/^(ftp|http):/i){
@@ -79,7 +79,7 @@ my $parser = new XML::Parser(Style => 'Stream');
 if($src eq '-'){
   $parser->parse(\*STDIN);
 }else{
-  open(F, $residFile) || die ("cannot open [$residFile]: $!");
+  open(F, $residFile) || CORE::die ("cannot open [$residFile]: $!");
   $parser->parse(\*F);
   close(F);
 }

@@ -149,7 +149,7 @@ my $correctPeptide;
 if ($fasta){
   # Loads a series of correct protein sequences as a fasta file
   my $protein;
-  open(F, $fasta) || die("Cannot open [$fasta]: $!");
+  open(F, $fasta) || CORE::die("Cannot open [$fasta]: $!");
   while (<F>){
     if (index($_, '>') == 0){
       $correctPeptide .= $protein.'|';
@@ -273,9 +273,9 @@ sub EndTag
   if ($el eq 'ple:ItemOrder'){
     if ($itemListNum > 0){
       for (my $i = 0; $i < @item; $i++){
-	die("Inconsistent item order [$file]") if ($item[$i] ne $itemRefList[$i]);
+	CORE::die("Inconsistent item order [$file]") if ($item[$i] ne $itemRefList[$i]);
       }
-      die("Inconsistent item order [$file]") if (scalar(@item) != scalar(@itemRefList));
+      CORE::die("Inconsistent item order [$file]") if (scalar(@item) != scalar(@itemRefList));
     }
     else{
       @itemRefList = @item;

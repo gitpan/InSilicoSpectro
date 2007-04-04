@@ -148,7 +148,7 @@ my $correctPeptide;
 if ($fasta){
   # Loads a series of correct protein sequences as a fasta file
   my $protein;
-  open(F, $fasta) || die("Cannot open [$fasta]: $!");
+  open(F, $fasta) || CORE::die("Cannot open [$fasta]: $!");
   while (<F>){
     if (index($_, '>') == 0){
       $correctPeptide .= $protein.'|';
@@ -436,7 +436,7 @@ sub parseParameters
     s/[\r\n]//g;
     if (/^MODS=(.+)/){
       my $modif = $modifConv{$1};
-      die("Fixed modification [$1] cannot be converted in an InSilicoSpectro equivalent") if (!$modif);
+      CORE::die("Fixed modification [$1] cannot be converted in an InSilicoSpectro equivalent") if (!$modif);
       push(@fixedModif, $modif);
     }
     elsif (/^IT_MODS=(.+)/){

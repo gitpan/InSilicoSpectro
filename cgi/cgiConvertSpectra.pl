@@ -349,10 +349,10 @@ EOT
 }
 
 
-my $fileIn=$query->param('inputfile')||die "must provide input file";
-my $inputFormat=$query->param('inputformat')||die "must provide input format";
-my $outputFormat=$query->param('outputformat')||die "must provide output format";
-my $defaultCharge=$query->param('defaultcharge') || die "must provide default parent charge";
+my $fileIn=$query->param('inputfile')||CORE::die "must provide input file";
+my $inputFormat=$query->param('inputformat')||CORE::die "must provide input format";
+my $outputFormat=$query->param('outputformat')||CORE::die "must provide output format";
+my $defaultCharge=$query->param('defaultcharge') || CORE::die "must provide default parent charge";
 my $title=$query->param('title');
 my $filter=$query->param('filter');
 my $filter_activated=$query->param('activation_filter');
@@ -376,7 +376,7 @@ use File::Temp qw(tempfile);
 my $ext=".tmp";
 $ext=".gz" if ($fileIn=~/.t?gz$/i);
 $ext=".zip" if ($fileIn=~/.zip$/i);
-my $fhin=upload('inputfile')||die "cannot convert [$fileIn] into filehandle";
+my $fhin=upload('inputfile')||CORE::die "cannot convert [$fileIn] into filehandle";
 my $bn=basename $fileIn;
 my ($fhout, $finTmp)=tempfile(UNLINK=>1, SUFFIX=>$ext);
 while (<$fhin>){
@@ -403,10 +403,10 @@ close $fhout;
 #    require Archive::Zip;
 #  };
 #  if ($@) {
-#    die "cannot open .zip format (missing Archive::Zip): $@";
+#    CORE::die "cannot open .zip format (missing Archive::Zip): $@";
 #  }
 #  my $zip = Archive::Zip->new();
-#  die "ZIP read error in [$finTmp]" unless $zip->read( $finTmp ) == Archive::Zip::AZ_OK;
+#  CORE::die "ZIP read error in [$finTmp]" unless $zip->read( $finTmp ) == Archive::Zip::AZ_OK;
 #  my @members = $zip->members();
 #  foreach my $mb (@members) {
 #    my ($fdtmp, $tmp)=tempfile(SUFFIX=>$inputFormat, UNLINK=>0);
@@ -449,7 +449,7 @@ close $fhout;
 #    $run->addSpectra($sp);
 #    $sp->open();
 #  } else {
-#    die "not possible to set multiple file in with format [$inputFormat]" if $#fileIn>0;
+#    CORE::die "not possible to set multiple file in with format [$inputFormat]" if $#fileIn>0;
 #    $InSilicoSpectro::Spectra::MSRun::handlers{$inputFormat}{read}->($run);
 #  }
 #}
@@ -471,7 +471,7 @@ print $query->header(-type=>'text/plain',
 my $cmd="convertSpectra.pl --version";
 my $version=`$cmd`;
 chomp $version;
-die "no convertSpectra.pl executable was found in $ENV{PATH}. \n".join ("\n", %ENV)."\nfix your path..." unless defined $version;
+CORE::die "no convertSpectra.pl executable was found in $ENV{PATH}. \n".join ("\n", %ENV)."\nfix your path..." unless defined $version;
 
 $cmd="convertSpectra.pl";
 my $cmdArgs="--in=$inputFormat:$finTmp ";
@@ -490,7 +490,7 @@ if($filter_activated){
 $cmdArgs.=" $convertSpectraXtraArgs" if $convertSpectraXtraArgs;
 
 $cmd.=" $cmdArgs --out=$outputFormat:-";
-system("$cmd ") && die "cannot execute $cmd";
+system("$cmd ") && CORE::die "cannot execute $cmd";
 
 #$run->write($outputFormat, \*STDOUT);
 

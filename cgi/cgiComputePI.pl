@@ -264,7 +264,7 @@ EOT
 }
 
 
-my $method=$query->param('method')||die "must provide method parameter";
+my $method=$query->param('method')||CORE::die "must provide method parameter";
 my $author=$query->param('author');
 my $peptseq=$query->param('peptseq');
 my $expdata=$query->param('expdata');

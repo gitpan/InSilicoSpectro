@@ -75,7 +75,7 @@ if ((length($protSeq) < 15) && (($protSeq =~ /[A-Z0-9]+_[A-Z0-9]+/) || ($protSeq
   # Assumes either an ID or an AC
   eval{
     require Bio::Perl;
-    my $bpseq = Bio::Perl::get_sequence('swiss', $protSeq) || die("cannot access [$protSeq] on remote DB");
+    my $bpseq = Bio::Perl::get_sequence('swiss', $protSeq) || CORE::die("cannot access [$protSeq] on remote DB");
     my $seq = InSilicoSpectro::InSilico::AASequence->new($bpseq);
     $protein = $seq->sequence();
   };
