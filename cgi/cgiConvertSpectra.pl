@@ -484,13 +484,15 @@ if($filter_activated){
   my ($fd, $f)=tempfile(UNLINK=>1, SUFFIX=>".filter.xml");
   print $fd $filter;
   close $fd;
-  $cmdArgs.=" --filer=$f";
+  $cmdArgs.=" --filter=$f";
 }
 
 $cmdArgs.=" $convertSpectraXtraArgs" if $convertSpectraXtraArgs;
 
 $cmd.=" $cmdArgs --out=$outputFormat:-";
-system("$cmd ") && CORE::die "cannot execute $cmd";
+if(system("$cmd")){
+  CORE::die "error executing:$cmd";
+};
 
 #$run->write($outputFormat, \*STDOUT);
 
