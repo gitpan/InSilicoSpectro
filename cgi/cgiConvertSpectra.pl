@@ -378,7 +378,7 @@ $ext=".gz" if ($fileIn=~/.t?gz$/i);
 $ext=".zip" if ($fileIn=~/.zip$/i);
 my $fhin=upload('inputfile')||CORE::die "cannot convert [$fileIn] into filehandle";
 my $bn=basename $fileIn;
-my ($fhout, $finTmp)=tempfile(UNLINK=>1, SUFFIX=>$ext);
+my ($fhout, $finTmp)=tempfile(unlink=>1, SUFFIX=>$ext);
 while (<$fhin>){
   print $fhout $_;
 }
@@ -409,7 +409,7 @@ close $fhout;
 #  CORE::die "ZIP read error in [$finTmp]" unless $zip->read( $finTmp ) == Archive::Zip::AZ_OK;
 #  my @members = $zip->members();
 #  foreach my $mb (@members) {
-#    my ($fdtmp, $tmp)=tempfile(SUFFIX=>$inputFormat, UNLINK=>0);
+#    my ($fdtmp, $tmp)=tempfile(SUFFIX=>$inputFormat, S=>1);
 #    $mb->extractToFileNamed($tmp);
 #    push @fileIn, {format=>$inputFormat, file=>$tmp, origFile=>basename($mb->externalFileName())};
 #    close $fdtmp;
@@ -468,15 +468,14 @@ print $query->header(-type=>'text/plain',
 		    );
 
 
-my $cmd="convertSpectra.pl --version";
-my $version=`$cmd`;
-chomp $version;
-CORE::die "no convertSpectra.pl executable was found in $ENV{PATH}. \n".join ("\n", %ENV)."\nfix your path..." unless defined $version;
 
-$cmd="convertSpectra.pl";
+my $cmdprefix=findCmdPrefix(cmd=>"convertSpectra.pl");
+
+CORE::die "no convertSpectra.pl executable was found in $ENV{PATH}. \nnor in ".dirname($ENV{SCRIPT_FILENAME})."/../; fix your path..." unless defined $cmdprefix;
+my $cmd=$cmdprefix."convertSpectra.pl";
 my $cmdArgs="--in=$inputFormat:$finTmp ";
-$cmdArgs.=" --defaultcharge='$defaultCharge'" if $defaultCharge;
-$cmdArgs.=" --title='$title'" if $title;
+$cmdArgs.=" --defaultcharge=\"$defaultCharge\"" if $defaultCharge;
+$cmdArgs.=" --title=\"$title\"" if $title;
 
 if($filter_activated){
   my $fc = new InSilicoSpectro::Spectra::Filter::MSFilterCollection();
@@ -490,12 +489,34 @@ if($filter_activated){
 $cmdArgs.=" $convertSpectraXtraArgs" if $convertSpectraXtraArgs;
 
 $cmd.=" $cmdArgs --out=$outputFormat:-";
-if(system("$cmd")){
-  CORE::die "error executing:$cmd";
-};
+system("$cmd ") && CORE::die "cannot execute $cmd";
 
 #$run->write($outputFormat, \*STDOUT);
 
+
+sub findCmdPrefix{
+  my %hp=@_;
+  my $cmd=$hp{cmd}||die "no cmd argument to findCmdPrefix";
+  my $opt=$hp{opt}||"--version";
+  
+  my $cmdtest="$cmd $opt";
+  my $ret=`$cmdtest`;
+  if ($ret){
+  	return "";
+  }
+  $cmdtest="$^X ".dirname($ENV{SCRIPT_FILENAME})."/../$cmd $opt";
+  my $ret=`$cmdtest`;
+   if ($ret){
+ 	return "$^X ".dirname($ENV{SCRIPT_FILENAME})."/../";
+  }
+  
+  $cmdtest="$^X ".dirname($ENV{SCRIPT_FILENAME})."\\..\\$cmd $opt";
+  my $ret=`$cmdtest`;
+  if ($ret){
+  	return "$^X ".dirname($ENV{SCRIPT_FILENAME})."\\..\\";
+  }
+  return undef;
+}
 
 __DATA__
 <html>
