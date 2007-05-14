@@ -335,7 +335,7 @@ sub readDTA{
     CORE::die "ZIP read error in [$src]" unless $zip->read( $src ) == Archive::Zip::AZ_OK;
     my @members = $zip->members();
     foreach my $mb (@members) {
-      my ($fdtmp, $tmp)=File::Temp::tempfile("$tmpdir/".(basename $_."-XXXXX"), UNLINK=>1);
+      my ($fdtmp, $tmp)=File::Temp::tempfile("$tmpdir/".(basename $mb->fileName()."-XXXXX"), UNLINK=>1);
       $mb->extractToFileNamed($tmp);
       push @files, $tmp;
       close $fdtmp;
@@ -406,7 +406,7 @@ sub readDTA{
 
       local $/;
       my $md5=md5($contents);
-      my $name=($this->{origFile}||(basename $fname)).".".($isp++);
+      my $name=((basename $fname)||$this->{origFile}).".".($isp++);
       if ($MERGE_MULTIPLE_PREC_CHARGES && defined $md52sp{$md5}) {
 	my $cmpd=$md52sp{$md5};
 	my $msk=$cmpd->getParentData(2);
