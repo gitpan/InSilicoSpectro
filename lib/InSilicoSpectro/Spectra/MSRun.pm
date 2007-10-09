@@ -130,7 +130,7 @@ Alexandre Masselot, www.genebio.com
 our (@ISA,@EXPORT,@EXPORT_OK, $dbPath);
 @ISA = qw(Exporter);
 
-@EXPORT = qw(&getReadFmtList &getwriteFmtList %handlers);
+@EXPORT = qw(&getReadFmtList &guessFormat &getwriteFmtList %handlers);
 @EXPORT_OK = ();
 
 use File::Basename;
@@ -319,13 +319,21 @@ sub readIDJ{
   my ($this, $file, %hprms)=@_;
 
   $file=$this->{source} unless defined $file;
+  my $ignoreElts={};
+  $ignoreElts->{'ple:peaks'}=1 if $hprms{skipPeakList};
+  $ignoreElts->{'idr:IdentificationResult/idl:IdentificationList'}=1;
+  $ignoreElts->{'/IdentificationResult/IdentificationList'}=1;
+  $ignoreElts->{'ple:PeakListExport[@spectrumType="pmf"]'}=1 if $hprms{skippmf};
   my $twig=XML::Twig->new(twig_handlers=>{
-					  'ple:PeakListExport'=>sub {twig_addSpectrum($this, $_[0], $_[1])},
+					  'ple:PeakListExport'=>sub {twig_addSpectrum($this, $_[0], $_[1], skippmf=>$hprms{skippmf})},
+					  'ple:peptide'=> sub {twig_addTmpCompound($this, $_[0], $_[1], skippeaklist=>$hprms{skipPeakList})},
 					  'idj:JobId'=>sub {$this->{jobId}=$_[1]->text},
 					  'idj:header'=>sub {twig_setHeader($this, $_[0], $_[1])},
-					  'ple:Msms2PmfKeysRelation'=>sub {twig_setMsms2PmfKeysRelation($this, $_[0], $_[1])},
-					  pretty_print=>'indented'
-					 }
+					  'ple:Msms2PmfKeysRelation'=>sub {twig_setMsms2PmfKeysRelation($this, $_[0], $_[1]),
+									 },
+					 },
+			  pretty_print=>'indented',
+			  ignore_elts=>$ignoreElts,
 			 );
 
   undef $pgBar;
@@ -333,7 +341,7 @@ sub readIDJ{
     require Term::ProgressBar;
     if(InSilicoSpectro::Utils::io::isInteractive()){
       my $size=(stat($file))[7];
-      $pgBar=Term::ProgressBar->new({name=>"parsing ".basename($file), count=>$size});
+      $pgBar=Term::ProgressBar->new({name=>"MSRun:parsing ".basename($file), count=>$size});
       $pgNextUpdate=0;
     }
 
@@ -369,20 +377,32 @@ sub twig_setHeader{
   $this->{date}=$el->first_child('idj:date')->text;
 }
 
+my @twigCompoundsBuffer;
 sub twig_addSpectrum{
-  my($this, $twig, $el)=@_;
+  my($this, $twig, $el, %hprms)=@_;
+
   $pgNextUpdate=$pgBar->update($twig->current_byte) if $pgBar && $twig->current_byte>$pgNextUpdate;
   my $type=$el->att('spectrumType') or InSilicoSpectro::Utils::io::croakIt "no spectrumType att for $el";
   my $sp;
   if($type eq 'msms'){
     $sp=InSilicoSpectro::Spectra::MSMSSpectra->new();
-    $sp->readTwigEl($el);
+    $sp->readTwigEl($el, skipcompounds=>1 );
+    my $parentPD=$sp->get('parentPD');
+    my $fragPD=$sp->get('fragPD');
+    foreach(@twigCompoundsBuffer){
+      $_->set('parentPD', $parentPD);
+      $_->set('fragPD', $fragPD);
+      $sp->addCompound($_);
+    }
+    undef @twigCompoundsBuffer;
+
     if($sp->get('compounds')){
       foreach (@{$sp->get('compounds')}){
 	$this->key2spectrum($_->get('key'), $_);
       }
     }
   }elsif($type =~ /^(ms|pmf)$/){
+    ($el->delete && return) if ($hprms{skippmf});
     $sp=InSilicoSpectro::Spectra::MSSpectra->new();
     $sp->readTwigEl($el);
   }else{
@@ -391,6 +411,16 @@ sub twig_addSpectrum{
   $this->addSpectra($sp);
   $this->key2spectrum($sp->get('key'), $sp);
 }
+
+sub twig_addTmpCompound{
+  my($this, $twig, $el, %hprms)=@_;
+  $pgNextUpdate=$pgBar->update($twig->current_byte) if $pgBar && $twig->current_byte>$pgNextUpdate;
+  my $cmpd=InSilicoSpectro::Spectra::MSMSCmpd->new;
+  $cmpd->readTwigEl($_, undef, undef, skippeaklist=>$hprms{skippeaklist});
+  push @twigCompoundsBuffer,  $cmpd;
+  $el->delete;;
+}
+
 
 sub twig_setHeader{
   my($this, $twig, $el)=@_;
@@ -426,17 +456,19 @@ my $twigmzxml;
 sub readMzXml{
   my ($this, $file)=@_;
   $file=$this->{source} unless defined $file;
+  my $ignoreElts={
+		  'index'=>1
+		 };
+  #$ignoreElts->{'scan[@msLevel="1"]'}=1 if $this->{read}{skip}{pmf};
 
   $twigmzxml=XML::Twig->new(twig_handlers=>{
-					  'scan[@msLevel="1"]'=>sub {twigMzxml_addPMFSpectrum($this, $_[0], $_[1])},
-					  'scan[@msLevel="2"]'=>sub {twigMzxml_addMSMSSpectrum($this, $_[0], $_[1])},
-					  'instrument'=>sub {twigMzxml_setInstrument($this, $_[0], $_[1])},
-					  'parentFile'=>sub {twigMzxml_setParentFile($this, $_[0], $_[1])},
-					 },
-			  pretty_print=>'indented',
-			  ignore_elts=>{
-				     'index'=>1,
-				     },
+					    'scan[@msLevel="1"]'=>sub {twigMzxml_addPMFSpectrum($this, $_[0], $_[1])},
+					    'scan[@msLevel="2"]'=>sub {twigMzxml_addMSMSSpectrum($this, $_[0], $_[1])},
+					    'instrument'=>sub {twigMzxml_setInstrument($this, $_[0], $_[1])},
+					    'parentFile'=>sub {twigMzxml_setParentFile($this, $_[0], $_[1])},
+					   },
+			    pretty_print=>'indented',
+			    ignore_elts=>$ignoreElts,
 			 );
   (-r $file) or InSilicoSpectro::Utils::io::croakIt "cannot read [$file]";
 
@@ -1034,6 +1066,26 @@ sub writePKL{
     next unless defined $_;
     $_->writePKL();
   }
+}
+
+
+=head3 guessFormat(sourcefile)
+
+Try to guess the spectra format (if it is not yet defined) based on the file extension stores in the argument {source}. However, if you wish to load for example .dta file from a directory, it will not determine it automatically.
+
+=cut
+
+sub guessFormat{
+  my ($src)=@_;
+
+  foreach (getReadFmtList(), InSilicoSpectro::Spectra::MSMSSpectra::getReadFmtList()){
+    if($src=~/\.$_/i){
+      my $fmt=$_;
+      $fmt=~s/\.xml$//;
+      return $fmt;
+    }
+  }
+  croak "InSilicoSpectro::Spectra::MSRun:guessFormat not possible as not source [$src] is not within the known formats";
 }
 
 # -------------------------------  getters/setters

@@ -102,6 +102,14 @@ use InSilicoSpectro::Spectra::MSMSSpectra;
 	     type=>'msms',
 	     ref=>"InSilicoSpectro::Spectra::MSMSSpectra"
 	    },
+       peaklist_xml=>{
+	     type=>'msms',
+	     ref=>"InSilicoSpectro::Spectra::MSMSSpectra"
+	    },
+       'nist.msp'=>{
+	     type=>'msms',
+	     ref=>"InSilicoSpectro::Spectra::MSMSSpectra"
+	    },
        'mgf.pmf'=>{
 	     type=>'msms',
 	     ref=>"InSilicoSpectro::Spectra::MSSpectra"
@@ -180,7 +188,7 @@ Reads the spectra from $this->source , with type from $this{format}. If the late
 use File::Basename;
 
 sub open{
-  my ($this)=@_;
+  my ($this, %params)=@_;
 
   $this=$this->FC_getme if $USE_FILECACHED;
   $this->guessFormat();
@@ -190,7 +198,7 @@ sub open{
   #croak ($InSilicoSpectro::Utils::io::VERBOSE?("<pre>".Carp::longmess(__PACKAGE__."(".__LINE__."): unknown spectra format [$fmt]\n")."\n</pre>\n"):(__PACKAGE__."(".__LINE__."): unknown spectra format [$fmt]")) unless defined $hFmt{$fmt};
   bless $this, $hFmt{$this->format}{ref};
 
-  $this->read();
+  $this->read(%params);
 }
 
 =head3 guessFormat()
@@ -214,7 +222,7 @@ sub guessFormat{
   }else{
     $src=$this;
   }
-  foreach (qw(idj.xml ple.xml peptMatches.xml mgf dta pkl txt)){
+  foreach (keys %hFmt){
     if($src=~/\.$_/i){
       my $fmt=$_;
       $fmt=~s/\.xml$//;
@@ -435,7 +443,7 @@ $shift</ple:PeakListExport>
 }
 
 sub read{
-  my ($this)=@_;
+  my ($this, %params)=@_;
 
   $this=$this->FC_getme if $USE_FILECACHED;
   my $fmt=$this->format();
@@ -451,7 +459,7 @@ sub read{
   }else{
     $this->set('sampleInfo', {sampleNumber=>0, instrument=>"n/a", instrumentId=>"n/a", spectrumType=>"pmf"});
   }
-  $handlers{$fmt}{read}->($this);
+  $handlers{$fmt}{read}->($this, %params);
 }
 
 sub readTwigEl{

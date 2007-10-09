@@ -72,8 +72,10 @@ unit=>'min',
 			     Bruker_HCT=>{unit=>'min',
 					  qr=>qr/\(rt=([\d\.]+)\)/i,
 					 },
+			     mzxml_import=>{unit=>'sec',
+					    qr=>qr/PT([\d\.]+)S/i,
+					 },
 					
-
 			    );
 
 sub new{
@@ -282,8 +284,8 @@ sub writeMGF{
 
   $this=$this->FC_getme if $InSilicoSpectro::Spectra::MSSpectra::USE_FILECACHED;
   return if $this->hide;
-my $icharge=$this->get('parentPD')->getFieldIndex('charge');
-my $ichargemask=$this->get('parentPD')->getFieldIndex('chargemask');
+  my $icharge=$this->get('parentPD')->getFieldIndex('charge');
+  my $ichargemask=$this->get('parentPD')->getFieldIndex('chargemask');
   print "BEGIN IONS
 TITLE=".$this->get('title')."
 PEPMASS=".$this->get('parentPD')->sprintData($this->getParentData(), $transformCharge)."\n";

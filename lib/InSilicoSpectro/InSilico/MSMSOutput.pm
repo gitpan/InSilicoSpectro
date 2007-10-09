@@ -258,10 +258,10 @@ sub new
     my $series = (getFragType($frag))[0];
     for (my $i = 0; $i < @{$spectrum->{ionType}{$frag}}; $i++) {
       # Fragment type name
-      push(@{$table->{mass}{term}[$fragNum]}, $spectrum->{ionType}{$frag}[$i]);
+      push(@{$table->{mass}{term}[$fragNum]}, $frag);#$spectrum->{ionType}{$frag}[$i]);
       if (defined($expSpectrum)){
-	push(@{$table->{match}{term}[$fragNum]}, $spectrum->{ionType}{$frag}[$i]);
-	push(@{$table->{intens}{term}[$fragNum]}, $spectrum->{ionType}{$frag}[$i]);
+	push(@{$table->{match}{term}[$fragNum]}, $frag);#$spectrum->{ionType}{$frag}[$i]);
+	push(@{$table->{intens}{term}[$fragNum]}, $frag);#$spectrum->{ionType}{$frag}[$i]);
       }
 
       if ((getSeries($series))[0] eq 'N') {

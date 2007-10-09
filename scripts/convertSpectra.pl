@@ -38,6 +38,10 @@ If no files are specified (thus the format must be) I/O are stdin/out.
 
 Defined a default charge for the precursor (msms) of the peak (ms) (it might be overwritten if the input file definesit explicitely. The charge argument can be something like '1+', '1', '2,3', '2+ AND 3+' etc.
 
+=item --forcedefaultcharge
+
+Will force the default charge defined into the file to be replaced
+
 =item --title=string
 
 Allows for setting a title (one line text)
@@ -124,7 +128,7 @@ use File::Temp;
 use Archive::Tar;
 use Archive::Zip qw( :ERROR_CODES :CONSTANTS);
 
-my(@fileIn, $fileOut, $showInputFmt, $showOutputFmt, $sampleInfo, $precursorTrustParentCharge, $defaultCharge, $title, $fileFilter, $dpmStr, @skip,
+my(@fileIn, $fileOut, $showInputFmt, $showOutputFmt, $sampleInfo, $precursorTrustParentCharge, $defaultCharge, $forceDefaultCharge, $title, $fileFilter, $dpmStr, @skip,
    $excludeKeysFile,
    $propertiesFile,$propertiesPrefix,
    $phenyxConfig, $help, $man, $verbose, $showVersion);
@@ -140,6 +144,7 @@ if (!GetOptions(
 		"duplicateprecursormoz=s"=>\$dpmStr,
 		"trustprecursorcharge=s"=>\$precursorTrustParentCharge,
 		"defaultcharge=s"=>\$defaultCharge,
+		"forcedefaultcharge"=>\$forceDefaultCharge,
 		"title=s"=>\$title,
 
 		"excludekeysfile=s"=>\$excludeKeysFile,
@@ -220,7 +225,7 @@ while (my $fileIn=shift @tmpFileIn){
   if ($fileIn=~/(.*?):(.*)/) {
     ($format, $source)=(lc($1), $2);
   } else {
-    ($format, $source)=(InSilicoSpectro::Spectra::MSSpectra::guessFormat($fileIn), $fileIn);
+    ($format, $source)=(InSilicoSpectro::Spectra::MSRun::guessFormat($fileIn), $fileIn);
   }
   my $tmpdir=File::Spec->tmpdir;
   if($source=~/\.(tar|tar\.gz|tgz)/i && $format ne 'dta'){
@@ -244,6 +249,7 @@ while (my $fileIn=shift @tmpFileIn){
 	push @fileIn, {format=>$format, file=>$tmp, origfile=>$_->fileName()};
       }
     }
+    next;
   }elsif($source=~/(.*)\.gz$/i){
     my $base=$1;
     my (undef, $tmp)=File::Temp::tempfile(DIR=>$tmpdir, SUFFIX=>basename($base), UNLINK=>1);
@@ -271,7 +277,8 @@ foreach (@fileIn) {
     $sp->set('sampleInfo', \%sampleInfo) if defined %sampleInfo;
     $sp->origFile($origFile);
     $sp->setSampleInfo('sampleNumber', $is++);
-    $sp->open();
+    $sp->open(forcedefaultcharge=>$forceDefaultCharge);
+    $run->set('defaultCharge', $run->get('defaultCharge')||$sp->get('defaultCharge'));
   } else {
     croak "not possible to set multiple file in with format [$inFormat]" if $#fileIn>0 and ! $InSilicoSpectro::Spectra::MSRun::handlers{$inFormat}{readMultipleFile};
     $InSilicoSpectro::Spectra::MSRun::handlers{$inFormat}{read}->($run);

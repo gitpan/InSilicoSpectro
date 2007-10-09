@@ -218,7 +218,7 @@ our (@ISA, @EXPORT, @EXPORT_OK, $VERSION);
 
 @EXPORT = qw($VERSION &saveInSilicoDef &init &getInSilicoDefFiles $DEF_FILENAME_ENV);
 @EXPORT_OK = ();
-$VERSION = "1.0.19";
+$VERSION = "1.3.1";
 
 our $DEF_FILENAME_ENV='INSILICOSPECTRO_DEFFILE';
 
@@ -268,11 +268,10 @@ sub init{
     push @tmp, $tmp;
   }
   @tmp or croak "must provide at least one  file argument";
-  print STDERR "init from files(@tmp)\n" if $InSilicoSpectro::Utils::io::VERBOSE;
+  #warn  "init from files(@tmp)";
   InSilicoSpectro::InSilico::ModRes::init(@tmp);
   InSilicoSpectro::InSilico::CleavEnzyme::init(@tmp);
   InSilicoSpectro::InSilico::MassCalculator::init(@tmp);
-
 }
 
 use File::Basename;

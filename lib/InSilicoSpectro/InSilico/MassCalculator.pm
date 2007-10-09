@@ -133,6 +133,7 @@ all the modif in the dictionary.
 sub init
 {
   # Init once only in case several modules use this one
+  my @files=@_;
   return if ($isInit);
 
   undef(%elMass);
@@ -156,10 +157,9 @@ sub init
   }
   InSilicoSpectro::InSilico::ModRes::registerModResHandler(\&InSilicoSpectro::InSilico::MassCalculator::setModif);
 
-
-  if (@_){
-    foreach (@_){
-      print STDERR "reading MassCalculator.pm def from $_\n" if ($InSilicoSpectro::Utils::io::VERBOSE);
+  if (@files){
+    foreach (@files){
+      #warn "reading MassCalculator.pm def from $_\n";
       $twig->parsefile($_) || croak("Cannot parse [$_]: $!");
     }
   }
@@ -2851,6 +2851,7 @@ sub getLoss
 
 
 =head2 setLoss($name, $residues, $formula)
+=head2 setLoss($name, $residues, $deltamass_mono, $deltamass_avg)
 
 Adds a new loss to the ones read from the file fragments.xml.
 The parameters are defined above in getLoss except formula.
@@ -2858,17 +2859,27 @@ The mass deltas are not given as real numbers but rather as
 deltas in atoms. Example:
 
   setLoss('H2O', 'ST', 'H 2 O 1');
+or 
+  setLoss('H2O', 'ST', 18.003, 17.927);
 
 =cut
 sub setLoss
 {
-  my ($name, $residues, $formula) = @_;
-  croak("Already defined loss for [$name]") if (defined($loss{$name}));
+  my $name=shift;
+  my $residues=shift;
+  if($_[0]=~/^[A-Z]/){
+    #we have a formula
+    my $formula=shift;
+    croak("Already defined loss for [$name]") if (defined($loss{$name}));
+    $loss{$name}{delta} = [massFromComposition($formula)];
+  }else{
+    # we should have two masses
+    $loss{$name}{delta} = [$_[0], $_[1]];
+  }
 
   foreach (split(//, $residues)){
     $loss{$name}{residues}{$_} = 1;
   }
-  $loss{$name}{delta} = [massFromComposition($formula)];
 
 } # setLoss
 
@@ -3094,7 +3105,6 @@ sub twigAddMolecule
 sub twigAddAminoAcid
 {
   my ($twig, $el) = @_;
-
   my $symbol = $el->atts->{code1};
   my $mel = $el->first_child('mass');
   my $mono = $mel->atts->{monoisotopic};
@@ -3124,8 +3134,14 @@ sub twigAddLoss
 
   my $name = $el->atts->{name};
   my $residues = $el->first_child('residues')->atts->{aa};
-  my $formula = $el->first_child('formula')->text;
-  setLoss($name, $residues, $formula);
+  my $formula = $el->first_child('formula')&&$el->first_child('formula')->text;
+  if($formula){
+    setLoss($name, $residues, $formula);
+  }else{
+    my $eldm=$el->first_child('deltaMass')|| die "must specify 'formula' or 'deltamass' in oneLoss definition [$name]";
+    $eldm->print(\*STDERR);
+    setLoss($name, $residues, $eldm->atts->{monoisotopic}, $eldm->atts->{average});
+  }
 
 } # twigAddLoss
 

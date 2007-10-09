@@ -92,7 +92,8 @@ sub new{
 use XML::Twig;
 sub readTwigEl{
   my ($this, $t)=@_;
-  croak "InSilicoSpectro::Spectra::PhenyxPeakDescriptor::readTwigEl tag name should be (ple:)?ItemOrder" unless $t->gi =~/(ple:)?ItemOrder/;
+  confess unless $t;
+  confess "InSilicoSpectro::Spectra::PhenyxPeakDescriptor::readTwigEl tag name should be (ple:)?ItemOrder" unless $t->gi =~/(ple:)?ItemOrder/;
   $this->{fieldNames}=[];
   foreach($t->children("ple:item"), $t->children("item")){
     my $f=$_->att('type') or croak "InSilicoSpectro::Spectra::PhenyxPeakDescriptor::readTwigEl no 'type' attribute for element ple:item";

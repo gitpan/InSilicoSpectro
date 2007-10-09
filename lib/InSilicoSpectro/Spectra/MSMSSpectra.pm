@@ -156,6 +156,12 @@ use InSilicoSpectro::Spectra::MSMSCmpd;
 		 write=>\&writeMGF,
 		 description=>"Mascot generic format (mgf)"
 		},
+	   peaklist_xml=>{read=>\&readPeaklistXML,
+			  description=>"Bruker pealkist.xml"
+			 },
+	   'nist.msp'=>{read=>\&readNISTMSP,
+			description=>"NIST MSP"
+		},
 	   btdx=>{read=>\&readBTDX,
 		  description=>"Bruker BTDX"
 		 },
@@ -200,7 +206,7 @@ sub new{
 
 
 sub read{
-  my ($this)=@_;
+  my ($this, %params)=@_;
   $this=$this->FC_getme if $InSilicoSpectro::Spectra::MSSpectra::USE_FILECACHED;
 
   my $fmt=$this->format();
@@ -216,7 +222,7 @@ sub read{
   }else{
     $this->set('sampleInfo', {sampleNumber=>0, instrument=>"n/a", instrumentId=>"n/a", spectrumType=>"msms"});
   }
-  $handlers{$fmt}{read}->($this);
+  $handlers{$fmt}{read}->($this, %params);
 }
 
 sub childText{
@@ -233,8 +239,11 @@ sub childText{
   return undef;
 }
 
+
+
+
 sub readTwigEl{
-  my ($this, $el)=@_;
+  my ($this, $el, %hprms)=@_;
   $this=$this->FC_getme if $InSilicoSpectro::Spectra::MSSpectra::USE_FILECACHED;
   my $pd=InSilicoSpectro::Spectra::PhenyxPeakDescriptor->new();
   $this->set('jobId',childText($el, "idj:JobId"));
@@ -247,15 +256,18 @@ sub readTwigEl{
   $this->set('parentPD', $pd);
   $this->set('fragPD', $pd);
 
+
   my $elsi=($elpl->get_xpath("ple:MSMSRun/ple:sample"))[0];
   foreach ($elsi->att_names){
     $this->setSampleInfo($_, $elsi->att($_));
   }
-  my @cmpds=$elpl->get_xpath("ple:MSMSRun/ple:peptide");
-  foreach(@cmpds){
-    my $cmpd=InSilicoSpectro::Spectra::MSMSCmpd->new;
-    $cmpd->readTwigEl($_, $pd, $pd);
-    $this->addCompound($cmpd);
+  unless($hprms{skipcompounds}){
+    my @cmpds=$elpl->get_xpath("ple:MSMSRun/ple:peptide");
+    foreach(@cmpds){
+      my $cmpd=InSilicoSpectro::Spectra::MSMSCmpd->new;
+      $cmpd->readTwigEl($_, $pd, $pd);
+      $this->addCompound($cmpd);
+    }
   }
 }
 
@@ -451,7 +463,7 @@ use Time::localtime;
 
 
 sub readMGF{
-  my ($this)=@_;
+  my ($this, %params)=@_;
   $this=$this->FC_getme if $InSilicoSpectro::Spectra::MSSpectra::USE_FILECACHED;
   my $src=$this->source();
   open (*fd, "<$src") or croak "cannot open [<$src]: $!";
@@ -472,7 +484,9 @@ sub readMGF{
     chomp;
     s/[\s\cA]+$//;
     if (/^CHARGE=(.*)/i) {
-      $this->set('defaultCharge', InSilicoSpectro::Spectra::MSSpectra::string2chargemask($1));
+      unless ($params{forcedefaultcharge} && $this->get('defaultCharge')){
+	$this->set('defaultCharge', InSilicoSpectro::Spectra::MSSpectra::string2chargemask($1));
+      }
       next;
     }
     if (/^COM=(.*)/i) {		#replace jobId by the COM tag if it is not empty
@@ -544,6 +558,89 @@ sub readMGF{
   }
   close *fd;
 }
+
+
+
+sub readNISTMSP{
+  my ($this)=@_;
+  $this=$this->FC_getme if $InSilicoSpectro::Spectra::MSSpectra::USE_FILECACHED;
+  my $src=$this->source();
+  open (*fd, "<$src") or croak "cannot open [<$src]: $!";
+
+  my $pd=InSilicoSpectro::Spectra::PhenyxPeakDescriptor->new("moz intensity chargemask");
+  $this->set('parentPD', $pd);
+  $this->set('fragPD', $pd);
+
+
+  $this->set('jobId', (basename $src));
+  $this->set('date', sprintf("%4d-%2.2d-%2.2d",localtime->year()+1900, localtime->mon()+1, localtime->mday()));
+  $this->set('time',sprintf("%2.2d:%2.2d:%2.2d", localtime->hour(), localtime->min(), localtime->sec()));
+
+  #msms step
+  my %md52sp;
+  my $iCmpd;
+  my $cmpd;
+  my $charge=$this->get('defaultCharge');
+  my $pl;
+  my $mw;
+  while(<fd>){
+    chomp;
+    s/[\s\cA]+$//;
+
+    if((defined $cmpd) && ! /\S/){
+      die "no parent data could be extracted from 'Comment:...' line" unless $cmpd->get('parentData');
+      $cmpd->set('fragments', $pl);
+      $this->addCompound($cmpd);
+      undef $cmpd;
+      next;
+    }
+
+    if(/^name:\s*(.*)/i){
+      $cmpd=InSilicoSpectro::Spectra::MSMSCmpd->new({title=>(basename $src)."($iCmpd)", parentPD=>$pd, fragPD=>$pd});
+      $pl=[];;
+      my $t=$1;
+      $t=~s/\s+$//;
+      $t=~s/^\s+//;
+      $cmpd->set('title', $t)if $t=~/\S/;
+      $iCmpd++;
+      next;
+    }
+    next unless defined $cmpd;
+
+    if(/^mw:\s*([\d\.]+)/i){
+      $mw=$1;
+    }
+    if(/^comments?:/i){
+      if(/\bparent=([\d\.]+)/i){
+	my $moz=$1;
+	my $z;
+	if(/\bcharge=(\d+)/i){
+	  $z=$1;
+	}else{
+	  $z=int(0.5+1.0*$mw/$moz);
+	}
+	my $int=1;
+	$cmpd->set('parentData', [$moz, $int, 1<<$z]);
+      }else{
+	die "cannot parse parent info out of\n$_";
+      }
+      next;
+    }
+    if(/^\s*([\d\.]+)\s+([\d\.]+)/){
+      push @$pl, [$1, $2];
+    }
+
+  }
+  #in case there is no empty line at the end
+  if((defined $cmpd)){
+    die "no parent data could be extracted from 'Comment:...' line" unless $cmpd->get('parentData');
+    $cmpd->set('fragments', $pl);
+    $this->addCompound($cmpd);
+  }
+
+  close *fd;
+}
+
 
 #--------------- BTDX format 
 my %itemSortIndex=(
@@ -660,6 +757,40 @@ sub twigBtdxAtt2PeakDecriptorString{
 }
 
 #---------------------- end of BTDX
+
+#---------------------- Bruker's peaklist.xml
+
+sub readPeaklistXML{
+  my ($this)=@_;
+  $this=$this->FC_getme if $InSilicoSpectro::Spectra::MSSpectra::USE_FILECACHED;
+
+  my $src=$this->source();
+  croak "input file [$src] is not readable" unless -r $src;
+  my $twig=XML::Twig->new(
+			 );
+  
+  print STDERR "xml parsing [$src]\n" if $InSilicoSpectro::Utils::io::VERBOSE;
+  $twig->parsefile($src) or croak "cannot parse [$src]: $!";
+
+  die "root element is not [pklist]" unless $twig->root->gi eq 'pklist';
+  my $elprec=$twig->root;
+  my $moz=$elprec->atts->{parentmass} or die "no attribute [mass] to <pklist>";
+  my $charge=$elprec->atts->{parentcharge} or die "no attribute [parentcharge] to <pklist>";
+
+  my $parentPD=InSilicoSpectro::Spectra::PhenyxPeakDescriptor->new("moz intensity charge");
+  my $cmpd=InSilicoSpectro::Spectra::MSMSCmpd->new({parentPD=>$parentPD, fragPD=>$parentPD});
+  $cmpd->set('title', $elprec->atts->{spectrumid});
+  $cmpd->set('parentData', [$moz, 1, $charge]);
+  my @peaks;
+  foreach ($elprec->get_xpath('pk')){
+    push @peaks, [$_->first_child('mass')->text, $_->first_child('absi')->text, '?'];
+  }
+  $cmpd->set('fragments', \@peaks);
+  $this->addCompound($cmpd);
+
+}
+
+#---------------------- end of peaklist xml
 #--------------- mzxml format
 
 #---------------------- end of mzxml

@@ -617,7 +617,6 @@ is not set or there are variable modifications.
 sub getMass
 {
   my $this = shift;
-
   return $this->{mass} if (defined($this->{mass}) && ($this->{massType} == InSilicoSpectro::InSilico::MassCalculator::getMassType()));
 
   return undef if (!defined(my $sequence = $this->sequence()));

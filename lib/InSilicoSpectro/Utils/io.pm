@@ -157,9 +157,20 @@ sub compressFile{
     $rmSource=$arg->{remove} if defined $arg->{remove};
   }
 
+
   open(FDIN, "<$fname") or croak "cannot compress from [$fname]: $!";
 
   my $outFile="$fname.gz";
+
+  if($rmSource){
+    unless (system ("gzip --version")){
+      unlink $outFile;
+      my $cmd="gzip $fname";
+      system ($cmd) && die "cannot $cmd";
+      return $outFile;
+    }
+  }
+
   my $gz = gzopen("$outFile", "wb")
     or CORE::die "Cannot open [$outFile]: $gzerrno\n" ;
   while (<FDIN>) {

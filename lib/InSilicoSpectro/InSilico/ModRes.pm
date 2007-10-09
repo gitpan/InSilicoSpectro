@@ -144,7 +144,7 @@ Alexandre Masselot, www.genebio.com
 our (@ISA, @EXPORT, @EXPORT_OK, $isInit, %dico, %re2Modif);
 @ISA = qw(Exporter);
 
-@EXPORT = qw(&init &getFromDico &getList &getModifFromSprotFT &twig_addModRes &registerModResHandler $isInit);
+@EXPORT = qw(&init &getFromDico &getList &getModifFromSprotFT &twig_addModRes &registerModResHandler);
 @EXPORT_OK = ();
 
 our $rsRegisterModResHandler;
@@ -395,12 +395,18 @@ sub twig_addModRes{
 
 sub getXMLTwigElt{
   my $this=shift;
-  my $el=XML::Twig::Elt->new()->parse("<oneModRes type='aaModif' name='$this->{name}'/>");
-  XML::Twig::Elt->new()->parse("<description>$this->{description}</description>")->paste(last_child=>$el);
+  my $el=XML::Twig::Elt->new()->parse("<oneModRes type='".($this->{type}||'aaModif')."' name='$this->{name}'/>");
+  XML::Twig::Elt->new()->parse("<description><![CDATA[$this->{description}]]></description>")->paste(last_child=>$el);
   if($this->{site}){
-    XML::Twig::Elt->new()->parse("<site><residue>$this->{site}{residue}</residue></site>")->paste(last_child=>$el);
+    my $termtag="";
+    $termtag.='<nterm/>' if($this->nTerm);
+    $termtag.='<cterm/>' if($this->cTerm);
+    XML::Twig::Elt->new()->parse("<site><residue>$this->{site}{residue}</residue>$termtag</site>")->paste(last_child=>$el);
   }else{
-    XML::Twig::Elt->new()->parse("<siteRegexp>$this->{regexpStr}</siteRegexp>")->paste(last_child=>$el);
+    my $termatts="";
+    $termatts=' nterm="yes"' if($this->nTerm);
+    $termatts=' cterm="yes"' if($this->cTerm);
+    XML::Twig::Elt->new()->parse("<siteRegexp$termatts>$this->{regexpStr}</siteRegexp>")->paste(last_child=>$el);
   }
   XML::Twig::Elt->new()->parse("<delta monoisotopic='$this->{delta_monoisotopic}' average='$this->{delta_average}'/>")->paste(last_child=>$el);
 
