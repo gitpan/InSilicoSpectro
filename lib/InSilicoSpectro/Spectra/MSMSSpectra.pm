@@ -94,7 +94,7 @@ header line format is m/z  intensity charge
 
 =head1 EXPORT
 
-=head 3 $MERGE_MULTIPLE_PREC_CHARGES
+=head3 $MERGE_MULTIPLE_PREC_CHARGES
 
 if true, spectra with same framgementa data and coherent precursor info but diferent charges will be merged into one multiple-charge spectrum. [default=1];
 
@@ -768,7 +768,6 @@ sub readPeaklistXML{
   croak "input file [$src] is not readable" unless -r $src;
   my $twig=XML::Twig->new(
 			 );
-  
   print STDERR "xml parsing [$src]\n" if $InSilicoSpectro::Utils::io::VERBOSE;
   $twig->parsefile($src) or croak "cannot parse [$src]: $!";
 
@@ -778,6 +777,7 @@ sub readPeaklistXML{
   my $charge=$elprec->atts->{parentcharge} or die "no attribute [parentcharge] to <pklist>";
 
   my $parentPD=InSilicoSpectro::Spectra::PhenyxPeakDescriptor->new("moz intensity charge");
+  $this->set('parentPD', $parentPD);
   my $cmpd=InSilicoSpectro::Spectra::MSMSCmpd->new({parentPD=>$parentPD, fragPD=>$parentPD});
   $cmpd->set('title', $elprec->atts->{spectrumid});
   $cmpd->set('parentData', [$moz, 1, $charge]);

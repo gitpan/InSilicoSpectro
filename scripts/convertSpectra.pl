@@ -78,9 +78,15 @@ Prints all the possible format for input
 
 Prints all the possible format for output
 
+=item --showformats=(xml|json)
+
 =item --propertiessave=file
 
 =item --propertiesprefix=string
+
+=item --usefilecaching
+
+activates a caching system for large files
 
 =item --version
 
@@ -128,9 +134,10 @@ use File::Temp;
 use Archive::Tar;
 use Archive::Zip qw( :ERROR_CODES :CONSTANTS);
 
-my(@fileIn, $fileOut, $showInputFmt, $showOutputFmt, $sampleInfo, $precursorTrustParentCharge, $defaultCharge, $forceDefaultCharge, $title, $fileFilter, $dpmStr, @skip,
+my(@fileIn, $fileOut, $showInputFmt, $showOutputFmt, $showDef, $sampleInfo, $precursorTrustParentCharge, $defaultCharge, $forceDefaultCharge, $title, $fileFilter, $dpmStr, @skip,
    $excludeKeysFile,
    $propertiesFile,$propertiesPrefix,
+   $useFileCache,
    $phenyxConfig, $help, $man, $verbose, $showVersion);
 
 use InSilicoSpectro;
@@ -140,6 +147,7 @@ if (!GetOptions(
 		"sampleinfo=s"=>\$sampleInfo,
 		"showinputformats"=>\$showInputFmt,
 		"showoutputformats"=>\$showOutputFmt,
+		"showdef=s"=>\$showDef,
 
 		"duplicateprecursormoz=s"=>\$dpmStr,
 		"trustprecursorcharge=s"=>\$precursorTrustParentCharge,
@@ -154,6 +162,8 @@ if (!GetOptions(
 		"propertiessave=s"=>\$propertiesFile,
 		"propertiesprefix=s"=>\$propertiesPrefix,
 
+		"usefilecaching"=>\$useFileCache,
+
 		"skip=s@"=>\@skip,
 		"phenyxconfig=s" => \$phenyxConfig,
 
@@ -163,7 +173,7 @@ if (!GetOptions(
                 "man" => \$man,
                 "verbose" => \$verbose,
                )
-    || $help || $man || $showVersion || (((not @fileIn) || (not $fileOut)) and  (not $showInputFmt) and (not $showOutputFmt))){
+    || $help || $man || $showVersion || (((not @fileIn) || (not $fileOut)) and  (not $showInputFmt) and (not $showOutputFmt) and (not $showDef))){
 
   if($showVersion){
     print basename($0)." InSilicoSpectro version $InSilicoSpectro::VERSION\n";
@@ -171,7 +181,7 @@ if (!GetOptions(
   }
 
   pod2usage(-verbose=>2, -exitval=>2) if(defined $man);
-  pod2usage(-verbose=>1, -exitval=>2);
+  pod2usage(-verbose=>1, -exitval=>$help?0:2);
 }
 
 my %sampleInfo;
@@ -186,6 +196,8 @@ use InSilicoSpectro::Spectra::MSRun;
 use InSilicoSpectro::Spectra::MSSpectra;
 use InSilicoSpectro::Spectra::Filter::MSFilterCollection;
 
+$InSilicoSpectro::Spectra::MSSpectra::USE_FILECACHED=1 if $useFileCache;
+
 $InSilicoSpectro::Utils::io::VERBOSE=$verbose;
 
 if ((defined $showInputFmt) or (defined $showOutputFmt)) {
@@ -195,6 +207,11 @@ if ((defined $showInputFmt) or (defined $showOutputFmt)) {
   if (defined $showOutputFmt) {
     print "output formats MS/MS: ".(InSilicoSpectro::Spectra::MSRun::getWriteFmtList(), InSilicoSpectro::Spectra::MSMSSpectra::getWriteFmtList())."\n";
   }
+  exit(0);
+}
+
+if($showDef){
+  getDef(out=>$showDef);
   exit(0);
 }
 
@@ -472,4 +489,84 @@ if($propertiesFile){
   $prop->prop_set($propertiesPrefix."msms.nbcompounds", $nbFragSp);
   
 
+}
+sub getDef{
+  my %hparams=@_;
+  my $out=$hparams{out} || 'xml';
+
+
+  my %ret=(
+	   input=>[],
+	   output=>[],
+	   version=>$InSilicoSpectro::VERSION,
+	   optionalargs=>[
+			  {
+			   key=>'duplicateprecursormoz',
+			   description=>'it is possible to duplicate precursor moz',
+			   type=>['STRING'],
+			   regexp=>['(\d+,)*\d+'],
+			   level=>'EXPERT',
+			  },
+			  {
+			   key=>'defaultcharge',
+			   description=>'precursor default charge',
+			   type=>['SELECT'],
+			   choices=>['1+', '2+', '2+ AND 3+', '3+'],
+			   level=>'DEFAULT',
+			  },
+			  {
+			   key=>'title',
+			   description=>'title',
+			   type=>['STRING'],
+			   level=>'DEFAULT',
+			  },
+			 ],
+	   compulsoryargs=>{},
+	   );
+  
+  while (my ($key, $h)=each %handlers){
+    if($h->{read}){
+      my %h1;
+      $h1{description}=[$h->{description}||""];
+      $h1{type}=$key;
+      $h1{aggregateruns}=[$h->{readMultipleFile}||0||'no'];
+      $h1{containsmultipleruns}=['no'];
+      push @{$ret{input}}, \%h1
+    }
+    if($h->{write}){
+      my %h1;
+      $h1{description}=[$h->{description}||""];
+      $h1{mimetype}=[$h->{mimetype}||"text/plain"];
+      $h1{type}=$key;
+      push @{$ret{output}}, \%h1
+    }
+  }
+  while (my ($key, $h)=each %InSilicoSpectro::Spectra::MSMSSpectra::handlers){
+    if($h->{read}){
+      my %h1;
+      $h1{description}=[$h->{description}||""];
+      $h1{type}=$key;
+      $h1{aggregateruns}=['yes'];
+      $h1{containsmultipleruns}=['no'];
+      push @{$ret{input}}, \%h1
+    }
+  }
+  if($out eq 'xml'){
+    require XML::Simple;
+    my $xs = XML::Simple->new;
+    print $xs->XMLout(\%ret,
+		      KeyAttr=>{input=>'+key'},
+		      KeyAttr=>{output=>'+key'},
+		      GroupTags=>{
+				  input=>"oneinput",
+				  output=>"oneoutput",
+				  optionalargs=>'oneoptionalarg',
+				  compulsoryargs=>'onecompulsoryarg',
+				  choices=>'onechoice',
+				 },
+		      RootName=>'InSilicoSpectroFormats',
+		     );
+    return;
+  }
+  die "out [$out] is not defined";
 }

@@ -137,7 +137,7 @@ Alexandre Masselot, www.genebio.com
 =cut
 
 use File::Temp qw /tempdir tempfile/;
-#use Data::Serializer;
+use Data::Serializer;
 
 our (@ISA, @EXPORT, @EXPORT_OK);
 @ISA = qw(Exporter);
@@ -207,6 +207,7 @@ sub FC_getme{
 sub FC_save{
   my $self=shift;
   my ($fh, $fname)=tempfile(DIR=>FC_tempdir(), UNLINK=>$REMOVE_TEMP_FILES, SUFFIX=>".fccached");
+  warn "FC_save $fname $self";
   my $serializer = Data::Serializer->new(%serializeParams);
   $serializer->store($self, $fh);
   close $fh;
@@ -241,15 +242,17 @@ sub FC_key{
 
 sub FC_load{
   my $self=shift;
-  my $fname=$self->FC_file or croak "cannot FC_load an object when file does not exsit";
+  my $fname=$self->FC_file or croak "cannot FC_load an object when file does not exits";
   my $serializer = Data::Serializer->new(%serializeParams);
-  my $h=$serializer->retrieve($fname) or croak "could retrieved from serialized file [$fname]";
+  my $h=$serializer->retrieve($fname) or croak "could not retrieved from serialized file [$fname]: $!";
+  warn "FC_load $fname";
   foreach (keys %$h){
     $self->{$_}=$h->{$_};
   }
   warn "FC\t".$self->FC_key." retieved from $fname\n" if $verbose;
-  unlink $fname;
-  delete $self->{FC_file};
+  #  TODO check if has side effect not to delete the file?
+  #  unlink $fname;
+  #  delete $self->{FC_file};
   $self->queueShift;
 }
 

@@ -179,6 +179,7 @@ my $build=Module::Build->new
   );
 
 $build->add_build_element('cgi') || die "cannot add build element [cgi]";
+$build->add_build_element('xml') || die "cannot add build element [cgi]";
 $build->prereq_failures() && $build->prereq_failures()->{requires}  && die "conflicts (missing requirem\ents?)";
 $build->create_build_script;
 

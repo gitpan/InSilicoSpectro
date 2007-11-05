@@ -144,18 +144,22 @@ use InSilicoSpectro::Utils::XML::SaxIndexMaker;
 our %handlers=(
 	       ple=>{
 		     write=>\&writePLE,
+		     mimetype=>'text/xml',
 		     description=>"Phenyx peaklist (ple)",
 		    },
 	       idj=>{
 		     write=>\&writeIDJ,
 		     read=>\&readIDJ,
+		     mimetype=>'text/xml',
 		     description=>"Phenyx spectra data (idj)",
 		    },
 	       mgf=>{
-		     write=>\&writeMGF
+		     write=>\&writeMGF,
+		     mimetype=>'text/plain',
 		    },
 	       pkl=>{
-		     write=>\&writePKL
+		     write=>\&writePKL,
+		     mimetype=>'text/plain',
 		    },
 	       mzxml=>{
 		       read=>\&readMzXml,
@@ -301,6 +305,7 @@ sub getWriteFmtList{
   }
   return wantarray?@tmp:("".(join ',', @tmp));
 }
+
 
 sub getFmtDescr{
   my $f=shift || croak "must provide a format to getFmtDescr";
@@ -484,6 +489,7 @@ sub readMzXml{
 
   print STDERR "xml parsing [$file]\n" if $InSilicoSpectro::Utils::io::VERBOSE;
   $twigmzxml->parsefile($file) or InSilicoSpectro::Utils::io::croakIt "cannot parse [$file]: $!";
+  $this->set('origFile', $file);
   undef $spmsms;
   $is=$this->getNbSpectra();
   $pgBar->update((stat($file))[7]) if $pgBar;
@@ -518,7 +524,7 @@ sub twigMzxml_setParentFile{
   $this->twigMzxml_init_spmsms unless (defined $spmsms);
 
   my $h=$el->atts();
-  $spmsms->origFile($h->{fileName});
+  #$spmsms->origFile($h->{fileName});
 }
 
 my $currentPmfKey;
