@@ -374,7 +374,10 @@ sub writeMGF{
   my ($this)=@_;
   $this=$this->FC_getme if $USE_FILECACHED;
   return if $this->hide;
-  warn "NO writeMGF fo MSSpectra implemented";
+  print "\n\n";
+  foreach (@{$this->{spectrum}}){
+    print join("\t", @$_)."\n";
+  }
   return;
 }
 

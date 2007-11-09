@@ -330,7 +330,7 @@ sub readIDJ{
   $ignoreElts->{'/IdentificationResult/IdentificationList'}=1;
   $ignoreElts->{'ple:PeakListExport[@spectrumType="pmf"]'}=1 if $hprms{skippmf};
   my $twig=XML::Twig->new(twig_handlers=>{
-					  'ple:PeakListExport'=>sub {twig_addSpectrum($this, $_[0], $_[1], skippmf=>$hprms{skippmf})},
+					  'ple:PeakListExport'=>sub {twig_addSpectrum($this, $_[0], $_[1], skippmf=>$hprms{skippmf}, skipmsms=>$hprms{skipmsms})},
 					  'ple:peptide'=> sub {twig_addTmpCompound($this, $_[0], $_[1], skippeaklist=>$hprms{skipPeakList})},
 					  'idj:JobId'=>sub {$this->{jobId}=$_[1]->text},
 					  'idj:header'=>sub {twig_setHeader($this, $_[0], $_[1])},
