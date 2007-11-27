@@ -229,6 +229,44 @@ sub spectrum{
   }
   return $this->get('fragments');
 }
+
+# cleaning
+
+sub sortAndRemoveDuplicates{
+  my $this=shift;
+  $this=$this->FC_getme if $InSilicoSpectro::Spectra::MSSpectra::USE_FILECACHED;
+  my ($sortit, $m);
+  foreach (@{$this->{fragments}}){
+    unless(defined  $m){
+      $m=$_->[0];
+      next;
+    }
+    if($_->[0]<=$m){
+      $sortit=1;
+      last;
+    }
+    $m=$_->[0];
+  }
+  unless($sortit){
+    return $this;
+  }
+  my @tmp;
+  undef $m;
+  foreach (sort {$a->[0] <=> $b->[0]} @{$this->{fragments}}){
+    unless(defined  $m){
+      $m=$_->[0];
+      push @tmp, $_;
+      next;
+    }
+    if($_->[0] > $m){
+      push @tmp, $_;
+    }
+    $m=$_->[0];
+  }
+  $this->{fragments}=\@tmp;
+}
+
+
 ################################
 sub peakDescriptor{
   my $this=shift;

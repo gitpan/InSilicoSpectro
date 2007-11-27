@@ -141,6 +141,7 @@ my(@fileIn, $fileOut, $showInputFmt, $showOutputFmt, $showDef, $sampleInfo, $pre
    $phenyxConfig, $help, $man, $verbose, $showVersion);
 
 use InSilicoSpectro;
+use InSilicoSpectro::Utils::io;
 if (!GetOptions(
 		"in=s@"=>\@fileIn,
 		"out=s"=>\$fileOut,
@@ -196,7 +197,11 @@ use InSilicoSpectro::Spectra::MSRun;
 use InSilicoSpectro::Spectra::MSSpectra;
 use InSilicoSpectro::Spectra::Filter::MSFilterCollection;
 
+#FIXME REMOOVE!
+
+
 $InSilicoSpectro::Spectra::MSSpectra::USE_FILECACHED=1 if $useFileCache;
+InSilicoSpectro::Utils::FileCached::verbose($verbose);
 
 $InSilicoSpectro::Utils::io::VERBOSE=$verbose;
 
@@ -401,8 +406,6 @@ if ($precursorTrustParentCharge){
     }
   }
 }
-
-
 if($dpmStr){
   use InSilicoSpectro;
   InSilicoSpectro::init();
@@ -499,29 +502,30 @@ sub getDef{
 	   input=>[],
 	   output=>[],
 	   version=>$InSilicoSpectro::VERSION,
-	   optionalargs=>[
+	   #might add some compulsory attribute if needed
+	   extraargs=>[
 			  {
 			   key=>'duplicateprecursormoz',
-			   description=>'it is possible to duplicate precursor moz',
-			   type=>['STRING'],
+			   description=>['it is possible to duplicate precursor moz'],
+			   type=>'String',
 			   regexp=>['(\d+,)*\d+'],
-			   level=>'EXPERT',
+			   level=>3,
 			  },
 			  {
 			   key=>'defaultcharge',
-			   description=>'precursor default charge',
-			   type=>['SELECT'],
+			   description=>['precursor default charge'],
+			   type=>'Select',
 			   choices=>['1+', '2+', '2+ AND 3+', '3+'],
-			   level=>'DEFAULT',
+			   level=>1,
 			  },
 			  {
 			   key=>'title',
-			   description=>'title',
-			   type=>['STRING'],
-			   level=>'DEFAULT',
+			   description=>['title'],
+			   type=>'String',
+			   level=>1,
+#			   compulsory=>1,
 			  },
 			 ],
-	   compulsoryargs=>{},
 	   );
   
   while (my ($key, $h)=each %handlers){
@@ -558,11 +562,12 @@ sub getDef{
 		      KeyAttr=>{input=>'+key'},
 		      KeyAttr=>{output=>'+key'},
 		      GroupTags=>{
+				  extraargs=>"oneExtraArg",
 				  input=>"oneinput",
 				  output=>"oneoutput",
 				  optionalargs=>'oneoptionalarg',
 				  compulsoryargs=>'onecompulsoryarg',
-				  choices=>'onechoice',
+				  choices=>'oneChoice',
 				 },
 		      RootName=>'InSilicoSpectroFormats',
 		     );

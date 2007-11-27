@@ -162,17 +162,19 @@ our ($verbose, $tempDir);
 sub new{
     my $pkg=shift;
     my %h=@_;
-    my $dvar={
+    my $self={
 	      FC_key=>$keyCpt++,
 	     };
-    bless $dvar, $pkg;
+    bless $self, $pkg;
     unless ($h{persistent}){
-      $dvar->queueShift;
+      $self->queueShift;
     }else{
-      $dvar->FC_persistent(1);
+      $self->FC_persistent(1);
     }
-    $dictionary{$dvar->FC_key}=$dvar;
-    return $dvar;
+    $dictionary{$self->FC_key}=$self;
+#     warn $dictionary{$self->FC_key}." == ".$self;
+#     Carp::confess ("".$dictionary{$self->FC_key} eq "".$self) unless("".$dictionary{$self->FC_key} eq "".$self);
+    return $self;
 }
 
 
@@ -193,8 +195,9 @@ sub FC_tempdir{
 }
 sub FC_getme{
   my $self=shift;
-  
+
   return $self if $self->FC_persistent;
+  #warn "FC_getme\t".$self->FC_key."\t(".$self->FC_file.") [$self] \n" if $verbose;
 
   if($self->FC_file){
     $self->FC_load;
@@ -207,11 +210,9 @@ sub FC_getme{
 sub FC_save{
   my $self=shift;
   my ($fh, $fname)=tempfile(DIR=>FC_tempdir(), UNLINK=>$REMOVE_TEMP_FILES, SUFFIX=>".fccached");
-  warn "FC_save $fname $self";
   my $serializer = Data::Serializer->new(%serializeParams);
   $serializer->store($self, $fh);
   close $fh;
-  warn "FC\t".$self->FC_key." saved into $fname\n" if $verbose;
   $self->FC_file($fname);
   foreach (keys %$self){
     next if /^FC_/;
@@ -230,9 +231,12 @@ sub FC_file{
 sub FC_persistent{
   my $self=shift;
   if(exists $_[0]){
-    $self->{persistent}=shift;
+    $self->{FC_persistent}=shift;
+    if($self->{FC_persistent}){
+      $self->queueRemove;
+    }
   }
-  return $self->{persistent};
+  return $self->{FC_persistent};
 }
 
 sub FC_key{
@@ -245,15 +249,15 @@ sub FC_load{
   my $fname=$self->FC_file or croak "cannot FC_load an object when file does not exits";
   my $serializer = Data::Serializer->new(%serializeParams);
   my $h=$serializer->retrieve($fname) or croak "could not retrieved from serialized file [$fname]: $!";
-  warn "FC_load $fname";
   foreach (keys %$h){
     $self->{$_}=$h->{$_};
   }
-  warn "FC\t".$self->FC_key." retieved from $fname\n" if $verbose;
+  #warn "FC\t".$self->FC_key." [$self] retrieved from $fname\n" if $verbose;
   #  TODO check if has side effect not to delete the file?
-  #  unlink $fname;
-  #  delete $self->{FC_file};
+  #unlink $fname;
+  delete $self->{FC_file};
   $self->queueShift;
+
 }
 
 sub FC_eject{
@@ -262,7 +266,7 @@ sub FC_eject{
   delete $key2queueEl{$queueTail->{object}->FC_key};
   $queueTail->{object}->FC_save;
   $queueTail=$queueTail->{prev};
-  delete $queueTail->{prev}{next};
+  delete $queueTail->{next};
   $queueLen--;
 }
 
@@ -272,10 +276,20 @@ sub FC_refresh{
   if($self->FC_file){
     $self->FC_load;
   }else{
+  
     my $qel=$key2queueEl{$self->FC_key};
+    my $second=$queueHead;
     $qel->{prev}{next}= $qel->{next};
-    $qel->{next}{prev}=$qel->{prev};
-    $self->queueShift;
+    $qel->{next}{prev}=$qel->{prev} if  $qel->{next};
+    $queueTail=$qel->{prev} if $queueTail==$qel;
+
+    $queueHead=$qel;
+    # HEHEHE just commentedq
+    #$self->queueShift;
+    $queueHead->{next}=$second;
+    $second->{prev}=$queueHead;
+    $queueHead->{prev}=undef;
+  
   }
 }
 
@@ -287,21 +301,42 @@ sub queueShift{
 	 prev=>undef,
 	 next=>undef,
 	};
-  $key2queueEl{$self->FC_key}=$h;
-  if ($queueHead){
-    $queueHead->{prev}=$h;
-    $h->{next}=$queueHead;
-    $queueHead=$h;
+  if( exists $key2queueEl{$self->FC_key}){
+    Carp::cluck "[".$self->FC_key."] AREADY IN QUEUE!";
   }else{
-    $queueHead=$h;
-    $queueTail=$h;
-  }
-  $queueLen++;
+    $key2queueEl{$self->FC_key}=$h;
+    if ($queueHead){
+      $queueHead->{prev}=$h;
+      $h->{next}=$queueHead;
+      $queueHead=$h;
+    }else{
+      $queueHead=$h;
+      $queueTail=$h;
+    }
+    $dictionary{$self->FC_key}=$self;
 
-  if(queueOverflow()){
-    warn "queueOverflow" if $verbose>2;
-    $queueTail->{object}->FC_eject;
+    $queueLen++;
+    if(queueOverflow()){
+      warn "queueOverflow" if $verbose>2;
+      $queueTail->{object}->FC_eject;
+    }
   }
+}
+
+sub queueRemove{
+  my $self=shift;
+  if(exists $key2queueEl{$self->FC_key}){
+    my $qel=$key2queueEl{$self->FC_key};
+    $qel->{prev}{next}=$qel->{next} if $qel->{prev};
+    $qel->{next}{prev}=$qel->{prev} if $qel->{next};
+    $queueHead= $qel->{next} if($qel==$queueHead);
+    $queueTail= $qel->{prev} if($qel==$queueTail);
+    delete $qel->{prev};
+    delete $qel->{next};
+    delete $key2queueEl{$self->FC_key};
+    $queueLen--;
+  }
+
 }
 
 sub queueMaxSize{
@@ -320,16 +355,22 @@ sub queueDump{
   return unless $queueHead;
   print "queue len=$queueLen\n";
   my $qel=$queueHead;
+
   while ($qel){
-    print $qel->{object}->FC_key."\t".ref($qel->{object})."\t".($qel->{prev} or 'NOPREV')."\t".($qel->{next} or 'NONEXT')."\t[".$qel->{object}->FC_persistent."]\n";
+    Carp::cluck unless $qel->{object};
+    print $qel->{object}->FC_key;
+    print "*" if $qel->{object}->FC_persistent;
+
+    print "\t".ref($qel->{object})."\t".($qel->{prev} or 'NOPREV')."\t".($qel->{next} or 'NONEXT')."\t[".$qel->{object}->FC_persistent."]\n";
     $qel=$qel->{next};
   }
 }
 
 sub dump_all{
   foreach (sort {$a <=> $b} keys %dictionary){
-    print "$_\t".ref($dictionary{$_})."\t".($dictionary{$_}->FC_file or "in_mem")."\n";
-    
+    print "$_\t".$dictionary{$_}."\t".$dictionary{$_}->FC_key;
+    print "*" if $dictionary{$_}->FC_persistent;
+    print "\t".($dictionary{$_}->FC_file or "in_mem")."\n";
   }
 }
 

@@ -107,7 +107,7 @@ my %requires=(
 	      'MIME::Base64' => 0,
 	      'XML::Parser' => 0,
 	      'XML::SemanticDiff' => '0',
-	      'XML::Twig' => '3.14',
+	      'XML::Twig' => '>=3.14',
 	     );
 
 if ($OSNAME=~/win/){

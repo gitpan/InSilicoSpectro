@@ -184,6 +184,7 @@ sub new{
 
   my $dvar = $class->SUPER::new(persistent=>1);
   bless $dvar, $class;
+  $dvar->FC_persistent(1);
 
   if(defined $h){
     if((ref $h)eq 'HASH'){
@@ -223,6 +224,13 @@ sub read{
     $this->set('sampleInfo', {sampleNumber=>0, instrument=>"n/a", instrumentId=>"n/a", spectrumType=>"msms"});
   }
   $handlers{$fmt}{read}->($this, %params);
+
+   if(defined $this->get('compounds')){
+    foreach (@{$this->get('compounds')}){
+      $_->sortAndRemoveDuplicates();
+    }
+  }
+
 }
 
 sub childText{
@@ -434,7 +442,7 @@ sub readDTA{
 	$cmpd->setParentData([$moz, $int, $cmsk]);
 	my @pl;
 	foreach (split /\n/, $contents) {
-	  my @tmp=split;
+	  my @tmp=(split)[0..1];
 	  push @pl,\@tmp;
 	}
 	$cmpd->set('fragments', \@pl);
@@ -888,7 +896,6 @@ $shift</ple:PeakListExport>
 sub writeMGF{
   my ($this)=@_;
   $this=$this->FC_getme if $InSilicoSpectro::Spectra::MSSpectra::USE_FILECACHED;
-  $this=$this->FC_getme if $InSilicoSpectro::Spectra::MSSpectra::USE_FILECACHED;
   return if $this->hide;
   my $transformChargeMask=1;
   if(defined $this->get('compounds')){
@@ -971,6 +978,7 @@ sub addSampleInfoTag{
 
 sub addCompound{
   my ($this, $cmpd)=@_;
+  $this=$this->FC_getme if $InSilicoSpectro::Spectra::MSSpectra::USE_FILECACHED;
   $cmpd->{key}="sample_$this->{sampleInfo}{sampleNumber}%"."cmpd_".($this->getSize()||0) unless defined $cmpd->{key};
   $cmpd->title2acquTime;
   push @{$this->{compounds}}, $cmpd;

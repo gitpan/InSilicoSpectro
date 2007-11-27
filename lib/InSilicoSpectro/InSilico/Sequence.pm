@@ -36,7 +36,7 @@ eval{
   $isBioPerl = 1;
 };
 if ($@){
-  warn("Bio::Perl is not installed") if ($InSilicoSpectro::Utils::io::VERBOSE);
+  warn("[WARNING] Bio::Perl is not installed") if ($InSilicoSpectro::Utils::io::VERBOSE);
 }
 
 # Visible attributes controled vocabulary

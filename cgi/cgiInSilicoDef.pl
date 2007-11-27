@@ -265,7 +265,8 @@ if($query->param('actiontype') eq 'save'){
 my $target=$username?"user [$username]":"file [$filename] (server side)";
 if($cat eq 'cleavenzyme'){
   print "<h3>Cleavage enzymes setup for $target</h3>\n";
-  my $key=$query->param('key');;
+  my $key=$query->param('key');
+  $key=~s/\s/_/g;
   if($query->param('actiontype') eq 'save'){
     my @tmp=$twig->root->get_xpath("//oneCleavEnzyme[\@name='$key']");
     my $el;
@@ -500,6 +501,7 @@ EOT
 if($cat eq 'modres'){
   print "<h3>Residue modifications setup for $target</h3>\n";
   my $key=$query->param('key');
+  $key=~s/\s/_/g;
   if($query->param('actiontype') eq 'save'){
     my @tmp=$twig->root->get_xpath("//oneModRes[\@name='$key']");
     my $el;

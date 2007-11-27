@@ -129,6 +129,7 @@ use InSilicoSpectro::Spectra::MSMSSpectra;
 		},
 	   mgf=>{
 		 write=>\&writeMGF,
+		 read=>\&readMGF,
 		 description=>"Mascot generic format (mgf)"
 		},
 	   pkl=>{
@@ -197,6 +198,7 @@ sub open{
   InSilicoSpectro::Utils::io::croakIt "unknown spectra format [$fmt]" unless defined $hFmt{$fmt};
   #croak ($InSilicoSpectro::Utils::io::VERBOSE?("<pre>".Carp::longmess(__PACKAGE__."(".__LINE__."): unknown spectra format [$fmt]\n")."\n</pre>\n"):(__PACKAGE__."(".__LINE__."): unknown spectra format [$fmt]")) unless defined $hFmt{$fmt};
   bless $this, $hFmt{$this->format}{ref};
+  $this->FC_persistent(1) if $hFmt{$this->format}{ref} =~ /MSMSSpectra$/;
 
   $this->read(%params);
 }
@@ -374,6 +376,7 @@ sub writeMGF{
   my ($this)=@_;
   $this=$this->FC_getme if $USE_FILECACHED;
   return if $this->hide;
+  #well, I'm not that sure that a double blank line is enough to separate multiple PMF queries
   print "\n\n";
   foreach (@{$this->{spectrum}}){
     print join("\t", @$_)."\n";
@@ -450,7 +453,7 @@ sub read{
 
   $this=$this->FC_getme if $USE_FILECACHED;
   my $fmt=$this->format();
-  croak "InSilicoSpectro::Spectra::MSSpectra: no reading handler is defined for format [$fmt]" unless defined $handlers{$fmt}{read};
+  Carp::confess "InSilicoSpectro::Spectra::MSSpectra: no reading handler is defined for format [$fmt]" unless defined $handlers{$fmt}{read};
 
 
   my $h=$this->get('sampleInfo');
@@ -531,7 +534,6 @@ sub readMGF{
   close $fd;
 }
 
-
 #--------------- charge subs
 
 =head2 chargeMasks
@@ -607,6 +609,15 @@ sub getFmtDescr{
   my $f=shift || croak "must provide a format to getFmtDescr";
   croak "no handler for format=[$f]" unless $handlers{$f};
   return $handlers{$f}{description} || $f;
+}
+
+use overload '""' => \&toString;
+
+sub toString
+{
+  my $this = shift;
+  return $this;
+  return "MSSpectra ($this->{key})";
 }
 
 return 1;

@@ -49,6 +49,11 @@ BEGIN{
 END{
 }
 
+use File::Temp qw(tempfile);
+use File::Spec;
+use Util::Properties;
+
+
 my $isCGI;
 use CGI qw(:standard);
 if($isCGI){
@@ -96,6 +101,11 @@ if($query->param('doc')){
   while(<DATA>){
     print $_;
   }
+  exit(0);
+}
+
+if ($query->param('action') eq 'upload'){
+  uploadManager();
   exit(0);
 }
 
@@ -517,6 +527,7 @@ sub findCmdPrefix{
   }
   return undef;
 }
+
 
 __DATA__
 <html>

@@ -39,7 +39,7 @@ WriteMakefile
                            'File::Find::Rule' => 0,
                            'Getopt::Long' => 0,
                            'XML::SemanticDiff' => '0',
-                           'XML::Twig' => '3.14',
+                           'XML::Twig' => '>=3.14',
                            'GD::Graph' => 0,
                            'MIME::Base64' => 0,
                            'File::Temp' => 0
