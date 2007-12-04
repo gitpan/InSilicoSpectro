@@ -599,7 +599,6 @@ sub twigMzxml_readCmpd{
   my $n=(scalar @$moz)-1;
 #  $cmpd->addOnePeak([$moz->[0], $int->[0]]);
    for (0..$n) {
-     warn "[$moz->[$_], $int->[$_]]";
      $cmpd->addOnePeak([$moz->[$_], $int->[$_]]);
    }
 
@@ -628,7 +627,6 @@ sub twigMzxml_decodeMzXmlPeaks{
     }
     $isMz=1-$isMz;
   }
-  warn "m=@m\n";
   return (\@m, \@i);
 }
 
