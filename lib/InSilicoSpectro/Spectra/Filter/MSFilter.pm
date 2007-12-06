@@ -236,11 +236,12 @@ sub filterSpectra{
     if (($this->{level} eq 'peaks') and ($this->{spectrumType} eq 'msms') and (ref($sp) ne 'InSilicoSpectro::Spectra::MSMSCmpd')) {
       
       my $sp_backup =  $this->currentSpectra();
-      foreach (@{$this->currentSpectra()->spectra()}) {
-	$this->filterSpectra($_);
-
+      if(ref($this->currentSpectra()) eq 'InSilicoSpectro::Spectra::MSSpectra'){
+	foreach (@{$this->currentSpectra()->spectra()}) {
+	  $this->filterSpectra($_);
+	}
+	$this->currentSpectra($sp_backup);
       }
-      $this->currentSpectra($sp_backup);
     } else {
       $this->computeFilterValue();
       $this->applyAction();

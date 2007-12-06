@@ -80,6 +80,10 @@ Prints all the possible format for output
 
 =item --showformats=(xml|json)
 
+=item --showdef=[xml|json]
+
+report all possible input/ouput format + relative info (optional/compulsory arguements...)
+
 =item --propertiessave=file
 
 =item --propertiesprefix=string
@@ -506,24 +510,29 @@ sub getDef{
 	   extraargs=>[
 			  {
 			   key=>'duplicateprecursormoz',
-			   description=>['it is possible to duplicate precursor moz'],
+			   description=>['it is possible to duplicate precursor moz for example "-1,1,2,3", when tolearance is small but isotope error are suspected'],
+			   shortdescription=>['dupplicate prec. m/z'],
 			   type=>'String',
-			   regexp=>['(\d+,)*\d+'],
+			   regexp=>['([\+\-]?\d+,)*[+\-]?\d+'],
 			   level=>3,
 			  },
 			  {
 			   key=>'defaultcharge',
-			   description=>['precursor default charge'],
+			   description=>['precursor default charge, to be assigned when no precursor is defined for a given ion'],
+			   shortdescription=>['prec. defaut charge'],
 			   type=>'Select',
 			   choices=>['1+', '2+', '2+ AND 3+', '3+'],
 			   level=>1,
+			   default=>['2+ AND 3+'],
 			  },
 			  {
 			   key=>'title',
-			   description=>['title'],
+			   shortdescription=>['title'],
+			   description=>['run general title'],
 			   type=>'String',
 			   level=>1,
 #			   compulsory=>1,
+			   default=>['no title'],
 			  },
 			 ],
 	   );

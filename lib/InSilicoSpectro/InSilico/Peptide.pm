@@ -414,7 +414,7 @@ sub aaBefore
       $this->{aaBefore} = $val;
     }
     else{
-      croak("Illegal amino acid [$val]");
+      warn("[WARNING] Illegal amino acid [$val]");
     }
   }
   return $this->{aaBefore};
@@ -436,7 +436,7 @@ sub aaAfter
       $this->{aaAfter} = $val;
     }
     else{
-      croak("Illegal amino acid [$val]");
+      warn("[WARNING] amino acid [$val]");
     }
   }
   return $this->{aaAfter};
