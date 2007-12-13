@@ -534,6 +534,24 @@ sub getDef{
 #			   compulsory=>1,
 			   default=>['no title'],
 			  },
+			  {
+			   key=>'filter',
+			   shortdescription=>['peaklist filter'],
+			   description=>['a configuration file to filter peaklist'],
+			   type=>'File',
+			   level=>3,
+#			   compulsory=>0,
+			   default=>[''],
+			  },
+			  {
+			   key=>'usefilecaching',
+			   shortdescription=>['use file caching'],
+			   description=>['activates a memory usage control system - a CPU time cost'],
+			   type=>'Flag',
+			   level=>3,
+#			   compulsory=>1,
+			   default=>undef,
+			  },
 			 ],
 	   );
   

@@ -183,6 +183,7 @@ sub print{
 
 sub regexp{
   my ($this, $reStr)=@_;
+
   if($reStr){
     $this->{regexp}=qr/$reStr/;
   }
@@ -363,7 +364,7 @@ sub twig_addModRes{
     $mr->cTerm(defined $elSite->first_child('cterm'));
     $mr->{site}{residue}=$elRes;
     my $re.=$mr->nTerm?'^':'';
-    $re.="[".$elRes->text."]";
+    $re.="[".($elRes->text || '.')."]";
     $re.=$mr->cTerm?'$':'';
     $mr->regexp($re);
   } elsif (my $elSite=$el->first_child('siteRegexp')) {
