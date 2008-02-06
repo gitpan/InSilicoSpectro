@@ -690,7 +690,6 @@ sub twigMzdata_addPMFSpectrum{
   my($this, $twig, $el)=@_;
   return if $this->{read}{skip}{pmf};
 
-  Carp::cluck "warning: twigMzdata_addPMFSpectrum not defined";
 #  my $sp=InSilicoSpectro::Spectra::MSSpectra->new();
 
 #  $sp->set('peakDescriptor', $pd_mzint);

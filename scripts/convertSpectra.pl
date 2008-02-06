@@ -146,6 +146,7 @@ my(@fileIn, $fileOut, $showInputFmt, $showOutputFmt, $showDef, $sampleInfo, $pre
 
 use InSilicoSpectro;
 use InSilicoSpectro::Utils::io;
+
 if (!GetOptions(
 		"in=s@"=>\@fileIn,
 		"out=s"=>\$fileOut,
@@ -411,14 +412,22 @@ if ($precursorTrustParentCharge){
   }
 }
 if($dpmStr){
-  use InSilicoSpectro;
-  InSilicoSpectro::init();
+  my $el_hplus;
+  eval{
+    use InSilicoSpectro;
+    InSilicoSpectro::init();
+    $el_hplus=InSilicoSpectro::InSilico::MassCalculator::getMass('el_H+');
+  };
+  if($@){
+    $el_hplus=1.00728;
+  }
   CORE::die "invalid value [$dpmStr] insteadd of --duplicateprecursormoz=i1:i2" unless $dpmStr=~/^([\-\d]+):([\-\d]+)$/;
   my ($min, $max)=($1, $2);
   my $imax=$run->getNbSpectra()-1;
 
   my $origpd_cmask;
   my $alterpd_charge;
+  my $cmpdNumber=0;
   foreach my $i(0..$imax){
     my $sp=$run->getSpectra($i);
     next unless ref($sp) eq 'InSilicoSpectro::Spectra::MSMSSpectra';
@@ -445,13 +454,16 @@ if($dpmStr){
 	foreach my $shift($min..$max){
 	  next if $shift==0;
 	  my $newcmpd=InSilicoSpectro::Spectra::MSMSCmpd->new($cmpd);
+	  $newcmpd->{compoundNumber}=$cmpdNumber++;
+	  delete $newcmpd->{key};
 	  my @prec=@{$cmpd->getParentData()};
 	  $newcmpd->setParentData(\@prec);
 	  $newcmpd->set('parentPD', $alterpd_charge);
 	  $prec[$ipdcharge]=$c;
-	  $prec[0]+=InSilicoSpectro::InSilico::MassCalculator::getMass('el_H+')*$shift/$c;
-	  $newcmpd->title(($cmpd->title() || "")." [".(($shift>0)?"+":"")."$shift isotope]");
+	  $prec[0]+=$el_hplus*$shift/$c;
+	  $newcmpd->title(($cmpd->title() || "")." [charge=$c+, ".(($shift>0)?"+":"")."$shift isotope]");
 	  $sp->addCompound($newcmpd);
+
 	}
       }
     }
@@ -531,7 +543,7 @@ sub getDef{
 			   description=>['run general title'],
 			   type=>'String',
 			   level=>1,
-#			   compulsory=>1,
+			   compulsory=>1,
 			   default=>['no title'],
 			  },
 			  {
@@ -592,8 +604,6 @@ sub getDef{
 				  extraargs=>"oneExtraArg",
 				  input=>"oneinput",
 				  output=>"oneoutput",
-				  optionalargs=>'oneoptionalarg',
-				  compulsoryargs=>'onecompulsoryarg',
 				  choices=>'oneChoice',
 				 },
 		      RootName=>'InSilicoSpectroFormats',

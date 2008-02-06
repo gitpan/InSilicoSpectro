@@ -160,7 +160,7 @@ sub new{
     my %h=(ref($_[0]) eq 'HASH')?%{$_[0]}:@_;
     foreach (keys(%h)){
       next unless /\S/;
-      next if /(persistent|msms2pmfRelation|key2spectrum)/;
+      next if /^(persistent|msms2pmfRelation|key2spectrum|read)$/;
       if(ref ($h{$_}) eq 'ARRAY'){
 	my @tmp=@{$h{$_}};
 	$spec->$_(\@tmp);
