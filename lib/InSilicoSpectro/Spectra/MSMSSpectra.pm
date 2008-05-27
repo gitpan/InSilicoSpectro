@@ -353,12 +353,12 @@ sub readDTA{
     my $tmpdir=File::Spec->tmpdir;
     my $zip = Archive::Zip->new();
     CORE::die "ZIP read error in [$src]" unless $zip->read( $src ) == Archive::Zip::AZ_OK;
-    my @members = $zip->members();
-    foreach my $mb (@members) {
-      my ($fdtmp, $tmp)=File::Temp::tempfile("$tmpdir/".(basename $mb->fileName()."-XXXXX"), UNLINK=>1);
-      $mb->extractToFileNamed($tmp);
+
+    my @members=$zip->members();
+    foreach my $mb (@members){
+      my (undef, $tmp)=File::Temp::tempfile("$tmpdir/".(basename($mb->fileName())."-XXXXX"), UNLINK=>1);
+      $zip->extractMemberWithoutPaths($mb, $tmp) && croak "cannot extract ".$mb->fileName().": $!\n";
       push @files, $tmp;
-      close $fdtmp;
     }
   }else{
     push @files, glob $src;
@@ -591,6 +591,7 @@ sub readNISTMSP{
   my $charge=$this->get('defaultCharge');
   my $pl;
   my $mw;
+  my $precmoz;
   while(<fd>){
     chomp;
     s/[\s\cA]+$//;
@@ -605,6 +606,7 @@ sub readNISTMSP{
 
     if(/^name:\s*(.*)/i){
       $cmpd=InSilicoSpectro::Spectra::MSMSCmpd->new({title=>(basename $src)."($iCmpd)", parentPD=>$pd, fragPD=>$pd});
+      undef $precmoz;
       $pl=[];;
       my $t=$1;
       $t=~s/\s+$//;
@@ -618,20 +620,23 @@ sub readNISTMSP{
     if(/^mw:\s*([\d\.]+)/i){
       $mw=$1;
     }
+    if(/^precursor:\s*([\d\.]+)/i){
+      $precmoz=$1;
+    }
     if(/^comments?:/i){
       if(/\bparent=([\d\.]+)/i){
-	my $moz=$1;
-	my $z;
-	if(/\bcharge=(\d+)/i){
-	  $z=$1;
-	}else{
-	  $z=int(0.5+1.0*$mw/$moz);
-	}
-	my $int=1;
-	$cmpd->set('parentData', [$moz, $int, 1<<$z]);
-      }else{
-	die "cannot parse parent info out of\n$_";
+	$precmoz=$1;
       }
+      die "cannot parse precursor m/z out of info (Precursor: and commen: lines)\n" unless  defined $precmoz;
+      my $z;
+      if(/\bcharge=(\d+)/i){
+	$z=$1;
+      }else{
+	$z=int(0.5+1.0*$mw/$precmoz);
+      }
+
+      my $int=1;
+      $cmpd->set('parentData', [$precmoz, $int, 1<<$z]);
       next;
     }
     if(/^\s*([\d\.]+)\s+([\d\.]+)/){

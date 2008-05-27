@@ -1,6 +1,6 @@
 ---
 name: InSilicoSpectro
-version: 1.3.17
+version: 1.3.20
 author:
   - 'Alexandre Masselot <alexandre.masselot@genebio.com>, Jacques Colinge <Jacques.Colinge@fh-hagenberg.at>'
 abstract: Open source Perl library for proteomics
@@ -38,7 +38,7 @@ recommends:
 provides:
   InSilicoSpectro:
     file: lib/InSilicoSpectro.pm
-    version: 1.3.17
+    version: 1.3.20
   InSilicoSpectro::InSilico::AASequence:
     file: lib/InSilicoSpectro/InSilico/AASequence.pm
   InSilicoSpectro::InSilico::CleavEnzyme:

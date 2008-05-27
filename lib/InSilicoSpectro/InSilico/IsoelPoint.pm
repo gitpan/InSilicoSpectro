@@ -116,7 +116,8 @@ sub new {
   $pi->{pK}{Rodwell}=
     {'Carboxyl'=>3.1,D=>3.86,E=>4.25,'Amino'=>8.0,K=>11.5,R=>11.5,H=>6.0,C=>8.33,Y=>10.07}; # Rodwell
   $pi->{pK}{Lehninger}=
-    {'Carboxyl'=>3.1,D=>4.4,E=>4.4,'Amino'=>8.0,K=>10.0,R=>12,H=>6.5,C=>8.5,Y=>10.0}; # DTASelect (Lehninger)
+    #    {'Carboxyl'=>3.1,D=>4.4,E=>4.4,'Amino'=>8.0,K=>10.0,R=>12,H=>6.5,C=>8.5,Y=>10.0}; # DTASelect (Lehninger)
+    {'Carboxyl'=>2.34,D=>3.86,E=>4.25,'Amino'=>9.69,K=>10.5,R=>12.4,H=>6.0,C=>8.33,Y=>10.0}; # Lehninger
   $pi->{pK}{EMBOSS}=
     {'Carboxyl'=>3.6,D=>3.9,E=>4.1,'Amino'=>8.6,K=>10.8,R=>12.5,H=>6.5,C=>8.5,Y=>10.1}; # EMBOSS
   $pi->{pK}{Solomon}=

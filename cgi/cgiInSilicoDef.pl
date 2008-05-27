@@ -538,7 +538,8 @@ if($cat eq 'modres'){
     print "    defList['$key']=new Array();\n";
     print "    defList['$key']['name']='$key';\n";
     my $descr=$_->first_child('description')->text;
-    $descr=~s/'/ /;
+    $descr=~s/'/ /g;
+    $descr=~s/[\r\n]//g;
     print "    defList['$key']['description']='$descr';\n";
     if (my $els=$_->first_child('site')) {
       print "    defList['$key']['residue']='".$els->first_child("residue")->text."';\n";

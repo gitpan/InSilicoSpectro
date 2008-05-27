@@ -284,6 +284,7 @@ sub readTwigEl{
   $this->set('fragPD', $pdFrag);
   $this->set('title', ($el->first_child('PeptideDescr')||$el->first_child('ple:PeptideDescr'))->text);
   my @d=split /\s+/, ($el->first_child('ple:ParentMass')||$el->first_child('ParentMass'))->text;
+  $this->set('key', ($el->atts->{key}));
   $this->set('parentData', \@d);
   my $tmp=($el->first_child('ple:peaks')||$el->first_child('peaks'))->text;
   foreach(split /\n/, $tmp){

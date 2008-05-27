@@ -135,7 +135,7 @@ sub train {
   for ($this->{fitting}) {
     /bypass/ && do { $this->set('fitmodel',[0.0,1.0]); last; };
     $this->preprocess(\@prdata,\@expdata) if  $this->{preprocess};
-    /linear/ && do { my $reg = Statistics::Regression->new(2, "linear regression",["const","prdata"]);
+    /linear/ && do { my $reg = Statistics::Regression->new("linear regression", ["const","prdata"]);
 		     foreach (@expdata) {
 		       $reg->include($_,[1,shift(@prdata)]);
 		     }

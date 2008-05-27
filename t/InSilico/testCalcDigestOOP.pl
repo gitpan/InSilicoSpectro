@@ -46,7 +46,6 @@ use InSilicoSpectro::InSilico::CleavEnzyme;
 use InSilicoSpectro::InSilico::AASequence;
 use InSilicoSpectro::InSilico::Peptide;
 
-eval{
   InSilicoSpectro::init();
 
   my $test = shift;
@@ -91,7 +90,3 @@ eval{
       print "$_\t", join("\t", $_->start(), $_->end(), $_->enzymatic(), $_->getMass(), modifToString($_->modif())), "\n";
     }
   }
-};
-if ($@){
-  carp($@);
-}

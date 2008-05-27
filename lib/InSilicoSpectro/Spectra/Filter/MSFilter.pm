@@ -569,20 +569,20 @@ sub twig_addSpectrumFilter{
   
   $this->{actionType}= $el->first_child('action')->atts->{type};
   
-  if($this->{actionType} eq 'label'){
+  if ($this->{actionType} eq 'label') {
     $this->{labelValue}= $el->first_child('action')->first_child('labelValue')->text;
     $this->{labelName}= $el->first_child('action')->first_child('labelName')->text;
   }
 
   
-  unless(($this->{actionType} eq 'algorithm') or ($this->{actionType} eq 'none')){
+  unless (($this->{actionType} eq 'algorithm') or ($this->{actionType} eq 'none')) {
   
-  my $el_thr = $el->first_child('action')->first_child('threshold');
+    my $el_thr = $el->first_child('action')->first_child('threshold');
   
-  $this->{relativeTo}= $el_thr->first_child('relativeTo')->text;
-  $this->thresholdValue($el_thr->first_child('thresholdValue')->text);
-  $this->{comparator}= $el_thr->first_child('comparator')->text;
-} 
+    $this->{relativeTo}= $el_thr->first_child('relativeTo')->text;
+    $this->thresholdValue($el_thr->first_child('thresholdValue')->text);
+    $this->{comparator}= $el_thr->first_child('comparator')->text;
+  } 
 
   $this->{filterType}= $el-> first_child('filterValue')->atts->{type};
    

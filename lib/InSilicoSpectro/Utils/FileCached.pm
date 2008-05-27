@@ -149,7 +149,7 @@ our $QUEUE_MAX_LEN=500;
 @EXPORT_OK = ();
 
 our %key2queueEl;
-our %serializeParams;
+our %serializeParams;#=(serializer=>'Data::Dumper');
 our %dictionary;
 
 our ($queueHead, $queueTail);
@@ -214,6 +214,8 @@ sub FC_save{
   $serializer->store($self, $fh);
   close $fh;
   $self->FC_file($fname);
+  #warn "FC\t".$self->FC_key." [$self] save in $fname\n";
+
   foreach (keys %$self){
     next if /^FC_/;
     delete $self->{$_};
@@ -252,7 +254,7 @@ sub FC_load{
   foreach (keys %$h){
     $self->{$_}=$h->{$_};
   }
-  #warn "FC\t".$self->FC_key." [$self] retrieved from $fname\n" if $verbose;
+  #warn "FC\t".$self->FC_key." [$self] retrieved from $fname\n";
   #  TODO check if has side effect not to delete the file?
   #unlink $fname;
   delete $self->{FC_file};

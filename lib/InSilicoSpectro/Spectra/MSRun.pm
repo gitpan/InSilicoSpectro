@@ -165,6 +165,10 @@ our %handlers=(
 		       read=>\&readMzXml,
 		       readMultipleFile=>1,
 		      },
+	       mzml=>{
+		       read=>\&readMzML,
+		       readMultipleFile=>0,
+		      },
 	       mascotxml=>{
 			   read=>\&readMascotXml,
 			   description=>'mascot exported xml, checking the "Input query data box"',
@@ -347,6 +351,8 @@ sub readIDJ{
     if(InSilicoSpectro::Utils::io::isInteractive()){
       my $size=(stat($file))[7];
       $pgBar=Term::ProgressBar->new({name=>"MSRun:parsing ".basename($file), count=>$size});
+      $pgBar->update((stat($file))[7]) if $pgBar;
+
       $pgNextUpdate=0;
     }
 
@@ -631,6 +637,230 @@ sub twigMzxml_decodeMzXmlPeaks{
 }
 
 ########## EOMzxml
+
+#########  MZML
+
+my $spmsms;
+my $pd_mzint=InSilicoSpectro::Spectra::PhenyxPeakDescriptor->new("moz intensity");
+my $pd_mzintcharge=InSilicoSpectro::Spectra::PhenyxPeakDescriptor->new("moz intensity chargemask");
+my $is=0;
+
+my $twigmzml;
+sub readMzML{
+  my ($this, $file)=@_;
+  $file=$this->{source} unless defined $file;
+  my $ignoreElts={
+		  'index'=>1
+		 };
+  #$ignoreElts->{'scan[@msLevel="1"]'}=1 if $this->{read}{skip}{pmf};
+
+  $twigmzml=XML::Twig->new(twig_handlers=>{
+					    'spectrum'=>sub {twigMzml_addSpectrum($this, $_[0], $_[1])},
+					    'instrument'=>sub {twigMzml_setInstrument($this, $_[0], $_[1])},
+					    'parentFile'=>sub {twigMzml_setParentFile($this, $_[0], $_[1])},
+					   },
+			    pretty_print=>'indented',
+			    ignore_elts=>$ignoreElts,
+			 );
+  (-r $file) or InSilicoSpectro::Utils::io::croakIt "cannot read [$file]";
+
+  undef $pgBar;
+  eval{
+    require Term::ProgressBar;
+    if(InSilicoSpectro::Utils::io::isInteractive()){
+      my $size=(stat($file))[7];
+      $pgBar=Term::ProgressBar->new({name=>"parsing ".basename($file), count=>$size});
+      $pgNextUpdate=0;
+    }
+  };
+
+  print STDERR "xml parsing [$file]\n" if $InSilicoSpectro::Utils::io::VERBOSE;
+  $twigmzml->parsefile($file) or InSilicoSpectro::Utils::io::croakIt "cannot parse [$file]: $!";
+  $this->set('origFile', $file);
+  undef $spmsms;
+  $is=$this->getNbSpectra();
+  $pgBar->update((stat($file))[7]) if $pgBar;
+}
+
+sub twigMzml_setInstrument{
+  my($this, $twig, $el)=@_;
+
+  warn "instrument (or list of instruments) not yet taken into account";
+  $twig->purge;
+
+#   my $h=$el->atts();
+#   foreach (keys %$h){
+#     $this->{instrument}{$_}=$h->{$_}
+#   }
+}
+sub twigMzml_init_spmsms{
+  my($this)=@_;
+
+  return if $spmsms;
+  $spmsms=InSilicoSpectro::Spectra::MSMSSpectra->new();
+  $spmsms->origFile($this->{origFile}) unless $spmsms->origFile;
+  $spmsms->set('parentPD', $pd_mzintcharge);
+  $spmsms->set('fragPD', $pd_mzintcharge);
+  $spmsms->setSampleInfo('spectrumType', 'msms');
+  $spmsms->setSampleInfo('sampleNumber', $is++);
+  $this->addSpectra($spmsms);
+}
+
+sub twigMzml_setParentFile{
+  my($this, $twig, $el)=@_;
+  $this->set('date', sprintf("%4d-%2.2d-%2.2d",localtime->year()+1900, localtime->mon()+1, localtime->mday()));
+  $this->set('time',sprintf("%2.2d:%2.2d:%2.2d", localtime->hour(), localtime->min(), localtime->sec()));
+
+  $this->twigMzml_init_spmsms unless (defined $spmsms);
+
+  my $h=$el->atts();
+  #$spmsms->origFile($h->{fileName});
+}
+
+
+sub twigMzml_addSpectrum{
+  my($this, $twig, $el)=@_;
+  $pgNextUpdate=$pgBar->update($twig->current_byte) if $pgBar && $twig->current_byte>$pgNextUpdate;
+
+#  my @tmp=$el->get_xpath('cvParam[@name="ms level"]');
+#  die "no child with 'cvParam[name=\"ms level\"]' can be found in \n".$el->sprint unless @tmp;
+#  my $level=$tmp[0]->atts->{'value'};
+  my $level=$el->atts->{msLevel}|| die "no attribute msLevel in ".$el->print;
+  if($level==1){
+    if($this->{read}{skip}{pmf}){
+      $twig->purge;
+      return;
+    }
+    $this->twigMzml_addPMFSpectrum($twig, $el);
+  }elsif($level == 2){
+    $this->twigMzml_addMSMSSpectrum($twig, $el);
+  }else{
+    die "cannot parse spectrum with level=[$level] \n".$el->sprint;
+  }
+
+}
+my $currentPmfKey;
+sub twigMzml_addPMFSpectrum{
+  my($this, $twig, $el)=@_;
+  $pgNextUpdate=$pgBar->update($twig->current_byte) if $pgBar && $twig->current_byte>$pgNextUpdate;
+  return if $this->{read}{skip}{pmf};
+  warn "nothing done for ms level=1 for mzML yet";
+#  my $sp=InSilicoSpectro::Spectra::MSSpectra->new();
+
+#  unless ($el->first_child('peaks')){
+#    $twig->purge;
+#    next;
+#  }
+
+#  $sp->origFile($this->{origFile});
+#  $sp->set('peakDescriptor', $pd_mzint);
+#  $sp->setSampleInfo('retentionTime', $el->atts->{retentionTime}) if $el->atts->{retentionTime};
+#  $sp->setSampleInfo('sampleNumber', $is++);
+
+#  my $elPeaks=$el->first_child('peaks');
+#  InSilicoSpectro::Utils::io::croakIt "parsing not yet defined for <peaks precision!=32> tag (".($elPeaks->atts->{precision}).")" if $elPeaks->atts->{precision} ne 32;
+#  my $tmp=$elPeaks->text;
+#  my ($moz, $int)=twigMzxml_decodeMzXmlPeaks($tmp);
+#  my $n=(scalar @$moz)-1;
+#  $sp->spectrum([]);
+#    for (0..$n){
+#      push @{$sp->spectrum()}, [$moz->[$_], $int->[$_]];
+#    }
+#  $this->addSpectra($sp);
+#  $sp->set('key', "pmf_".$sp->getSampleInfo('sampleNumber')) unless defined $sp->get('key');
+#  $currentPmfKey=$sp->get('key');
+#  $this->key2spectrum($currentPmfKey, $sp);
+  $twig->purge;
+}
+
+sub twigMzml_addMSMSSpectrum{
+  my($this, $twig, $el)=@_;
+  $pgNextUpdate=$pgBar->update($twig->current_byte) if $pgBar && $twig->current_byte>$pgNextUpdate;
+  return if $this->{read}{skip}{msms};
+  $this->twigMzml_init_spmsms unless (defined $spmsms);
+  $this->twigMzml_readCmpd($twig, $el);
+  $twig->purge;
+}
+
+sub twigMzml_cv{
+  my ($el, $name, $optional)=@_;
+  my @tmp=$el->get_xpath("cvParam[\@name='$name']");
+  if($optional && !@tmp){
+    return undef;
+  }
+  Carp::confess "no single solution xpath <cvParam[\@name='$name']> in ".$el->sprint() unless @tmp==1;
+  return $tmp[0]->atts->{value};
+}
+
+sub twigMzml_readCmpd{
+  my($this, $twig, $el)=@_;
+
+  $pgNextUpdate=$pgBar->update($twig->current_byte) if $pgBar && $twig->current_byte>$pgNextUpdate;
+  my $cmpd=InSilicoSpectro::Spectra::MSMSCmpd->new();
+  $cmpd->set('parentPD', $spmsms->get('parentPD'));
+  $cmpd->set('fragPD', $spmsms->get('fragPD'));
+
+  my $elDescr=$el->first_child('spectrumDescription') or die "no <spectrumDescription> in ".$el->sprint;
+  my $elScan=$elDescr->first_child('scan') or die "cannot find <scan> el in ".$elDescr->sprint() or die "no <scan> in ".$el->sprint();
+  my @tmp=$elDescr->get_xpath('precursorList/precursor');
+  die "only single precursor are read (yet) in ".$elDescr->sprint unless @tmp==1;
+  my $elPrec=$tmp[0];
+
+  my $rt=twigMzml_cv($elScan, "scan time");
+  my $title="rt=".$rt;
+  $cmpd->set('title', $title);
+  $cmpd->set('acquTime', $rt);
+
+  my $elIon=$elPrec->first_child('ionSelection') or die "cannot find child 'ionSelection' in ".$elPrec->sprint;
+
+  my $mz=twigMzml_cv($elIon, 'm/z');
+  my $c=InSilicoSpectro::Spectra::MSSpectra::string2chargemask(twigMzml_cv($elIon, 'charge state', 1));
+//    || $this->get('defaultCharge');
+  #or InSilicoSpectro::Utils::io::croakIt "no default charge nor precursor is defined ($cmpd->{title})";
+  $cmpd->set('parentData', [$mz, 1, $c]);
+
+
+
+  my $moz=twigMzMl_binaryData($el, "m/z array");
+  my $int=twigMzMl_binaryData($el, "intensity array");
+  
+  my $n=(scalar @$moz)-1;
+#  $cmpd->addOnePeak([$moz->[0], $int->[0]]);
+   for (0..$n) {
+     $cmpd->addOnePeak([$moz->[$_], $int->[$_]]);
+   }
+
+  $spmsms->addCompound($cmpd);
+  #$this->msms2pmfRelation($cmpd->get('key'), $currentPmfKey);
+  $this->key2spectrum($cmpd->get('key'), $cmpd);
+
+  #   push @{$spmsms->{compounds}}, $cmpd;
+}
+
+sub twigMzMl_binaryData{
+  my $el=shift;
+  my $dataName=shift;
+  my @tmp=$el->get_xpath("binaryDataArray/cvParam[\@name='$dataName']");
+  die "cannot find binaryDataArray with name [$dataName] in ".$el->sprint() unless @tmp==1;
+  my $elb=$tmp[0]->parent;
+  my $unpackformat;
+  if($elb->get_xpath('cvParam[@name="64-bit float"]')){
+    $unpackformat='d';
+  }else{
+    Carp::confess "cannot unpack binary data from".$elb->sprint;
+  }
+  my $len=$elb->atts->{arrayLength};
+  my $o=decode_base64($elb->first_child('binary')->text);
+  my @data = unpack ("$unpackformat*", $o);
+  my $lu=@data;
+  Carp::confess "unpacked $lu values when expecting $len in ".$el->sprint() unless $len==$lu;
+  return \@data;
+}
+
+
+########## EO MZML
+
+
 
 ######### mzData
 
@@ -946,7 +1176,7 @@ sub compoundKey2compound{
     my $jmax=$sp->size()-1;
     for my $j (0..$jmax){
       my $cmpd=$sp->get('compounds')->[$j];
-      $h{$cmpd->{key}}=$cmpd;
+      $h{$cmpd->get('key')}=$cmpd;
     }
   }
   return %h;

@@ -138,7 +138,7 @@ use File::Temp;
 use Archive::Tar;
 use Archive::Zip qw( :ERROR_CODES :CONSTANTS);
 
-my(@fileIn, $fileOut, $showInputFmt, $showOutputFmt, $showDef, $sampleInfo, $precursorTrustParentCharge, $defaultCharge, $forceDefaultCharge, $title, $fileFilter, $dpmStr, @skip,
+my(@fileIn, $fileOut, $showInputFmt, $showOutputFmt, $showDef, $sampleInfo, $precursorTrustParentCharge, $defaultCharge, $forceDefaultCharge, $title, $fileFilter, $dpmStr, @skip, $doNotMergePrecursors,
    $excludeKeysFile,
    $propertiesFile,$propertiesPrefix,
    $useFileCache,
@@ -156,6 +156,7 @@ if (!GetOptions(
 		"showdef=s"=>\$showDef,
 
 		"duplicateprecursormoz=s"=>\$dpmStr,
+		"donotmergeprecursors"=>\$doNotMergePrecursors,
 		"trustprecursorcharge=s"=>\$precursorTrustParentCharge,
 		"defaultcharge=s"=>\$defaultCharge,
 		"forcedefaultcharge"=>\$forceDefaultCharge,
@@ -203,7 +204,7 @@ use InSilicoSpectro::Spectra::MSSpectra;
 use InSilicoSpectro::Spectra::Filter::MSFilterCollection;
 
 #FIXME REMOOVE!
-
+$InSilicoSpectro::Spectra::MSMSSpectra::MERGE_MULTIPLE_PREC_CHARGES=0 if $doNotMergePrecursors;
 
 $InSilicoSpectro::Spectra::MSSpectra::USE_FILECACHED=1 if $useFileCache;
 InSilicoSpectro::Utils::FileCached::verbose($verbose);
@@ -255,7 +256,7 @@ while (my $fileIn=shift @tmpFileIn){
     ($format, $source)=(InSilicoSpectro::Spectra::MSRun::guessFormat($fileIn), $fileIn);
   }
   my $tmpdir=File::Spec->tmpdir;
-  if($source=~/\.(tar|tar\.gz|tgz)/i && $format ne 'dta'){
+  if($source=~/\.(tar|tar\.gz|tgz)$/i && $format ne 'dta'){
     my $tar=Archive::Tar->new;
     $tar->read($source, $source =~ /gz$/i);
     foreach ($tar->list_files()){
@@ -264,7 +265,7 @@ while (my $fileIn=shift @tmpFileIn){
       push @fileIn, {format=>$format, file=>$tmp, origFile=>basename($_)};
       close $fdtmp;
     }
-  }elsif($source=~/\.zip/i && $format ne 'dta'){
+  }elsif($source=~/\.zip$/i && $format ne 'dta'){
     my $zip=Archive::Zip->new();
     unless($zip->read($source)==AZ_OK){
       CORE::die "zip/unzip: cannot read archive $source";
@@ -356,6 +357,8 @@ if ($fileFilter) {
   my $fc = new InSilicoSpectro::Spectra::Filter::MSFilterCollection();
   $fc->readXml($fileFilter);
   $fc->filterSpectra($run);
+  use Data::Dumper;
+  print Dumper ($run);
 }
 
 if ($precursorTrustParentCharge){
@@ -447,7 +450,7 @@ if($dpmStr){
 	    $alterpd_charge->getFields()->[$ipdcmask]='charge';
 	    $ipdcharge=$ipdcmask;
 	  }else{
-	    $alterpd_charge=$cmpd->get('parentPD');
+	    #$alterpd_charge=$cmpd->get('parentPD');
 	    $ipdcharge=$ipdcmask;
 	  }
 	}
