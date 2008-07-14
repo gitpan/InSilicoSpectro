@@ -356,9 +356,10 @@ sub readDTA{
 
     my @members=$zip->members();
     foreach my $mb (@members){
-      my (undef, $tmp)=File::Temp::tempfile("$tmpdir/".(basename($mb->fileName())."-XXXXX"), UNLINK=>1);
+      my ($fdtmp, $tmp)=File::Temp::tempfile("$tmpdir/".(basename($mb->fileName())."-XXXXX"), UNLINK=>1);
       $zip->extractMemberWithoutPaths($mb, $tmp) && croak "cannot extract ".$mb->fileName().": $!\n";
       push @files, $tmp;
+      close $fdtmp;
     }
   }else{
     push @files, glob $src;
@@ -388,6 +389,7 @@ sub readDTA{
       s/^\s+(?=\S)//;
       $all.=$_;
     }
+    close fd;
     ##################### gap detection (and merging)
     #we must merge gap such as
     #876 123 3

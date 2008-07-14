@@ -424,7 +424,7 @@ $shift  <ple:PeakLists>
     }
     print "/>\n";
   } else {
-    croak "No sample info available when saving to ple ".$this->source;
+    Carp::confess "No sample info available when saving to ple ".$this->source;
   }
   #print
   if (defined $this->get('wellInfo')) {

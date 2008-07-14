@@ -173,6 +173,10 @@ our %handlers=(
 			   read=>\&readMascotXml,
 			   description=>'mascot exported xml, checking the "Input query data box"',
 		      },
+	       bdal_tofofxml=>{
+			       read=>\&readBdalToftofXml,
+			       description=>'Bruker TOF-TOF xml'
+			      },
 	       mzdata=>{
 			read=>\&readMzData,
 			description=>"mzdata (version >= 1.05)",
@@ -722,10 +726,16 @@ sub twigMzml_addSpectrum{
   my($this, $twig, $el)=@_;
   $pgNextUpdate=$pgBar->update($twig->current_byte) if $pgBar && $twig->current_byte>$pgNextUpdate;
 
-#  my @tmp=$el->get_xpath('cvParam[@name="ms level"]');
-#  die "no child with 'cvParam[name=\"ms level\"]' can be found in \n".$el->sprint unless @tmp;
-#  my $level=$tmp[0]->atts->{'value'};
-  my $level=$el->atts->{msLevel}|| die "no attribute msLevel in ".$el->print;
+  my @tmp=$el->get_xpath('cvParam[@name="ms level"]');
+  my $level;
+  if(@tmp){
+    $level=$tmp[0]->atts->{'value'};
+  }else{
+    $level=$el->atts->{msLevel}|| die "no attribute msLevel in ".$el->print;
+  }
+  unless($level){
+    die "no child with 'cvParam[name=\"ms level\"]' nor msLevel attribute can be found in \n".$el->sprint unless @tmp;
+  }
   if($level==1){
     if($this->{read}{skip}{pmf}){
       $twig->purge;
@@ -1040,6 +1050,125 @@ sub twigMzdata_readCmpd{
 
 ######### eo mzData
 
+#########  BDAL TOF TOF xml
+
+use Time::localtime;
+
+use InSilicoSpectro::Spectra::PhenyxPeakDescriptor;
+
+my $sppmf;
+my $pd_mzint=InSilicoSpectro::Spectra::PhenyxPeakDescriptor->new("moz intensity");
+my $pd_mzintcharge=InSilicoSpectro::Spectra::PhenyxPeakDescriptor->new("moz intensity chargemask");
+my $is=0;
+
+my $twigmzxml;
+sub readBdalToftofXml{
+  my ($this, $file)=@_;
+  $file=$this->{source} unless defined $file;
+  my $ignoreElts={
+		  'index'=>1
+		 };
+  #$ignoreElts->{'scan[@msLevel="1"]'}=1 if $this->{read}{skip}{pmf};
+
+  $twigmzxml=XML::Twig->new(twig_handlers=>{
+					    cmpd=>sub {twigBdalToftofXml_addSpectrum($this, $_[0], $_[1])},
+					   },
+			    pretty_print=>'indented',
+			    ignore_elts=>$ignoreElts,
+			 );
+  (-r $file) or InSilicoSpectro::Utils::io::croakIt "cannot read [$file]";
+
+  undef $pgBar;
+  eval{
+    require Term::ProgressBar;
+    if(InSilicoSpectro::Utils::io::isInteractive()){
+      my $size=(stat($file))[7];
+      $pgBar=Term::ProgressBar->new({name=>"parsing ".basename($file), count=>$size});
+      $pgNextUpdate=0;
+    }
+  };
+
+  print STDERR "xml parsing [$file]\n" if $InSilicoSpectro::Utils::io::VERBOSE;
+  $twigmzxml->parsefile($file) or InSilicoSpectro::Utils::io::croakIt "cannot parse [$file]: $!";
+  $this->set('origFile', $file);
+  undef $spmsms;
+  $is=$this->getNbSpectra();
+  $pgBar->update((stat($file))[7]) if $pgBar;
+}
+
+sub twigBdalToftofXml_init_sppmf{
+  my($this)=@_;
+
+  return if $sppmf;
+  $is=0;
+  $sppmf=InSilicoSpectro::Spectra::MSSpectra->new();
+  $sppmf->set('peakDescriptor', $pd_mzint);
+  $this->addSpectra($sppmf);
+  $sppmf->spectrum([]);
+  $sppmf->set('key', "pmf_$is") unless defined $sppmf->get('key');
+  $sppmf->setSampleInfo('sampleNumber', $is++);
+
+  $spmsms=InSilicoSpectro::Spectra::MSMSSpectra->new();
+  $spmsms->origFile($this->{origFile}) unless $spmsms->origFile;
+  $spmsms->set('parentPD', $pd_mzintcharge);
+  $spmsms->set('fragPD', $pd_mzintcharge);
+  $spmsms->setSampleInfo('spectrumType', 'msms');
+  $spmsms->setSampleInfo('sampleNumber', $is++);
+  $this->addSpectra($spmsms);
+}
+
+sub twigBdalToftofXml_addMSMSSpectrum{
+  my($this, $twig, $el)=@_;
+  $pgNextUpdate=$pgBar->update($twig->current_byte) if $pgBar && $twig->current_byte>$pgNextUpdate;
+  return if $this->{read}{skip}{msms};
+  $this->twigMzxml_init_spmsms unless (defined $spmsms);
+  $this->twigMzxml_readCmpd($twig, $el);
+  $twig->purge;
+}
+
+sub twigBdalToftofXml_addSpectrum{
+  my($this, $twig, $el)=@_;
+
+  $pgNextUpdate=$pgBar->update($twig->current_byte) if $pgBar && $twig->current_byte>$pgNextUpdate;
+  $this->twigBdalToftofXml_init_sppmf();
+
+  my $elprec=$el->first_child('precursor');
+  push @{$sppmf->spectrum()}, [$elprec->atts->{mz}, $elprec->atts->{i}, $elprec->atts->{z}];
+
+  if($el->first_child('ms_spectrum[@msms_stage="2"]')){
+
+    #MSMS
+    my $cmpd=InSilicoSpectro::Spectra::MSMSCmpd->new();
+    $cmpd->set('parentPD', $spmsms->get('parentPD'));
+    $cmpd->set('fragPD', $spmsms->get('fragPD'));
+    my $title="cmpdnr=".$el->atts->{cmpdnr};
+    $cmpd->set('title', $title);
+    if ($el->atts->{rt}) {
+      my $rt=$el->atts->{rt};
+      $cmpd->set('acquTime', $rt);
+    }
+    $cmpd->set('scan', {start=>$el->atts->{cmpdnr}, end=>$el->atts->{cmpdnr}});
+    my $z=$elprec->atts->{z};
+    $z=~s/\+//;
+    my $c=InSilicoSpectro::Spectra::MSSpectra::string2chargemask($z) || $this->get('defaultCharge');
+    $cmpd->set('parentData', [$elprec->atts->{mz}, $elprec->atts->{i}, $c]);
+
+    my $elPeaks=$el->first_child('ms_spectrum')->first_child('ms_peaks');
+    my @tmp=$elPeaks->get_xpath('pk');
+    for (@tmp) {
+      $cmpd->addOnePeak([$_->atts->{mz}, $_->atts->{i}]);
+    }
+
+    $spmsms->addCompound($cmpd);
+    $this->msms2pmfRelation($cmpd->get('key'), $currentPmfKey);
+    $this->key2spectrum($cmpd->get('key'), $cmpd);
+  }
+}
+
+
+########## EO BDAL TOF TOF xml
+
+
 ######### mascotXml
 
 my $spmsms_mascotxml;
@@ -1268,6 +1397,7 @@ sub writePLE{
 #  print STDERR "# spectra= $#spectra\n";
   foreach(@{$this->get('spectra')}){
     next unless defined $_;
+    use Data::Dumper;
     $_->writePLE($shift);
   }
  print "    <Msms2PmfKeysRelation><![CDATA[\n";
