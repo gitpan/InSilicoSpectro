@@ -518,6 +518,9 @@ sub readMGF{
 	  $t=~s/\s+$//;
 	  $t=~s/^\s+//;
 	  $cmpd->set('title', $t)if $t=~/\S/;
+	  if($t=~/\.(\d+)\.(\d+)\.\d$/){
+	    $cmpd->set('scan', {start=>(0+$1), end=>(0+$2)});
+	  }
 	  next;
 	}
 	if (/^CHARGE=(.*)/i) {
@@ -721,7 +724,7 @@ sub twigBtdxReadCmpd{
     croak "cannot handle different set of peak attributes [$s]/[$twigBtdxPeakDescriptorStr] (line=".$t->current_line. " col=".$t->current_column.")" if $s ne $twigBtdxPeakDescriptorStr;
   }
   my $cmpd=InSilicoSpectro::Spectra::MSMSCmpd->new({parentPD=>$twigBtdxPeakDescriptor, fragPD=>$twigBtdxPeakDescriptor});
-  $cmpd->set('title', $el->first_child('title')->text);
+  $cmpd->set('title', $el->first_child('title')->text) if  $el->first_child('title');
   if($prec->{att}->{rt_unit} eq 's'){
     $cmpd->set('acquTime', $prec->{att}->{rt});
   }

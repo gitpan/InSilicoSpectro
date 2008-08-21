@@ -294,6 +294,12 @@ foreach (@fileIn) {
   $run->set('format', $inFormat);
   $run->set('source', $src);
   $run->set('origFile', $origFile);
+  if((defined $InSilicoSpectro::Spectra::MSRun::autoDetectFormatHandlers{$inFormat})){
+    my $tmp = $InSilicoSpectro::Spectra::MSRun::autoDetectFormatHandlers{$inFormat}{read}->($src);
+    die "cannot auto detect [$inFormat] from $src" unless $tmp;
+    $inFormat=$tmp;
+    $run->set('format', $inFormat);
+  }
   unless (defined $InSilicoSpectro::Spectra::MSRun::handlers{$inFormat}{read}) {
     my %h;
     foreach (keys %$run) {

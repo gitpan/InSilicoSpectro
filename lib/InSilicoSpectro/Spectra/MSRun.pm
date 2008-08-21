@@ -130,7 +130,7 @@ Alexandre Masselot, www.genebio.com
 our (@ISA,@EXPORT,@EXPORT_OK, $dbPath);
 @ISA = qw(Exporter);
 
-@EXPORT = qw(&getReadFmtList &guessFormat &getwriteFmtList %handlers);
+@EXPORT = qw(&getReadFmtList &guessFormat &getwriteFmtList %handlers %autoDetectFormatHandlers);
 @EXPORT_OK = ();
 
 use File::Basename;
@@ -140,6 +140,13 @@ use MIME::Base64;
 use InSilicoSpectro::Spectra::MSSpectra;
 use InSilicoSpectro::Spectra::MSMSSpectra;
 use InSilicoSpectro::Utils::XML::SaxIndexMaker;
+
+our %autoDetectFormatHandlers=(
+			       bruker_xml=>{
+					    read=>\&autoDetect_brukerXml,
+					    description=>'Bruker xml',
+					   },
+			       );
 
 our %handlers=(
 	       ple=>{
@@ -300,9 +307,13 @@ sub removeSpectra{
 
 sub getReadFmtList{
   my @tmp;
-  foreach (sort keys %handlers){
+  foreach (keys %handlers){
     push @tmp, $_ if $handlers{$_}{read};
   }
+  foreach (keys %autoDetectFormatHandlers){
+    push @tmp, $_ if $autoDetectFormatHandlers{$_}{read};
+  }
+  @tmp=sort @tmp;
   return wantarray?@tmp:("".(join ',', @tmp));
 }
 
@@ -317,8 +328,9 @@ sub getWriteFmtList{
 
 sub getFmtDescr{
   my $f=shift || croak "must provide a format to getFmtDescr";
-  croak "no handler for format=[$f]" unless $handlers{$f};
-  return $handlers{$f}{description} || $f;
+  return ($handlers{$f}{description} || $f) if $handlers{$f};
+  return ($autoDetectFormatHandlers{$f}{description} || $f) if $autoDetectFormatHandlers{$f};
+  croak "no handler not autodetect  for format=[$f]" unless $handlers{$f};
 }
 
 
@@ -326,6 +338,28 @@ use XML::Twig;
 
 my ($pgBar, $pgNextUpdate);
 
+
+sub autoDetect_brukerXml{
+  my $src=shift || die "so src file given to autoDetect_brukerXml";
+  my $head;
+  open (FD, "<$src") || die "cannot open [$src]: $!";
+  my $i=0;
+  while(<FD>){
+    $head.=$_;
+    last if $i++>=10;
+  }
+  close FD;
+  my $out;
+  if($head=~/subtype="TOF Mixed Data"/){
+    return 'bdal_tofofxml';
+  }
+  if($head=~/<pklist /){
+    return 'peaklist_xml';
+  }
+  if($head=~/<root>/){
+    return 'btdx';
+  }
+}
 
 ############## IDJ format
 sub readIDJ{
@@ -603,7 +637,7 @@ sub twigMzxml_readCmpd{
   $cmpd->set('parentData', [$elprec->text, $elprec->atts->{precursorIntensity}, $c]);
 
   my $elPeaks=$el->first_child('peaks');
-  InSilicoSpectro::Utils::io::croakIt "parsing not yet defined for <peaks precision!=32> tag (".($elPeaks->atts->{precision}).")" if $elPeaks->atts->{precision} ne 32;
+#  InSilicoSpectro::Utils::io::croakIt "parsing not yet defined for <peaks precision!=32> tag (".($elPeaks->atts->{precision}).")" if $elPeaks->atts->{precision} ne 32;
   my $tmp=$elPeaks->text;
   my ($moz, $int)=twigMzxml_decodeMzXmlPeaks($tmp);
   my $n=(scalar @$moz)-1;
@@ -611,7 +645,6 @@ sub twigMzxml_readCmpd{
    for (0..$n) {
      $cmpd->addOnePeak([$moz->[$_], $int->[$_]]);
    }
-
   $spmsms->addCompound($cmpd);
   $this->msms2pmfRelation($cmpd->get('key'), $currentPmfKey);
   $this->key2spectrum($cmpd->get('key'), $cmpd);
@@ -750,11 +783,13 @@ sub twigMzml_addSpectrum{
 
 }
 my $currentPmfKey;
+my $nothingForMS1;
 sub twigMzml_addPMFSpectrum{
   my($this, $twig, $el)=@_;
   $pgNextUpdate=$pgBar->update($twig->current_byte) if $pgBar && $twig->current_byte>$pgNextUpdate;
   return if $this->{read}{skip}{pmf};
-  warn "nothing done for ms level=1 for mzML yet";
+  warn "nothing done for ms level=1 for mzML yet" unless $nothingForMS1;
+  $nothingForMS1=1;
 #  my $sp=InSilicoSpectro::Spectra::MSSpectra->new();
 
 #  unless ($el->first_child('peaks')){
@@ -821,7 +856,7 @@ sub twigMzml_readCmpd{
   $cmpd->set('title', $title);
   $cmpd->set('acquTime', $rt);
 
-  my $elIon=$elPrec->first_child('ionSelection') or die "cannot find child 'ionSelection' in ".$elPrec->sprint;
+  my $elIon=$elPrec->first_child('selectedIonList') && $elPrec->first_child('selectedIonList')->first_child('selectedIon') or die "cannot find child 'selectedIonList/selectedIon' in ".$elPrec->sprint;
 
   my $mz=twigMzml_cv($elIon, 'm/z');
   my $c=InSilicoSpectro::Spectra::MSSpectra::string2chargemask(twigMzml_cv($elIon, 'charge state', 1));
@@ -850,20 +885,28 @@ sub twigMzml_readCmpd{
 sub twigMzMl_binaryData{
   my $el=shift;
   my $dataName=shift;
-  my @tmp=$el->get_xpath("binaryDataArray/cvParam[\@name='$dataName']");
+  my @tmp=$el->get_xpath("binaryDataArrayList/binaryDataArray/cvParam[\@name='$dataName']");
   die "cannot find binaryDataArray with name [$dataName] in ".$el->sprint() unless @tmp==1;
   my $elb=$tmp[0]->parent;
   my $unpackformat;
   if($elb->get_xpath('cvParam[@name="64-bit float"]')){
     $unpackformat='d';
+  }elsif($elb->get_xpath('cvParam[@name="32-bit float"]')){
+    $unpackformat='d';
   }else{
     Carp::confess "cannot unpack binary data from".$elb->sprint;
   }
+  my $zlib=1 if $elb->get_xpath('cvParam[@name="zlib compression"]');
   my $len=$elb->atts->{arrayLength};
-  my $o=decode_base64($elb->first_child('binary')->text);
+  my $tmp=$elb->first_child('binary')->text;
+  my $o=decode_base64($tmp);
+  if($zlib){
+    require Compress::Zlib;
+    $o=Compress::Zlib::uncompress($o);
+  }
   my @data = unpack ("$unpackformat*", $o);
   my $lu=@data;
-  Carp::confess "unpacked $lu values when expecting $len in ".$el->sprint() unless $len==$lu;
+  Carp::confess "unpacked $lu values when expecting $len in ".$elb->sprint() if (defined $len) && ($len!=$lu);
   return \@data;
 }
 

@@ -84,6 +84,7 @@ sub new{
   my $dvar = $class->SUPER::new();
   bless $dvar, $class;
 
+  $dvar->{fragments}=[];
   if(defined $h){
     if((ref $h)eq 'HASH'){
       foreach (keys %$h){
